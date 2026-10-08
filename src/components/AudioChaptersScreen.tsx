@@ -58,6 +58,8 @@ export const AudioChaptersScreen: React.FC<AudioChaptersScreenProps> = ({ onBack
     setRate,
     toggleMute,
     setSleepTimer,
+    hasAudiobook,
+    triggerAudiobookPaywall,
   } = useAudio();
 
   // Filter chapters based on selected part and search query
@@ -88,12 +90,12 @@ export const AudioChaptersScreen: React.FC<AudioChaptersScreenProps> = ({ onBack
     return `${m}:${s < 10 ? '0' : ''}${s}`;
   };
 
-  const isCurrentFree = currentChapter.chapterNumber <= 3;
-  const isCurrentLocked = !isCurrentFree && !isPremium;
+  const isCurrentFree = currentChapter.chapterNumber === 1;
+  const isCurrentLocked = !isCurrentFree && !hasAudiobook && !isPremium;
 
   const handleTogglePlay = () => {
     if (isCurrentLocked) {
-      onNavigate('subscription');
+      triggerAudiobookPaywall();
       return;
     }
     togglePlay();
@@ -205,15 +207,15 @@ export const AudioChaptersScreen: React.FC<AudioChaptersScreenProps> = ({ onBack
                 <div className="flex items-center gap-2 min-w-0">
                   <Lock size={13} className="text-[#8e6724] dark:text-[#e8b98a] shrink-0" />
                   <span className="text-[11px] text-[#1f2a28] dark:text-[#f1ede6] font-medium leading-tight truncate">
-                    Chapters 4–45 require Sovereign Membership
+                    Chapters 2–45 require Audiobook Purchase
                   </span>
                 </div>
                 <button
                   type="button"
-                  onClick={() => onNavigate('subscription')}
+                  onClick={() => triggerAudiobookPaywall()}
                   className="px-2.5 py-1 rounded-xl bg-[#17495e] dark:bg-[#e8b98a] text-[#e8b98a] dark:text-[#0b1317] text-[10.5px] font-bold shrink-0 cursor-pointer"
                 >
-                  Unlock All →
+                  Unlock from AED 39 →
                 </button>
               </div>
             )}
@@ -501,8 +503,8 @@ export const AudioChaptersScreen: React.FC<AudioChaptersScreenProps> = ({ onBack
           <div className="space-y-2">
             {filteredChapters.map((chapter) => {
               const isCurrent = currentChapter.id === chapter.id;
-              const isChapterFree = chapter.chapterNumber <= 3;
-              const isChapterLocked = !isChapterFree && !isPremium;
+              const isChapterFree = chapter.chapterNumber === 1;
+              const isChapterLocked = !isChapterFree && !hasAudiobook && !isPremium;
 
               return (
                 <motion.div
@@ -511,7 +513,7 @@ export const AudioChaptersScreen: React.FC<AudioChaptersScreenProps> = ({ onBack
                   whileTap={{ scale: 0.99 }}
                   onClick={() => {
                     if (isChapterLocked) {
-                      onNavigate('subscription');
+                      triggerAudiobookPaywall();
                       return;
                     }
                     playChapter(chapter);
@@ -547,15 +549,15 @@ export const AudioChaptersScreen: React.FC<AudioChaptersScreenProps> = ({ onBack
                           <span className="text-[#838c89] dark:text-[#6c8491] text-[9px]">•</span>
                           {isChapterFree ? (
                             <span className="text-[8.5px] bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 font-bold px-1.5 py-0.2 rounded-full font-mono">
-                              FREE
+                              FREE SAMPLE (25M)
                             </span>
                           ) : isChapterLocked ? (
                             <span className="text-[8.5px] bg-[#fdf6ec] dark:bg-[#1b2b36] border border-[#d9a44a]/40 dark:border-[#e8b98a]/40 text-[#8e6724] dark:text-[#e8b98a] font-bold px-1.5 py-0.2 rounded-full font-mono flex items-center gap-0.5">
-                              <Lock size={8} /> SOVEREIGN
+                              <Lock size={8} /> LOCKED
                             </span>
                           ) : (
                             <span className="text-[8.5px] bg-[#fdf6ec] dark:bg-[#1b2b36] text-[#8e6724] dark:text-[#e8b98a] font-bold px-1.5 py-0.2 rounded-full font-mono">
-                              SOVEREIGN
+                              UNLOCKED
                             </span>
                           )}
                         </div>

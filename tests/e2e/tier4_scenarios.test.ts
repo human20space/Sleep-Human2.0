@@ -35,10 +35,10 @@ describe('Tier 4: Real-World Application Scenarios', () => {
     let currentScreen = 'sleep';
     assert.equal(currentScreen, 'sleep');
 
-    // 3. User browses curated catalog, discovers free sleepcast "The Whispering Pines"
-    const freeTrack = REFERENCE_SLEEP_CATALOG.find(t => t.category === 'sleepcast' && !t.isPremium);
-    assert.ok(freeTrack, 'Free sleepcast track must exist in catalog');
-    assert.equal(freeTrack.title, 'The Whispering Pines');
+    // 3. User browses curated catalog, discovers free soundscape "Sacred Temple Bell"
+    const freeTrack = REFERENCE_SLEEP_CATALOG.find(t => t.id === 'sleep-free-1');
+    assert.ok(freeTrack, 'Free track must exist in catalog');
+    assert.equal(freeTrack.title, 'Sacred Temple Bell');
     assert.equal(freeTrack.isPremium, false);
 
     // 4. User taps Play button (verifying touch target >= 44px)

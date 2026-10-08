@@ -65,17 +65,20 @@ describe('Tier 3: Cross-Feature Pairwise Combinations', () => {
     assert.equal(solfeggio432Freq, 432);
   });
 
-  // Combination 4: Sovereign Plan (F9) + Audiobook Section (F10)
-  test('Pairwise 4 [F9 + F10]: Sovereign simulation unlock immediately makes Audiobook Chapters 4-45 accessible', () => {
+  // Combination 4: Sovereign / Audiobook Plan (F9) + Audiobook Section (F10)
+  test('Pairwise 4 [F9 + F10]: Audiobook purchase or Sovereign simulation unlock immediately makes Audiobook Chapters 2-45 accessible', () => {
     const vault = new MockLocalStorageVault();
     assert.equal(vault.isSovereign(), false);
 
-    const canPlayChapter = (chNum: number) => chNum <= 3 || vault.isSovereign();
+    const canPlayChapter = (chNum: number) =>
+      chNum === 1 || vault.getItem('human2_has_audiobook') === 'true' || vault.isSovereign();
     assert.equal(canPlayChapter(1), true);
+    assert.equal(canPlayChapter(2), false);
     assert.equal(canPlayChapter(4), false);
 
-    // Simulate unlock
-    vault.setSovereign(true);
+    // Simulate unlock via Launch Offer (AED 39)
+    vault.setItem('human2_has_audiobook', 'true');
+    assert.equal(canPlayChapter(2), true);
     assert.equal(canPlayChapter(4), true);
     assert.equal(canPlayChapter(45), true);
   });

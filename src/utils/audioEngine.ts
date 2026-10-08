@@ -10,6 +10,7 @@ class AudioEngine {
 
   // Dedicated procedural nodes
   private noiseNode: AudioNode | null = null;
+  private bellInterval: number | null = null;
 
   private initContext() {
     if (!this.ctx) {
@@ -246,8 +247,50 @@ class AudioEngine {
     return this.toggleSolfeggioTone(432);
   }
 
+  // Resonant Temple Bell Soundscape (Periodic harmonic singing bowl & bell strikes)
+  public toggleBellSound(baseFreq: number = 260): boolean {
+    this.initContext();
+    if (!this.ctx) return false;
+
+    if (this.isPlayingAmbient && this.activeSoundType === 'bell_sound') {
+      this.stopProceduralSound();
+      return false;
+    }
+
+    this.stopProceduralSound();
+
+    try {
+      // Immediate strike on play
+      this.playBowlChime(baseFreq, 6);
+
+      // Periodic resonant strikes every 8.5 seconds with gentle organic variation
+      this.bellInterval = window.setInterval(() => {
+        if (!this.isPlayingAmbient || this.activeSoundType !== 'bell_sound') {
+          if (this.bellInterval) clearInterval(this.bellInterval);
+          return;
+        }
+        // Subtle harmonic variation between fundamental and fifth
+        const variations = [baseFreq, baseFreq * 1.25, baseFreq * 1.5, baseFreq];
+        const nextFreq = variations[Math.floor(Math.random() * variations.length)];
+        this.playBowlChime(nextFreq, 6.5);
+      }, 8500);
+
+      this.isPlayingAmbient = true;
+      this.activeSoundType = 'bell_sound';
+      return true;
+    } catch (e) {
+      console.warn('Temple bell sound error', e);
+      return false;
+    }
+  }
+
   // Gracefully stop all procedural audio
   public stopProceduralSound() {
+    if (this.bellInterval) {
+      clearInterval(this.bellInterval);
+      this.bellInterval = null;
+    }
+
     if (!this.ctx || !this.ambientGain) {
       this.isPlayingAmbient = false;
       this.activeSoundType = null;

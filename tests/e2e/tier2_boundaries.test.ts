@@ -444,10 +444,10 @@ describe('Feature 10 Boundaries: Standalone Audiobook Section', () => {
     assert.ok(chaptersContent.includes('chapterNumber: 1'));
   });
 
-  test('F10_B2: Chapter 3 to 4 boundary: Ch 3 is free while Ch 4 requires Sovereign', () => {
-    const isFree = (chNum: number) => chNum <= 3;
-    assert.equal(isFree(3), true);
-    assert.equal(isFree(4), false);
+  test('F10_B2: Chapter 1 to 2 boundary: Ch 1 is free 25m sample while Ch 2 requires Audiobook/Sovereign purchase', () => {
+    const isFree = (chNum: number) => chNum === 1;
+    assert.equal(isFree(1), true);
+    assert.equal(isFree(2), false);
   });
 
   test('F10_B3: Chapter 45 is the upper boundary index (chapterNumber === 45)', () => {
@@ -455,12 +455,12 @@ describe('Feature 10 Boundaries: Standalone Audiobook Section', () => {
     assert.ok(!chaptersContent.includes('chapterNumber: 46'));
   });
 
-  test('F10_B4: Chapter durationFormatted parses sub-hour format (e.g. 11:24)', () => {
+  test('F10_B4: Chapter durationFormatted parses 25-minute sample format (e.g. 25:00)', () => {
     const parseDuration = (formatted: string) => {
       const [m, s] = formatted.split(':').map(Number);
       return m * 60 + s;
     };
-    assert.equal(parseDuration('11:24'), 684);
+    assert.equal(parseDuration('25:00'), 1500);
   });
 
   test('F10_B5: missing chapter streamUrl falls back cleanly to driveUrl folder', () => {

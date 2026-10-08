@@ -164,7 +164,7 @@ export interface SleepTrack {
   category: 'sleepcast' | 'solfeggio' | 'soundscape' | 'sos' | 'body_scan';
   durationSeconds: number;
   isPremium: boolean;
-  audioEngineType?: 'solfeggio_432' | 'solfeggio_528' | 'delta_binaural' | 'ocean_rain' | 'sos_reset';
+  audioEngineType?: 'solfeggio_432' | 'solfeggio_528' | 'delta_binaural' | 'ocean_rain' | 'sos_reset' | 'bell_sound';
   audioUrl?: string;
   tags: string[];
   description: string;

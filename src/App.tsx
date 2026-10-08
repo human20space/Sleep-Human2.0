@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import type { Screen, UserInsight, AwarenessMoment, MirrorSession, ConstructionAudioSession } from './types';
 import { INITIAL_USER_INSIGHTS } from './data/bookContent';
-import { AudioProvider } from './context/AudioContext';
+import { AudioProvider, useAudio } from './context/AudioContext';
 import { PhoneFrame } from './components/PhoneFrame';
 import { SplashScreen } from './components/SplashScreen';
 import { HomeScreen } from './components/HomeScreen';
@@ -28,6 +28,7 @@ import { registerServiceWorker, applyServiceWorkerUpdate } from './pwa/registerS
 import { usePwaInstall } from './pwa/usePwaInstall';
 import { UpdateToast } from './components/UpdateToast';
 import { InstallPromptModal } from './components/InstallPromptModal';
+import { AudiobookPaywallModal } from './components/AudiobookPaywallModal';
 
 export function AppContent() {
   const [currentScreen, setCurrentScreen] = useState<Screen>('splash');
@@ -44,6 +45,13 @@ export function AppContent() {
     showInstallModal,
     dismissInstallPrompt,
   } = usePwaInstall();
+
+  // Audiobook Paywall State from Audio Context
+  const {
+    showAudiobookPaywall,
+    setShowAudiobookPaywall,
+    unlockAudiobook,
+  } = useAudio();
 
   // Initialize Service Worker Registration
   useEffect(() => {
@@ -484,6 +492,14 @@ export function AppContent() {
           onInstall={promptInstall}
           isIOS={isIOS}
           canPromptDirectly={canPromptDirectly}
+        />
+
+        {/* Dedicated Audiobook Paywall Modal (triggers when 25-min sample ends or locked chapter tapped) */}
+        <AudiobookPaywallModal
+          show={showAudiobookPaywall}
+          onClose={() => setShowAudiobookPaywall(false)}
+          onUnlockSuccess={() => unlockAudiobook()}
+          onNavigateToSovereign={() => setCurrentScreen('subscription')}
         />
       </div>
     </PhoneFrame>

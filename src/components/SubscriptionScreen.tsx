@@ -67,7 +67,7 @@ export const SubscriptionScreen: React.FC<SubscriptionScreenProps> = ({ onBack, 
     {
       icon: Headphones,
       title: 'Full 45 Audiobook Chapters',
-      free: 'First 3 Chapters',
+      free: 'Chapter 1 (25-Min Sample)',
       sovereign: 'All 45 Tracks Unlocked',
       highlight: true
     },
@@ -204,6 +204,43 @@ export const SubscriptionScreen: React.FC<SubscriptionScreenProps> = ({ onBack, 
           <div className="w-6 h-6 rounded-full bg-[#17495e] dark:bg-[#e8b98a] text-white dark:text-[#0b1317] flex items-center justify-center">
             <Check size={14} className="stroke-[2.5]" />
           </div>
+        </div>
+
+        {/* Standalone Audiobook One-Time Purchase Card (As per pricing plan) */}
+        <div className="p-3.5 rounded-2xl bg-gradient-to-r from-amber-50 to-orange-50 dark:from-[#17252f] dark:to-[#132029] border border-amber-200/80 dark:border-[#203644] shadow-xs flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <div className="w-8 h-8 rounded-xl bg-amber-500/20 text-[#8e6724] dark:text-[#e8b98a] flex items-center justify-center shrink-0">
+              <Headphones size={16} />
+            </div>
+            <div className="min-w-0">
+              <div className="flex items-center gap-1.5">
+                <span className="text-[9.5px] uppercase font-mono font-bold tracking-wider text-[#8e6724] dark:text-[#e8b98a]">
+                  Audiobook Only · One-Time
+                </span>
+                <span className="text-[8.5px] font-mono font-bold bg-[#d9a44a]/20 text-[#8e6724] dark:text-[#e8b98a] px-1.5 py-0.2 rounded-full">
+                  SAVE 35%
+                </span>
+              </div>
+              <p className="text-xs font-bold text-[#17495e] dark:text-[#f1ede6] truncate">
+                All 45 Chapters · Launch Offer AED 39 / $10.99
+              </p>
+              <p className="text-[10px] text-[#5a6663] dark:text-[#98abb6]">
+                Keep forever with zero monthly subscription fees
+              </p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => {
+              hapticsEngine.trigger('tap');
+              localStorage.setItem('human2_has_audiobook', 'true');
+              audioEngine.playBowlChime(528, 3.5);
+              alert('Complete 45-chapter Human 2.0 Audiobook unlocked! (AED 39 Launch Offer)');
+            }}
+            className="px-2.5 py-1.5 rounded-xl bg-[#17495e] dark:bg-[#e8b98a] text-[#e8b98a] dark:text-[#0b1317] text-[10.5px] font-bold shrink-0 cursor-pointer hover:opacity-90 transition-opacity"
+          >
+            Get Book →
+          </button>
         </div>
 
         {/* Feature Comparison Matrix */}

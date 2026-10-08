@@ -49,7 +49,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   const solfeggioTracks = SLEEP_TRACKS.filter((t) => t.category === 'solfeggio');
   const sleepcastTracks = SLEEP_TRACKS.filter((t) => t.category === 'sleepcast' || t.category === 'body_scan');
 
-  const heroTrack = SLEEP_TRACKS[0]; // The Whispering Pines
+  const heroTrack = SLEEP_TRACKS[0]; // Sacred Temple Bell
   const sosTrack = SLEEP_TRACKS.find((t) => t.id === 'sleep-free-4') || SLEEP_TRACKS[3]; // 90s SOS
 
   const handleTrackClick = (track: SleepTrack) => {
@@ -132,7 +132,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
         >
           <div className="flex items-start justify-between mb-2">
             <span className="text-[10px] uppercase font-mono font-bold tracking-widest text-[#e8b98a] bg-black/25 px-2.5 py-0.5 rounded-full">
-              Tonight's Featured Sleepcast · 100% Free
+              Tonight's Featured Bell Sound · 100% Free
             </span>
             <span className="text-xs text-[#e8b98a]/90 font-mono font-semibold">
               {Math.floor(heroTrack.durationSeconds / 60)} min
@@ -156,7 +156,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
               {currentTrack?.id === heroTrack.id && isPlaying ? (
                 <>
                   <Pause size={15} className="fill-current" />
-                  <span>Pause Sleepcast</span>
+                  <span>Pause Bell Sound</span>
                 </>
               ) : (
                 <>

@@ -31,6 +31,11 @@ interface AudioContextType {
   setSleepTimer: (minutes: number | null) => void;
   dismissMiniPlayer: () => void;
   restoreMiniPlayer: () => void;
+  hasAudiobook: boolean;
+  showAudiobookPaywall: boolean;
+  setShowAudiobookPaywall: (show: boolean) => void;
+  triggerAudiobookPaywall: () => void;
+  unlockAudiobook: () => void;
 }
 
 const AudioContext = createContext<AudioContextType | null>(null);
@@ -39,8 +44,43 @@ const STORAGE_LAST_CHAPTER_ID = 'human2_last_chapter_id';
 const STORAGE_LAST_TIME = 'human2_last_timestamp';
 const STORAGE_FAVORITES = 'human2_favorites';
 const STORAGE_CONTINUE_LISTENING = 'human2_continue_listening';
+const STORAGE_HAS_AUDIOBOOK = 'human2_has_audiobook';
+const STORAGE_IS_PREMIUM = 'human2_is_premium';
 
 export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  // Audiobook entitlement state
+  const [hasAudiobook, setHasAudiobook] = useState<boolean>(() => {
+    try {
+      return (
+        localStorage.getItem(STORAGE_HAS_AUDIOBOOK) === 'true' ||
+        localStorage.getItem(STORAGE_IS_PREMIUM) === 'true'
+      );
+    } catch {
+      return false;
+    }
+  });
+
+  const [showAudiobookPaywall, setShowAudiobookPaywall] = useState<boolean>(false);
+
+  const triggerAudiobookPaywall = useCallback(() => {
+    hapticsEngine.trigger('tap');
+    if (audioRef.current) {
+      audioRef.current.pause();
+    }
+    setIsPlaying(false);
+    setShowAudiobookPaywall(true);
+  }, []);
+
+  const unlockAudiobook = useCallback(() => {
+    try {
+      localStorage.setItem(STORAGE_HAS_AUDIOBOOK, 'true');
+    } catch {
+      // ignore
+    }
+    setHasAudiobook(true);
+    setShowAudiobookPaywall(false);
+  }, []);
+
   // Load initial chapter from localStorage or default to Chapter 1
   const [currentChapter, setCurrentChapter] = useState<AudioChapter>(() => {
     try {
@@ -93,8 +133,8 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       {
         id: 'sleep-free-1',
         type: 'sleep_track',
-        title: 'The Whispering Pines',
-        subtitle: 'Calming bedtime journey',
+        title: 'Sacred Temple Bell',
+        subtitle: 'Harmonic bell resonance',
         positionSeconds: 340,
         durationSeconds: 1200,
         updatedAt: Date.now() - 3600000,
@@ -103,8 +143,13 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   });
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const currentChapterRef = useRef<AudioChapter>(currentChapter);
   const sleepIntervalRef = useRef<number | null>(null);
   const proceduralTimerRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    currentChapterRef.current = currentChapter;
+  }, [currentChapter]);
 
   const isFavorite = useCallback((id: string) => favorites.includes(id), [favorites]);
 
@@ -186,6 +231,19 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         } catch {
           // ignore
         }
+
+        // When 1st 25 mins is over on free chapter, pause and ask for payment!
+        const isChapter1 = currentChapterRef.current?.chapterNumber === 1;
+        const isUnlocked =
+          localStorage.getItem(STORAGE_HAS_AUDIOBOOK) === 'true' ||
+          localStorage.getItem(STORAGE_IS_PREMIUM) === 'true';
+
+        // 25 minutes = 1500 seconds
+        if (isChapter1 && !isUnlocked && audio.currentTime >= 25 * 60) {
+          audio.pause();
+          setIsPlaying(false);
+          setShowAudiobookPaywall(true);
+        }
       }
     };
 
@@ -197,7 +255,17 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
     const handleEnded = () => {
       setIsPlaying(false);
-      nextChapter();
+      const isChapter1 = currentChapterRef.current?.chapterNumber === 1;
+      const isUnlocked =
+        localStorage.getItem(STORAGE_HAS_AUDIOBOOK) === 'true' ||
+        localStorage.getItem(STORAGE_IS_PREMIUM) === 'true';
+
+      // When the 1st free chapter ends, immediately ask for payment!
+      if (isChapter1 && !isUnlocked) {
+        setShowAudiobookPaywall(true);
+      } else {
+        nextChapter();
+      }
     };
 
     audio.addEventListener('play', handlePlay);
@@ -268,8 +336,20 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     audioEngine.stopProceduralSound();
     if (proceduralTimerRef.current) clearInterval(proceduralTimerRef.current);
 
+    const isUnlocked =
+      hasAudiobook ||
+      localStorage.getItem(STORAGE_HAS_AUDIOBOOK) === 'true' ||
+      localStorage.getItem(STORAGE_IS_PREMIUM) === 'true';
+
+    // Chapters 2-45 require Audiobook purchase or Sovereign membership
+    if (chapter.chapterNumber > 1 && !isUnlocked) {
+      triggerAudiobookPaywall();
+      return;
+    }
+
     setCurrentChapter(chapter);
-    setCurrentTrack({ ...chapter, type: 'audiobook', isPremium: chapter.chapterNumber > 3 });
+    currentChapterRef.current = chapter;
+    setCurrentTrack({ ...chapter, type: 'audiobook', isPremium: chapter.chapterNumber > 1 });
     setShowMiniPlayer(true);
     setSourceForChapter(chapter);
 
@@ -326,6 +406,8 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         audioEngine.toggleOceanRainNoise();
       } else if (track.audioEngineType === 'sos_reset') {
         audioEngine.playSosBreathPacer();
+      } else if (track.audioEngineType === 'bell_sound') {
+        audioEngine.toggleBellSound();
       }
 
       setIsPlaying(true);
@@ -413,7 +495,17 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const nextChapter = () => {
     const currentIndex = AUDIO_CHAPTERS.findIndex((c) => c.id === currentChapter.id);
     const nextIndex = (currentIndex + 1) % AUDIO_CHAPTERS.length;
-    playChapter(AUDIO_CHAPTERS[nextIndex]);
+    const nextChap = AUDIO_CHAPTERS[nextIndex];
+    const isUnlocked =
+      hasAudiobook ||
+      localStorage.getItem(STORAGE_HAS_AUDIOBOOK) === 'true' ||
+      localStorage.getItem(STORAGE_IS_PREMIUM) === 'true';
+
+    if (nextChap.chapterNumber > 1 && !isUnlocked) {
+      triggerAudiobookPaywall();
+      return;
+    }
+    playChapter(nextChap);
   };
 
   const prevChapter = () => {
@@ -477,6 +569,11 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         setSleepTimer,
         dismissMiniPlayer,
         restoreMiniPlayer,
+        hasAudiobook,
+        showAudiobookPaywall,
+        setShowAudiobookPaywall,
+        triggerAudiobookPaywall,
+        unlockAudiobook,
       }}
     >
       {children}

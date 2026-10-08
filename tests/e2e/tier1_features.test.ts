@@ -412,11 +412,11 @@ describe('Feature 9: Single Sovereign Paid Plan Simulation', () => {
     assert.equal(lockedCount, 0);
   });
 
-  test('F9.3: sovereign unlock grants access to Audiobook Chapters 4-45', () => {
+  test('F9.3: sovereign unlock grants access to Audiobook Chapters 2-45', () => {
     const vault = new MockLocalStorageVault();
     vault.setSovereign(true);
     const canAccessChapter = (chapterNum: number) => {
-      if (chapterNum <= 3) return true;
+      if (chapterNum === 1) return true;
       return vault.isSovereign();
     };
     for (let i = 1; i <= 45; i++) {
@@ -435,6 +435,18 @@ describe('Feature 9: Single Sovereign Paid Plan Simulation', () => {
     assert.equal(vault.isSovereign(), true);
     vault.setSovereign(false);
     assert.equal(vault.isSovereign(), false);
+  });
+
+  test('F9.6: audiobook one-time purchase unlocks Chapters 2-45 (Launch AED 39 / Regular AED 59 / Upgrade AED 29)', () => {
+    const vault = new MockLocalStorageVault();
+    vault.setItem('human2_has_audiobook', 'true');
+    const canAccessChapter = (chapterNum: number) => {
+      if (chapterNum === 1) return true;
+      return vault.getItem('human2_has_audiobook') === 'true' || vault.isSovereign();
+    };
+    for (let i = 1; i <= 45; i++) {
+      assert.equal(canAccessChapter(i), true);
+    }
   });
 });
 
@@ -458,11 +470,11 @@ describe('Feature 10: Standalone Audiobook Section ("Listen")', () => {
     assert.equal(uniqueParts.size, 5);
   });
 
-  test('F10.3: Chapters 1, 2, 3 are Free while Chapters 4-45 require Sovereign', () => {
-    const isChapterFree = (chNum: number) => chNum <= 3;
+  test('F10.3: Chapter 1 is the single Free sample (25 mins) while Chapters 2-45 require Audiobook purchase or Sovereign', () => {
+    const isChapterFree = (chNum: number) => chNum === 1;
     assert.equal(isChapterFree(1), true);
-    assert.equal(isChapterFree(2), true);
-    assert.equal(isChapterFree(3), true);
+    assert.equal(isChapterFree(2), false);
+    assert.equal(isChapterFree(3), false);
     assert.equal(isChapterFree(4), false);
     assert.equal(isChapterFree(45), false);
   });

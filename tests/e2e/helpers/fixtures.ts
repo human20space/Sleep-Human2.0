@@ -38,14 +38,14 @@ export const REFERENCE_SLEEP_CATALOG: SleepTrackSpec[] = [
   // 4 Free Tracks
   {
     id: 'sleep-free-1',
-    title: 'The Whispering Pines',
-    subtitle: 'Calming bedtime journey through ancient alpine woods',
-    category: 'sleepcast',
+    title: 'Sacred Temple Bell',
+    subtitle: 'Deep harmonic bell resonance for stillness and sleep',
+    category: 'soundscape',
     durationSeconds: 1200,
     isPremium: false,
-    audioUrl: '/audio/Sample.mp3',
-    tags: ['Sleepcast', 'Nature', 'Free', 'Relaxation'],
-    description: 'Drift away gently under the evergreen canopy with soft pine needle rustles.',
+    audioEngineType: 'bell_sound',
+    tags: ['Bell', 'Temple', 'Free', 'Stillness'],
+    description: 'Resonant Tibetan temple bell strikes with warm decaying harmonics to quiet nocturnal thoughts.',
   },
   {
     id: 'sleep-free-2',

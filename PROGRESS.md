@@ -6,7 +6,7 @@ Human 2.0 has been successfully transformed into an installable, high-performanc
 
 - **Git Branch:** `feature/pwa`
 - **Build Status:** Clean static build (`tsc -b && vite build` exits with code 0).
-- **Test Status:** 193/193 contract, boundary, pairwise, and scenario tests passing.
+- **Test Status:** 194/194 contract, boundary, pairwise, and scenario tests passing.
 - **Runtime Environment:** Pure client-side static bundle in `dist/` with 0 SSR dependencies (100% Capacitor / Native Wrapper ready).
 
 ---
@@ -74,7 +74,7 @@ Human 2.0 has been successfully transformed into an installable, high-performanc
 2. **Curated Sleep Catalog (`src/data/sleepCatalogData.ts`):**
    - Exactly 16 curated sleep tracks:
      - **4 Free Tracks** (playable instantly with zero login or signup walls):
-       1. *The Whispering Pines* (Sleepcast journey, 20m)
+       1. *Sacred Temple Bell* (Deep harmonic bell resonance soundscape, 20m, procedural offline `bell_sound`)
        2. *432Hz Deep Theta Drift* (Solfeggio harmonic tuning, 30m)
        3. *Midnight Ocean Rain* (Pink noise acoustic wash, 30m)
        4. *90-Second Racing Mind Silencer* (Acute emergency reset, 90s)
@@ -94,25 +94,27 @@ Human 2.0 has been successfully transformed into an installable, high-performanc
 
 3. **Offline Audio Engine (`src/utils/audioEngine.ts`):**
    - Web Audio API procedural synthesizers:
+     - **Sacred Temple Bell soundscape:** Multi-harmonic singing bowl and periodic temple bell strikes with exponential decay.
      - 432Hz and 528Hz pure sine/harmonics Solfeggio generator.
      - 200Hz/202Hz binaural oscillator generating true 2Hz Delta wave sleep entrainment.
      - Multi-stage pink noise ocean rain synthesis with randomized lowpass filtering.
      - 90-second SOS breath pacer chime.
    - Synthesizes audio 100% offline with zero data consumption or external asset requests.
 
-4. **Single Sovereign Paid Plan (`src/components/SubscriptionScreen.tsx`):**
-   - Unifies monetization into one clear Sovereign Tier:
-     - Annual: $69.99/year (7-day free trial).
-     - Monthly: $9.99/month.
-   - Unlocks all 12 premium sleep tracks, all 45 audiobook chapters, world expert masterclasses, and unlimited Vinay Kapoor AI dialogue.
-   - Triggers 528Hz Solfeggio confirmation frequency upon unlock.
-   - Synchronized with `human2_is_premium` local storage key.
+4. **Audiobook Standalone Payment Plan (`src/components/AudiobookPaywallModal.tsx` & `src/components/SubscriptionScreen.tsx`):**
+   - Designed in accordance with the user's pricing benchmark:
+     - **Launch Offer (Recommended):** AED 39 / US$10.99 (Save 35% on full 45 chapters).
+     - **Regular Lifetime Price:** AED 59 / US$15.99 (Full lifetime ownership, no subscription fees).
+     - **Upgrade for Existing Book Buyers:** AED 29 / US$7.99 (50% reader discount for physical book owners).
+     - Value benchmark: Outperforms Audible's recurring $14.95/month model by offering permanent one-time ownership.
+     - Dual currency toggle (AED د.إ / USD $) with StoreKit 2 checkout simulation and 528Hz confirmation chime.
+   - Also preserves Sovereign Membership option ($69.99/year or $9.99/month) for complete all-access app tier.
 
-5. **Standalone Audiobook Section (`src/components/AudioChaptersScreen.tsx`):**
+5. **Standalone Audiobook Section with 25-Min Free Sample Enforcement (`src/components/AudioChaptersScreen.tsx`):**
    - Dedicated "Listen" section housing the complete 45-chapter *Human 2.0* audiobook by Vinay Kapoor.
-   - Chapters 1–3 marked with green `FREE` badge, accessible to all users.
-   - Chapters 4–45 marked with gold `SOVEREIGN` lock badge.
-   - Free users tapping locked chapters are seamlessly guided to the Sovereign unlock screen.
+   - **Chapter 1 Only is Free:** Configured as a 25-minute sample (`25:00`).
+   - **Chapters 2–45 Locked:** Accessible via Audiobook one-time unlock (`human2_has_audiobook`) or Sovereign (`human2_is_premium`).
+   - **Automatic Paywall on Sample Expiration:** When Chapter 1 playback reaches 25 minutes or ends, audio pauses and immediately presents the Audiobook Payment Plan.
 
 6. **Favourites & Continue Listening (`src/context/AudioContext.tsx` & `src/components/VaultScreen.tsx`):**
    - Bookmark any sleep track or chapter to personal favourites.
