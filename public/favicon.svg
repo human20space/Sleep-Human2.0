@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+  <defs>
+    <linearGradient id="favDisc" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#103848" />
+      <stop offset="50%" stop-color="#17495e" />
+      <stop offset="100%" stop-color="#247291" />
+    </linearGradient>
+    <linearGradient id="favGold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fae3cb" />
+      <stop offset="50%" stop-color="#e8b98a" />
+      <stop offset="100%" stop-color="#c99540" />
+    </linearGradient>
+  </defs>
+  <rect width="48" height="48" rx="10" fill="#05070a" />
+  <circle cx="24" cy="24" r="20" fill="url(#favDisc)" stroke="#e8b98a" stroke-width="1.2" stroke-opacity="0.4" />
+  <text x="24" y="30.5"
+        font-family="'Playfair Display', Georgia, serif"
+        font-weight="700"
+        font-size="16"
+        letter-spacing="-0.5"
+        text-anchor="middle"
+        fill="url(#favGold)">
+    2.0
+  </text>
+</svg>

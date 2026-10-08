@@ -1,0 +1,84 @@
+{
+  "id": "/",
+  "name": "Human 2.0",
+  "short_name": "Human 2.0",
+  "description": "Sleep Supporting Mobile App & Personal Awareness Platform for the AI Age",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "portrait",
+  "theme_color": "#05070a",
+  "background_color": "#05070a",
+  "lang": "en-US",
+  "dir": "ltr",
+  "categories": ["health", "lifestyle", "music", "productivity"],
+  "icons": [
+    {
+      "src": "/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-maskable-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icons/apple-touch-icon-180x180.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Night Sleep Reset",
+      "short_name": "Sleep Reset",
+      "description": "Acute 90-second racing mind silencer & sleep induction",
+      "url": "/?action=sos",
+      "icons": [
+        {
+          "src": "/icons/icon-192x192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Sleep Soundscapes",
+      "short_name": "Soundscapes",
+      "description": "432Hz solfeggio drone and delta wave sleep binaurals",
+      "url": "/?action=soundscapes",
+      "icons": [
+        {
+          "src": "/icons/icon-192x192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Audiobook",
+      "short_name": "Audiobook",
+      "description": "45-Chapter Human 2.0 Audiobook",
+      "url": "/?action=audiobook",
+      "icons": [
+        {
+          "src": "/icons/icon-192x192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    }
+  ],
+  "prefer_related_applications": false,
+  "related_applications": []
+}

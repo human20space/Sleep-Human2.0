@@ -1,0 +1,181 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  --sat: env(safe-area-inset-top, 0px);
+  --sab: env(safe-area-inset-bottom, 0px);
+  --sal: env(safe-area-inset-left, 0px);
+  --sar: env(safe-area-inset-right, 0px);
+  --cream: #f7f3ec;
+  --cream-2: #efe9df;
+  --sand: #e6dccb;
+  --white: #ffffff;
+  --ink: #1f2a28;
+  --ink-muted: #5a6663;
+  --ink-faint: #838c89;
+  --teal: #1f5f78;
+  --teal-dark: #17495e;
+  --teal-soft: #dce9f0;
+  --gold: #d9a44a;
+  --gold-dark: #8e6724;
+  --sunrise: #e8b98a;
+  --success: #3c7858;
+  --success-soft: #e8f1ec;
+  --page-bg: #dcd3c2;
+}
+
+.dark {
+  --cream: #0b1317;
+  --cream-2: #121f26;
+  --sand: #1b2d38;
+  --white: #14232c;
+  --ink: #f2ede4;
+  --ink-muted: #9eb2be;
+  --ink-faint: #6c8491;
+  --teal: #3ba2c7;
+  --teal-dark: #1f7b9c;
+  --teal-soft: #183340;
+  --gold: #e8b98a;
+  --gold-dark: #d9a44a;
+  --sunrise: #f1cfab;
+  --success: #52a378;
+  --success-soft: #132a1f;
+  --page-bg: #070c0e;
+}
+
+html, body {
+  height: 100%;
+  height: 100dvh;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  background-color: var(--page-bg);
+  color: var(--ink);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior: none;
+}
+
+/* Ensure mobile screen fills 100% without bounce */
+#root {
+  height: 100%;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+}
+
+/* Enforce 16px font-size on all form elements to prevent iOS Safari auto-zoom */
+input, textarea, select {
+  font-size: 16px !important;
+}
+
+.font-serif-title {
+  font-family: 'Playfair Display', Georgia, serif;
+}
+
+.font-serif-quote {
+  font-family: 'Lora', Georgia, serif;
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(31, 42, 40, 0.12);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(31, 42, 40, 0.22);
+}
+
+/* --- ANIMATION KEYFRAMES --- */
+
+@keyframes breathPulse {
+  0%, 100% {
+    transform: scale(0.92);
+    box-shadow: 0 0 30px rgba(217, 164, 74, 0.2);
+  }
+  50% {
+    transform: scale(1.12);
+    box-shadow: 0 0 70px rgba(217, 164, 74, 0.55), 0 0 120px rgba(31, 95, 120, 0.3);
+  }
+}
+
+@keyframes breathRingOut {
+  0% {
+    transform: scale(0.85);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1.45);
+    opacity: 0;
+  }
+}
+
+@keyframes soundBar {
+  0%, 100% {
+    height: 4px;
+  }
+  50% {
+    height: 14px;
+  }
+}
+
+@keyframes floatGentle {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes shimmerGleam {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.animate-breathe-pacer {
+  animation: breathPulse 6.8s ease-in-out infinite;
+}
+
+.animate-breath-ring {
+  animation: breathRingOut 3.4s ease-out infinite;
+}
+
+.animate-sound-1 {
+  animation: soundBar 1.1s ease-in-out infinite;
+}
+.animate-sound-2 {
+  animation: soundBar 0.8s ease-in-out infinite 0.2s;
+}
+.animate-sound-3 {
+  animation: soundBar 1.3s ease-in-out infinite 0.4s;
+}
+
+.animate-float {
+  animation: floatGentle 5s ease-in-out infinite;
+}
+
+.shimmer-button {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.35) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmerGleam 4s infinite;
+}

@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Human 2.0 — Intuitive Process Flow Diagram</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=JetBrains+Mono:wght@500;700&display=swap');
+
+    body {
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      background-color: #f7f4ee;
+      color: #1f2a28;
+    }
+
+    .font-serif-title {
+      font-family: 'Playfair Display', Georgia, serif;
+    }
+
+    .font-mono-code {
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* Glows & Transitions */
+    .flow-card {
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .flow-card:hover {
+      transform: translateY(-2px);
+      filter: drop-shadow(0 12px 20px rgba(23, 73, 94, 0.12));
+    }
+
+    /* SVG smooth animations */
+    .flow-line {
+      transition: opacity 0.35s ease, stroke-width 0.3s ease;
+    }
+    .dimmed {
+      opacity: 0.15 !important;
+    }
+    .highlighted {
+      opacity: 1 !important;
+      stroke-width: 3.5px !important;
+    }
+
+    /* Custom print layout for Ultra High Resolution PDF */
+    @media print {
+      @page {
+        size: A3 landscape;
+        margin: 8mm;
+      }
+      * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      body {
+        background: #ffffff !important;
+        padding: 0 !important;
+        margin: 0 !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+      header {
+        margin-bottom: 12px !important;
+      }
+      main {
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+        max-width: 100% !important;
+      }
+      footer {
+        margin-top: 14px !important;
+        gap: 12px !important;
+      }
+    }
+  </style>
+</head>
+<body class="p-4 sm:p-8 flex flex-col items-center">
+
+  <!-- TOP HEADER & CONTROLS -->
+  <header class="w-full max-w-7xl mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+    <div>
+      <div class="flex items-center gap-2 mb-1">
+        <span class="w-2.5 h-2.5 rounded-full bg-[#3c7858] inline-block animate-pulse"></span>
+        <span class="text-xs font-mono-code font-bold uppercase tracking-widest text-[#8e6724]">
+          Executive Architecture & Non-Technical Journey Map
+        </span>
+      </div>
+      <h1 class="text-2xl sm:text-3xl font-serif-title font-bold text-[#17495e] leading-tight">
+        How Human 2.0 Works: Clear End-to-End Process Flow
+      </h1>
+      <p class="text-sm text-[#5a6663] max-w-3xl mt-1">
+        A completely unobstructed, color-coded map designed for non-technical stakeholders. Follow how an intention in everyday life journeys through touchpoints, audio engines, and sovereign outcomes.
+      </p>
+    </div>
+
+    <!-- Actions & Print -->
+    <div class="flex items-center gap-2 no-print shrink-0">
+      <button 
+        onclick="window.print()" 
+        class="px-4 py-2 rounded-xl bg-white border border-[#e6dccb] shadow-xs hover:bg-[#efe9df] text-xs font-bold text-[#17495e] transition-all flex items-center gap-1.5 cursor-pointer"
+      >
+        <span>🖨️ Print / PDF</span>
+      </button>
+      <button 
+        onclick="resetHighlights()" 
+        class="px-4 py-2 rounded-xl bg-[#17495e] text-[#e8b98a] shadow-xs hover:bg-[#1f5f78] text-xs font-bold transition-all cursor-pointer"
+      >
+        <span>Show All Paths</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- INTERACTIVE JOURNEY FILTER BAR -->
+  <nav class="w-full max-w-7xl mb-5 p-2.5 bg-white/95 backdrop-blur-md rounded-2xl border border-[#e6dccb] shadow-xs flex items-center gap-2 overflow-x-auto no-print">
+    <span class="text-xs font-bold text-[#8e6724] uppercase tracking-wider px-2 shrink-0">
+      Highlight Journey:
+    </span>
+    
+    <button onclick="highlightJourney('sos')" class="filter-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-[#fee2e2] text-[#991b1b] border border-[#fecaca] hover:shadow-xs transition-all whitespace-nowrap cursor-pointer">
+      🔴 1. Panic & SOS 90s
+    </button>
+    
+    <button onclick="highlightJourney('ebb')" class="filter-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-[#f3e8ff] text-[#6b21a8] border border-[#e9d5ff] hover:shadow-xs transition-all whitespace-nowrap cursor-pointer">
+      🟣 2. Ebb AI Companion
+    </button>
+    
+    <button onclick="highlightJourney('daily')" class="filter-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-[#dcfce7] text-[#166534] border border-[#bbf7d0] hover:shadow-xs transition-all whitespace-nowrap cursor-pointer">
+      🟢 3. Daily Calm & 7-Day Path
+    </button>
+    
+    <button onclick="highlightJourney('sleep')" class="filter-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-[#dbeafe] text-[#1e40af] border border-[#bfdbfe] hover:shadow-xs transition-all whitespace-nowrap cursor-pointer">
+      🔵 4. Sleepcasts & Sanctuary
+    </button>
+    
+    <button onclick="highlightJourney('timer')" class="filter-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-[#fef3c7] text-[#92400e] border border-[#fde68a] hover:shadow-xs transition-all whitespace-nowrap cursor-pointer">
+      🟡 5. Unguided Timer & Bells
+    </button>
+    
+    <button onclick="highlightJourney('explore')" class="filter-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-[#cffafe] text-[#155e75] border border-[#a5f3fc] hover:shadow-xs transition-all whitespace-nowrap cursor-pointer">
+      🩵 6. 100k+ Library & Live
+    </button>
+  </nav>
+
+  <!-- MAIN DIAGRAM CONTAINER -->
+  <main class="w-full max-w-7xl bg-white rounded-3xl border border-[#e6dccb] shadow-sm p-4 sm:p-6 overflow-x-auto relative">
+    
+    <svg 
+      id="flowchart-svg" 
+      viewBox="0 0 1350 930" 
+      class="w-full h-auto min-w-[1100px] select-none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <!-- DEFINITIONS: ARROWHEADS & GRADIENTS -->
+      <defs>
+        <!-- Distinct Arrow Markers -->
+        <marker id="arrow-sos" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1 L 9 5 L 0 9 z" fill="#dc2626" />
+        </marker>
+        <marker id="arrow-ebb" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1 L 9 5 L 0 9 z" fill="#7c3aed" />
+        </marker>
+        <marker id="arrow-daily" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1 L 9 5 L 0 9 z" fill="#16a34a" />
+        </marker>
+        <marker id="arrow-sleep" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1 L 9 5 L 0 9 z" fill="#2563eb" />
+        </marker>
+        <marker id="arrow-timer" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1 L 9 5 L 0 9 z" fill="#d97706" />
+        </marker>
+        <marker id="arrow-explore" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1 L 9 5 L 0 9 z" fill="#0891b2" />
+        </marker>
+
+        <!-- Drop Shadows -->
+        <filter id="shadow-card" x="-8%" y="-8%" width="116%" height="120%">
+          <feDropShadow dx="0" dy="3" stdDeviation="3" flood-opacity="0.06" flood-color="#17495e" />
+        </filter>
+        <filter id="shadow-header" x="-4%" y="-4%" width="108%" height="110%">
+          <feDropShadow dx="0" dy="2" stdDeviation="2.5" flood-opacity="0.08" flood-color="#000000" />
+        </filter>
+      </defs>
+
+      <!-- ==================================================== -->
+      <!-- 4 FULL HORIZONTAL SWIMLANES WITH DEDICATED HEADERS   -->
+      <!-- Dedicated Left Margin Column (x:20 to x:205)         -->
+      <!-- Arrow & Content Canvas (x:220 to x:1330)            -->
+      <!-- ZERO arrows cross or touch any heading!             -->
+      <!-- ==================================================== -->
+
+      <!-- SWIMLANE 1: HOW YOU FEEL (THE HUMAN INTENTION) -->
+      <g id="lane-1">
+        <!-- Main Lane Background -->
+        <rect x="20" y="45" width="1305" height="155" rx="18" fill="#faf8f4" stroke="#e8e2d5" stroke-width="1.2" />
+        <!-- Full-Covered Solid Header Card on the Left -->
+        <rect x="20" y="45" width="185" height="155" rx="18" fill="#efe9df" stroke="#ded4c3" stroke-width="1" filter="url(#shadow-header)" />
+        <rect x="32" y="58" width="28" height="28" rx="8" fill="#17495e" />
+        <text x="42" y="77" fill="#e8b98a" font-size="14" font-weight="800">1</text>
+        <text x="68" y="70" fill="#17495e" font-size="11" font-weight="800" letter-spacing="0.5">HUMAN STATE</text>
+        <text x="68" y="82" fill="#8e6724" font-size="9" font-weight="700">How You Feel</text>
+        <text x="32" y="112" fill="#3c4c47" font-size="11" font-weight="600">The raw human</text>
+        <text x="32" y="128" fill="#3c4c47" font-size="11" font-weight="600">starting moment:</text>
+        <text x="32" y="148" fill="#5a6663" font-size="10">Panic, confusion,</text>
+        <text x="32" y="164" fill="#5a6663" font-size="10">habit, or curiosity.</text>
+      </g>
+
+      <!-- SWIMLANE 2: WHERE YOU GO IN THE APP (TOUCHPOINTS) -->
+      <g id="lane-2">
+        <!-- Main Lane Background -->
+        <rect x="20" y="245" width="1305" height="165" rx="18" fill="#fdfbf7" stroke="#e8e2d5" stroke-width="1.2" />
+        <!-- Full-Covered Solid Header Card on the Left -->
+        <rect x="20" y="245" width="185" height="165" rx="18" fill="#e7eef2" stroke="#ccdce4" stroke-width="1" filter="url(#shadow-header)" />
+        <rect x="32" y="258" width="28" height="28" rx="8" fill="#17495e" />
+        <text x="42" y="277" fill="#e8b98a" font-size="14" font-weight="800">2</text>
+        <text x="68" y="270" fill="#17495e" font-size="11" font-weight="800" letter-spacing="0.5">APP TOUCHPOINT</text>
+        <text x="68" y="282" fill="#1f5f78" font-size="9" font-weight="700">Where You Go</text>
+        <text x="32" y="312" fill="#3c4c47" font-size="11" font-weight="600">Intuitive interface</text>
+        <text x="32" y="328" fill="#3c4c47" font-size="11" font-weight="600">you tap on screen:</text>
+        <text x="32" y="348" fill="#5a6663" font-size="10">Fast bars, Ebb bot,</text>
+        <text x="32" y="364" fill="#5a6663" font-size="10">courses & library.</text>
+      </g>
+
+      <!-- SWIMLANE 3: BEHIND THE SCENES (INTELLIGENT ENGINES & AUDIO) -->
+      <g id="lane-3">
+        <!-- Main Lane Background -->
+        <rect x="20" y="455" width="1305" height="175" rx="18" fill="#f8fafb" stroke="#dbe5eb" stroke-width="1.2" />
+        <!-- Full-Covered Solid Header Card on the Left -->
+        <rect x="20" y="455" width="185" height="175" rx="18" fill="#e0ecf2" stroke="#c0d7e3" stroke-width="1" filter="url(#shadow-header)" />
+        <rect x="32" y="468" width="28" height="28" rx="8" fill="#17495e" />
+        <text x="42" y="487" fill="#e8b98a" font-size="14" font-weight="800">3</text>
+        <text x="68" y="480" fill="#17495e" font-size="11" font-weight="800" letter-spacing="0.5">BEHIND SCENES</text>
+        <text x="68" y="492" fill="#17495e" font-size="9" font-weight="700">Engines & Audio</text>
+        <text x="32" y="522" fill="#3c4c47" font-size="11" font-weight="600">The intelligent</text>
+        <text x="32" y="538" fill="#3c4c47" font-size="11" font-weight="600">systems running:</text>
+        <text x="32" y="558" fill="#5a6663" font-size="10">Somatic AI, Audio</text>
+        <text x="32" y="574" fill="#5a6663" font-size="10">Synth, Sleep Fade.</text>
+      </g>
+
+      <!-- SWIMLANE 4: WHAT YOU TAKE AWAY (SOVEREIGN GROWTH) -->
+      <g id="lane-4">
+        <!-- Main Lane Background -->
+        <rect x="20" y="675" width="1305" height="160" rx="18" fill="#fbfdfa" stroke="#d5e8dc" stroke-width="1.2" />
+        <!-- Full-Covered Solid Header Card on the Left -->
+        <rect x="20" y="675" width="185" height="160" rx="18" fill="#e4f1ea" stroke="#cce3d5" stroke-width="1" filter="url(#shadow-header)" />
+        <rect x="32" y="688" width="28" height="28" rx="8" fill="#2d6a4f" />
+        <text x="42" y="707" fill="#bbf7d0" font-size="14" font-weight="800">4</text>
+        <text x="68" y="700" fill="#1b4d3e" font-size="11" font-weight="800" letter-spacing="0.5">LIFE OUTCOME</text>
+        <text x="68" y="712" fill="#2d6a4f" font-size="9" font-weight="700">Sovereign Growth</text>
+        <text x="32" y="742" fill="#3c4c47" font-size="11" font-weight="600">What changes in</text>
+        <text x="32" y="758" fill="#3c4c47" font-size="11" font-weight="600">your real life:</text>
+        <text x="32" y="778" fill="#5a6663" font-size="10">Poise, deep rest,</text>
+        <text x="32" y="794" fill="#5a6663" font-size="10">private MAM vault.</text>
+      </g>
+
+      <!-- ==================================================== -->
+      <!-- 6 DISTINCT COLOR-CODED JOURNEY PATHWAYS & CARDS      -->
+      <!-- X-Centers: 305, 490, 675, 860, 1045, 1230           -->
+      <!-- Width of each card: 156px                            -->
+      <!-- ==================================================== -->
+
+      <!-- ---------------------------------------------------- -->
+      <!-- COLUMN 1: PATHWAY 1 (SOS ACUTE STRESS & PAUSE - RED) -->
+      <!-- X: 228 to 384, Center: 306                           -->
+      <!-- ---------------------------------------------------- -->
+      <g class="flow-group group-sos" data-journey="sos">
+        <!-- Lane 1 Card -->
+        <g class="flow-card" transform="translate(228, 60)">
+          <rect width="156" height="125" rx="14" fill="#ffffff" stroke="#fca5a5" stroke-width="1.5" filter="url(#shadow-card)" />
+          <rect x="10" y="10" width="28" height="28" rx="8" fill="#fee2e2" />
+          <text x="17" y="30" font-size="16">🚨</text>
+          <text x="44" y="24" fill="#991b1b" font-size="11" font-weight="800">ACUTE STRESS</text>
+          <text x="44" y="36" fill="#ef4444" font-size="9" font-weight="700">Panic, Anger, Spiral</text>
+          <text x="12" y="60" fill="#374151" font-size="11" font-weight="600">"My heart is racing;</text>
+          <text x="12" y="76" fill="#374151" font-size="11" font-weight="600">I need to stop before</text>
+          <text x="12" y="92" fill="#374151" font-size="11" font-weight="600">I react or explode."</text>
+        </g>
+
+        <!-- Lane 2 Card -->
+        <g class="flow-card" transform="translate(228, 260)">
+          <rect width="156" height="135" rx="14" fill="#ffffff" stroke="#fca5a5" stroke-width="1.5" filter="url(#shadow-card)" />
+          <rect x="10" y="10" width="28" height="28" rx="8" fill="#fee2e2" />
+          <text x="17" y="30" font-size="16">⏸️</text>
+          <text x="44" y="24" fill="#991b1b" font-size="11" font-weight="800">SOS & PAUSE</text>
+          <text x="44" y="36" fill="#ef4444" font-size="9" font-weight="700">90s to 3 Minutes</text>
+          <text x="12" y="60" fill="#374151" font-size="11" font-weight="600">• 30s Sovereign Pause</text>
+          <text x="12" y="76" fill="#374151" font-size="11" font-weight="600">• Panic Circuit Breaker</text>
+          <text x="12" y="92" fill="#374151" font-size="11" font-weight="600">• Anger Reactivity Halt</text>
+          <text x="12" y="114" fill="#dc2626" font-size="10" font-weight="800">1-Tap Emergency Reset</text>
+        </g>
+
+        <!-- Lane 3 Card -->
+        <g class="flow-card" transform="translate(228, 470)">
+          <rect width="156" height="145" rx="14" fill="#ffffff" stroke="#fca5a5" stroke-width="1.5" filter="url(#shadow-card)" />
+          <rect x="10" y="10" width="28" height="28" rx="8" fill="#fee2e2" />
+          <text x="17" y="30" font-size="16">📳</text>
+          <text x="44" y="24" fill="#991b1b" font-size="11" font-weight="800">SOMATIC ENGINE</text>
+          <text x="44" y="36" fill="#ef4444" font-size="9" font-weight="700">Vibration & Breath</text>
+          <text x="12" y="58" fill="#4b5563" font-size="10.5">• Inhale: 3 micro-taps</text>
+          <text x="12" y="74" fill="#4b5563" font-size="10.5">• Hold: Steady hum</text>
+          <text x="12" y="90" fill="#4b5563" font-size="10.5">• Exhale: Settling wave</text>
+          <text x="12" y="106" fill="#4b5563" font-size="10.5">• 360Hz Singing Bowl</text>
+          <text x="12" y="128" fill="#991b1b" font-size="9.5" font-weight="700">Eyes-Free Tactile Guide</text>
+        </g>
+
+        <!-- Lane 4 Card -->
+        <g class="flow-card" transform="translate(228, 690)">
+          <rect width="156" height="130" rx="14" fill="#ffffff" stroke="#fca5a5" stroke-width="1.5" filter="url(#shadow-card)" />
+          <rect x="10" y="10" width="28" height="28" rx="8" fill="#fee2e2" />
+          <text x="17" y="30" font-size="16">🛡️</text>
+          <text x="44" y="24" fill="#991b1b" font-size="11" font-weight="800">SOVEREIGN SEAL</text>
+          <text x="44" y="36" fill="#ef4444" font-size="9" font-weight="700">Reclaimed Poise</text>
+          <text x="12" y="60" fill="#374151" font-size="11" font-weight="600">• Amygdala down-shift</text>
+          <text x="12" y="76" fill="#374151" font-size="11" font-weight="600">• No regrettable email</text>
+          <text x="12" y="92" fill="#374151" font-size="11" font-weight="600">• +1 Meaningful Moment</text>
+          <text x="12" y="112" fill="#166534" font-size="10" font-weight="700">Saved to Local Vault ✓</text>
+        </g>
+
+        <!-- Direct Downward Arrows for Column 1 -->
+        <line x1="306" y1="185" x2="306" y2="258" stroke="#dc2626" stroke-width="2.5" marker-end="url(#arrow-sos)" class="flow-line" />
+        <line x1="306" y1="395" x2="306" y2="468" stroke="#dc2626" stroke-width="2.5" marker-end="url(#arrow-sos)" class="flow-line" />
+        <line x1="306" y1="615" x2="306" y2="688" stroke="#dc2626" stroke-width="2.5" marker-end="url(#arrow-sos)" class="flow-line" />
+      </g>
+
+
+      <!-- ---------------------------------------------------- -->
+      <!-- COLUMN 2: PATHWAY 2 (EBB AI COMPANION - PURPLE)      -->
+      <!-- X: 412 to 568, Center: 490                           -->
+      <!-- ---------------------------------------------------- -->
+      <g class="flow-group group-ebb" data-journey="ebb">
+        <!-- Lane 1 Card -->
+        <g class="flow-card" transform="translate(412, 60)">
+          <rect width="156" height="125" rx="14" fill="#ffffff" stroke="#d8b4fe" stroke-width="1.5" filter="url(#shadow-card)" />
+          <rect x="10" y="10" width="28" height="28" rx="8" fill="#f3e8ff" />
+          <text x="17" y="30" font-size="16">🌊</text>
+          <text x="44" y="24" fill="#6b21a8" font-size="11" font-weight="800">FEELING LOST</text>
+          <text x="44" y="36" fill="#9333ea" font-size="9" font-weight="700">Unsure / Overwhelmed</text>
+          <text x="12" y="60" fill="#374151" font-size="11" font-weight="600">"I feel heavy and</text>
+          <text x="12" y="76" fill="#374151" font-size="11" font-weight="600">scattered, but don't</text>
+          <text x="12" y="92" fill="#374151" font-size="11" font-weight="600">know what I need."</text>
+        </g>
+
+        <!-- Lane 2 Card -->
+        <g class="flow-card" transform="translate(412, 260)">
+          <rect width="156" height="135" rx="14" fill="#ffffff" stroke="#d8b4fe" stroke-width="1.5" filter="url(#shadow-card)" />
+          <rect x="10" y="10" width="28" height="28" rx="8" fill="#f3e8ff" />
+          <text x="17" y="30" font-size="16">✨</text>
+          <text x="44" y="24" fill="#6b21a8" font-size="11" font-weight="800">EBB COMPANION</text>
+          <text x="44" y="36" fill="#9333ea" font-size="9" font-weight="700">Internal Weather Check</text>
+          <text x="12" y="60" fill="#374151" font-size="11" font-weight="600">• Tap your mood emoji</text>
+          <text x="12" y="76" fill="#374151" font-size="11" font-weight="600">• Or speak in your words</text>
+          <text x="12" y="92" fill="#374151" font-size="11" font-weight="600">• No judgment or advice</text>
+          <text x="12" y="114" fill="#7c3aed" font-size="10" font-weight="800">Attuned Somatic Triage</text>
+        </g>
+
+        <!-- Lane 3 Card -->
+        <g class="flow-card" transform="translate(412, 470)">
+          <rect width="156" height="145" rx="14" fill="#ffffff" stroke="#d8b4fe" stroke-width="1.5" filter="url(#shadow-card)" />
+          <rect x="10" y="10" width="28" height="28" rx="8" fill="#f3e8ff" />
+          <text x="17" y="30" font-size="16">🧠</text>
+          <text x="44" y="24" fill="#6b21a8" font-size="11" font-weight="800">EBB AI ENGINE</text>
+          <text x="44" y="36" fill="#9333ea" font-size="9" font-weight="700">Somatic Matching</text>
+          <text x="12" y="58" fill="#4b5563" font-size="10.5">• Reads emotional tone</text>
+          <text x="12" y="74" fill="#4b5563" font-size="10.5">• Validates your burden</text>
+          <text x="12" y="90" fill="#4b5563" font-size="10.5">• Selects exact audio track</text>
+          <!-- Explicit Connector Badge -->
+          <rect x="10" y="105" width="136" height="22" rx="6" fill="#7c3aed" />
+          <text x="16" y="120" fill="#ffffff" font-size="9.5" font-weight="700">➔ Hands-Off to Audio Player</text>
+        </g>
+
+        <!-- Lane 4 Card -->
+        <g class="flow-card" transform="translate(412, 690)">
+          <rect width="156" height="130" rx="14" fill="#ffffff" stroke="#d8b4fe" stroke-width="1.5" filter="url(#shadow-card)" />
+          <rect x="10" y="10" width="28" height="28" rx="8" fill="#f3e8ff" />
+          <text x="17" y="30" font-size="16">💡</text>
+          <text x="44" y="24" fill="#6b21a8" font-size="11" font-weight="800">EMOTIONAL CLARITY</text>
+          <text x="44" y="36" fill="#9333ea" font-size="9" font-weight="700">Seen & Grounded</text>
+          <text x="12" y="60" fill="#374151" font-size="11" font-weight="600">• Emotions validated</text>
+          <text x="12" y="76" fill="#374151" font-size="11" font-weight="600">• Right session matched</text>
+          <text x="12" y="92" fill="#374151" font-size="11" font-weight="600">• Restored alignment</text>
+          <text x="12" y="112" fill="#166534" font-size="10" font-weight="700">Insight Saved to Vault ✓</text>
+        </g>
+
+        <!-- Direct Downward Arrows for Column 2 -->
+        <line x1="490" y1="185" x2="490" y2="258" stroke="#7c3aed" stroke-width="2.5" marker-end="url(#arrow-ebb)" class="flow-line" />
+        <line x1="490" y1="395" x2="490" y2="468" stroke="#7c3aed" stroke-width="2.5" marker-end="url(#arrow-ebb)" class="flow-line" />
+        <line x1="490" y1="615" x2="490" y2="688" stroke="#7c3aed" stroke-width="2.5" marker-end="url(#arrow-ebb)" class="flow-line" />
+      </g>
+
+
+      <!-- ---------------------------------------------------- -->
+      <!-- COLUMN 3: PATHWAY 3 (DAILY CALM & FOUNDATIONS - GREEN)-->
+      <!-- X: 596 to 752, Center: 674                           -->
+      <!-- ---------------------------------------------------- -->
+      <g class="flow-group group-daily" data-journey="daily">
+        <!-- Lane 1 Card -->
+        <g class="flow-card" transform="translate(596, 60)">
+          <rect width="156" height="125" rx="14" fill="#ffffff" stroke="#86efac" stroke-width="1.5" filter="url(#shadow-card)" />
+          <rect x="10" y="10" width="28" height="28" rx="8" fill="#dcfce7" />
+          <text x="17" y="30" font-size="16">🌿</text>
+          <text x="44" y="24" fill="#166534" font-size="11" font-weight="800">DAILY HABIT</text>
+          <text x="44" y="36" fill="#16a34a" font-size="9" font-weight="700">Morning Consistency</text>
+          <text x="12" y="60" fill="#374151" font-size="11" font-weight="600">"I want to build a</text>
+          <text x="12" y="76" fill="#374151" font-size="11" font-weight="600">solid daily practice</text>
+          <text x="12" y="92" fill="#374151" font-size="11" font-weight="600">step by step."</text>
+        </g>
+
+        <!-- Lane 2 Card -->
+        <g class="flow-card" transform="translate(596, 260)">
+          <rect width="156" height="135" rx="14" fill="#ffffff" stroke="#86efac" stroke-width="1.5" filter="url(#shadow-card)" />
+          <rect x="10" y="10" width="28" height="28" rx="8" fill="#dcfce7" />
+          <text x="17" y="30" font-size="16">🌱</text>
+          <text x="44" y="24" fill="#166534" font-size="11" font-weight="800">CORE PATHS</text>
+          <text x="44" y="36" fill="#16a34a" font-size="9" font-weight="700">Daily Calm & Steps</text>
+          <text x="12" y="60" fill="#374151" font-size="11" font-weight="600">• 10m Fresh Daily Calm</text>
+          <text x="12" y="76" fill="#374151" font-size="11" font-weight="600">• 7-Day Foundations</text>
+          <text x="12" y="92" fill="#374151" font-size="11" font-weight="600">• Sarah Lin's voice</text>
+          <text x="12" y="114" fill="#15803d" font-size="10" font-weight="800">Sequential Mastery</text>
+        </g>
+
+        <!-- Lane 3 Card -->
+        <g class="flow-card" transform="translate(596, 470)">
+          <rect width="156" height="145" rx="14" fill="#ffffff" stroke="#86efac" stroke-width="1.5" filter="url(#shadow-card)" />
+          <rect x="10" y="10" width="28" height="28" rx="8" fill="#dcfce7" />
+          <text x="17" y="30" font-size="16">🎙️</text>
+          <text x="44" y="24" fill="#166534" font-size="11" font-weight="800">CONSISTENT VOICE</text>
+          <text x="44" y="36" fill="#16a34a" font-size="9" font-weight="700">Cumulative Progression</text>
+          <text x="12" y="58" fill="#4b5563" font-size="10.5">• Days 1-7 build in order</text>
+          <text x="12" y="74" fill="#4b5563" font-size="10.5">• Audio In Production</text>
+          <text x="12" y="90" fill="#4b5563" font-size="10.5">• 432Hz ambient synth</text>
+          <text x="12" y="106" fill="#4b5563" font-size="10.5">• Or upload local MP3</text>
+          <text x="12" y="128" fill="#15803d" font-size="9.5" font-weight="700">Full Player Fidelity</text>
+        </g>
+
+        <!-- Lane 4 Card -->
+        <g class="flow-card" transform="translate(596, 690)">
+          <rect width="156" height="130" rx="14" fill="#ffffff" stroke="#86efac" stroke-width="1.5" filter="url(#shadow-card)" />
+          <rect x="10" y="10" width="28" height="28" rx="8" fill="#dcfce7" />
+          <text x="17" y="30" font-size="16">🎯</text>
+          <text x="44" y="24" fill="#166534" font-size="11" font-weight="800">NEURAL STREAK</text>
+          <text x="44" y="36" fill="#16a34a" font-size="9" font-weight="700">Lasting Discipline</text>
+          <text x="12" y="60" fill="#374151" font-size="11" font-weight="600">• Automatic daily streak</text>
+          <text x="12" y="76" fill="#374151" font-size="11" font-weight="600">• Foundations certified</text>
+          <text x="12" y="92" fill="#374151" font-size="11" font-weight="600">• Calm becomes default</text>
+          <text x="12" y="112" fill="#166534" font-size="10" font-weight="700">Saved to Local Vault ✓</text>
+        </g>
+
+        <!-- Direct Downward Arrows for Column 3 -->
+        <line x1="674" y1="185" x2="674" y2="258" stroke="#16a34a" stroke-width="2.5" marker-end="url(#arrow-daily)" class="flow-line" />
+        <line x1="674" y1="395" x2="674" y2="468" stroke="#16a34a" stroke-width="2.5" marker-end="url(#arrow-daily)" class="flow-line" />
+        <line x1="674" y1="615" x2="674" y2="688" stroke="#16a34a" stroke-width="2.5" marker-end="url(#arrow-daily)" class="flow-line" />
+      </g>
+
+
+      <!-- ---------------------------------------------------- -->
+      <!-- COLUMN 4: PATHWAY 4 (SLEEPCASTS & STORIES - BLUE)    -->
+      <!-- X: 780 to 936, Center: 858                           -->
+      <!-- ---------------------------------------------------- -->
+      <g class="flow-group group-sleep" data-journey="sleep">
+        <!-- Lane 1 Card -->
+        <g class="flow-card" transform="translate(780, 60)">
+          <rect width="156" height="125" rx="14" fill="#ffffff" stroke="#93c5fd" stroke-width="1.5" filter="url(#shadow-card)" />
+          <rect x="10" y="10" width="28" height="28" rx="8" fill="#dbeafe" />
+          <text x="17" y="30" font-size="16">🌙</text>
+          <text x="44" y="24" fill="#1e40af" font-size="11" font-weight="800">INSOMNIA</text>
+          <text x="44" y="36" fill="#2563eb" font-size="9" font-weight="700">Racing Bedtime Mind</text>
+          <text x="12" y="60" fill="#374151" font-size="11" font-weight="600">"I am exhausted but</text>
+          <text x="12" y="76" fill="#374151" font-size="11" font-weight="600">my brain won't shut</text>
+          <text x="12" y="92" fill="#374151" font-size="11" font-weight="600">down in the dark."</text>
+        </g>
+
+        <!-- Lane 2 Card -->
+        <g class="flow-card" transform="translate(780, 260)">
+          <rect width="156" height="135" rx="14" fill="#ffffff" stroke="#93c5fd" stroke-width="1.5" filter="url(#shadow-card)" />
+          <rect x="10" y="10" width="28" height="28" rx="8" fill="#dbeafe" />
+          <text x="17" y="30" font-size="16">🌌</text>
+          <text x="44" y="24" fill="#1e40af" font-size="11" font-weight="800">SLEEP SANCTUARY</text>
+          <text x="44" y="36" fill="#2563eb" font-size="9" font-weight="700">Sleepcasts & Stories</text>
+          <text x="12" y="60" fill="#374151" font-size="11" font-weight="600">• Kyoto Rain Sleepcast</text>
+          <text x="12" y="76" fill="#374151" font-size="11" font-weight="600">• Alexandria (Stephen Fry)</text>
+          <text x="12" y="92" fill="#374151" font-size="11" font-weight="600">• Somatic Body Melt</text>
+          <text x="12" y="114" fill="#1d4ed8" font-size="10" font-weight="800">Night Sanctuary Dark</text>
+        </g>
+
+        <!-- Lane 3 Card -->
+        <g class="flow-card" transform="translate(780, 470)">
+          <rect width="156" height="145" rx="14" fill="#ffffff" stroke="#93c5fd" stroke-width="1.5" filter="url(#shadow-card)" />
+          <rect x="10" y="10" width="28" height="28" rx="8" fill="#dbeafe" />
+          <text x="17" y="30" font-size="16">⏳</text>
+          <text x="44" y="24" fill="#1e40af" font-size="11" font-weight="800">SLEEP TIMER</text>
+          <text x="44" y="36" fill="#2563eb" font-size="9" font-weight="700">10-Step Soft Fade</text>
+          <text x="12" y="58" fill="#4b5563" font-size="10.5">• Presets: 15 / 30 / 45m</text>
+          <text x="12" y="74" fill="#4b5563" font-size="10.5">• Continuous loop audio</text>
+          <text x="12" y="90" fill="#4b5563" font-size="10.5">• No abrupt volume cuts</text>
+          <text x="12" y="106" fill="#4b5563" font-size="10.5">• Gentle ramp-down curve</text>
+          <text x="12" y="128" fill="#1d4ed8" font-size="9.5" font-weight="700">Delta Sleep Protection</text>
+        </g>
+
+        <!-- Lane 4 Card -->
+        <g class="flow-card" transform="translate(780, 690)">
+          <rect width="156" height="130" rx="14" fill="#ffffff" stroke="#93c5fd" stroke-width="1.5" filter="url(#shadow-card)" />
+          <rect x="10" y="10" width="28" height="28" rx="8" fill="#dbeafe" />
+          <text x="17" y="30" font-size="16">😴</text>
+          <text x="44" y="24" fill="#1e40af" font-size="11" font-weight="800">DEEP RESTORATION</text>
+          <text x="44" y="36" fill="#2563eb" font-size="9" font-weight="700">Circadian Reset</text>
+          <text x="12" y="60" fill="#374151" font-size="11" font-weight="600">• Fast sleep latency</text>
+          <text x="12" y="76" fill="#374151" font-size="11" font-weight="600">• Restorative REM cycles</text>
+          <text x="12" y="92" fill="#374151" font-size="11" font-weight="600">• Wake rested & clear</text>
+          <text x="12" y="112" fill="#166534" font-size="10" font-weight="700">Night Log in Vault ✓</text>
+        </g>
+
+        <!-- Direct Downward Arrows for Column 4 -->
+        <line x1="858" y1="185" x2="858" y2="258" stroke="#2563eb" stroke-width="2.5" marker-end="url(#arrow-sleep)" class="flow-line" />
+        <line x1="858" y1="395" x2="858" y2="468" stroke="#2563eb" stroke-width="2.5" marker-end="url(#arrow-sleep)" class="flow-line" />
+        <line x1="858" y1="615" x2="858" y2="688" stroke="#2563eb" stroke-width="2.5" marker-end="url(#arrow-sleep)" class="flow-line" />
+      </g>
+
+
+      <!-- ---------------------------------------------------- -->
+      <!-- COLUMN 5: PATHWAY 5 (UNGUIDED TIMER & BELLS - AMBER) -->
+      <!-- X: 964 to 1120, Center: 1042                         -->
+      <!-- ---------------------------------------------------- -->
+      <g class="flow-group group-timer" data-journey="timer">
+        <!-- Lane 1 Card -->
+        <g class="flow-card" transform="translate(964, 60)">
+          <rect width="156" height="125" rx="14" fill="#ffffff" stroke="#fcd34d" stroke-width="1.5" filter="url(#shadow-card)" />
+          <rect x="10" y="10" width="28" height="28" rx="8" fill="#fef3c7" />
+          <text x="17" y="30" font-size="16">🧘</text>
+          <text x="44" y="24" fill="#92400e" font-size="11" font-weight="800">SILENT SITTING</text>
+          <text x="44" y="36" fill="#b45309" font-size="9" font-weight="700">No Talking Needed</text>
+          <text x="12" y="60" fill="#374151" font-size="11" font-weight="600">"I don't want a guide;</text>
+          <text x="12" y="76" fill="#374151" font-size="11" font-weight="600">just authentic bells</text>
+          <text x="12" y="92" fill="#374151" font-size="11" font-weight="600">and stillness."</text>
+        </g>
+
+        <!-- Lane 2 Card -->
+        <g class="flow-card" transform="translate(964, 260)">
+          <rect width="156" height="135" rx="14" fill="#ffffff" stroke="#fcd34d" stroke-width="1.5" filter="url(#shadow-card)" />
+          <rect x="10" y="10" width="28" height="28" rx="8" fill="#fef3c7" />
+          <text x="17" y="30" font-size="16">🔔</text>
+          <text x="44" y="24" fill="#92400e" font-size="11" font-weight="800">UNGUIDED TIMER</text>
+          <text x="44" y="36" fill="#b45309" font-size="9" font-weight="700">Custom Intervals</text>
+          <text x="12" y="60" fill="#374151" font-size="11" font-weight="600">• Duration (1-120m)</text>
+          <text x="12" y="76" fill="#374151" font-size="11" font-weight="600">• Interval bells (5/10m)</text>
+          <text x="12" y="92" fill="#374151" font-size="11" font-weight="600">• Posture warm-up delay</text>
+          <text x="12" y="114" fill="#b45309" font-size="10" font-weight="800">Zen Simplicity</text>
+        </g>
+
+        <!-- Lane 3 Card -->
+        <g class="flow-card" transform="translate(964, 470)">
+          <rect width="156" height="145" rx="14" fill="#ffffff" stroke="#fcd34d" stroke-width="1.5" filter="url(#shadow-card)" />
+          <rect x="10" y="10" width="28" height="28" rx="8" fill="#fef3c7" />
+          <text x="17" y="30" font-size="16">🥣</text>
+          <text x="44" y="24" fill="#92400e" font-size="11" font-weight="800">PHYSICAL CHIMES</text>
+          <text x="44" y="36" fill="#b45309" font-size="9" font-weight="700">Web Audio Synthesizer</text>
+          <text x="12" y="58" fill="#4b5563" font-size="10.5">• Tibetan Singing Bowl</text>
+          <text x="12" y="74" fill="#4b5563" font-size="10.5">• Temple Bronze Gong</text>
+          <text x="12" y="90" fill="#4b5563" font-size="10.5">• Tingsha Chimes</text>
+          <text x="12" y="106" fill="#4b5563" font-size="10.5">• Organic acoustic decay</text>
+          <text x="12" y="128" fill="#b45309" font-size="9.5" font-weight="700">Offline & Zero Latency</text>
+        </g>
+
+        <!-- Lane 4 Card -->
+        <g class="flow-card" transform="translate(964, 690)">
+          <rect width="156" height="130" rx="14" fill="#ffffff" stroke="#fcd34d" stroke-width="1.5" filter="url(#shadow-card)" />
+          <rect x="10" y="10" width="28" height="28" rx="8" fill="#fef3c7" />
+          <text x="17" y="30" font-size="16">🎉</text>
+          <text x="44" y="24" fill="#92400e" font-size="11" font-weight="800">AUTONOMY</text>
+          <text x="44" y="36" fill="#b45309" font-size="9" font-weight="700">Unmediated Presence</text>
+          <text x="12" y="60" fill="#374151" font-size="11" font-weight="600">• Sitting with yourself</text>
+          <text x="12" y="76" fill="#374151" font-size="11" font-weight="600">• Confetti & finish chime</text>
+          <text x="12" y="92" fill="#374151" font-size="11" font-weight="600">• Internal sovereignty</text>
+          <text x="12" y="112" fill="#166534" font-size="10" font-weight="700">Saved to Local Vault ✓</text>
+        </g>
+
+        <!-- Direct Downward Arrows for Column 5 -->
+        <line x1="1042" y1="185" x2="1042" y2="258" stroke="#d97706" stroke-width="2.5" marker-end="url(#arrow-timer)" class="flow-line" />
+        <line x1="1042" y1="395" x2="1042" y2="468" stroke="#d97706" stroke-width="2.5" marker-end="url(#arrow-timer)" class="flow-line" />
+        <line x1="1042" y1="615" x2="1042" y2="688" stroke="#d97706" stroke-width="2.5" marker-end="url(#arrow-timer)" class="flow-line" />
+      </g>
+
+
+      <!-- ---------------------------------------------------- -->
+      <!-- COLUMN 6: PATHWAY 6 (100k+ LIBRARY & AUDIO - TEAL)   -->
+      <!-- X: 1148 to 1304, Center: 1226                        -->
+      <!-- ---------------------------------------------------- -->
+      <g class="flow-group group-explore" data-journey="explore">
+        <!-- Lane 1 Card -->
+        <g class="flow-card" transform="translate(1148, 60)">
+          <rect width="156" height="125" rx="14" fill="#ffffff" stroke="#67e8f9" stroke-width="1.5" filter="url(#shadow-card)" />
+          <rect x="10" y="10" width="28" height="28" rx="8" fill="#cffafe" />
+          <text x="17" y="30" font-size="16">📚</text>
+          <text x="44" y="24" fill="#155e75" font-size="11" font-weight="800">EXPLORATION</text>
+          <text x="44" y="36" fill="#0891b2" font-size="9" font-weight="700">Curiosity & Growth</text>
+          <text x="12" y="60" fill="#374151" font-size="11" font-weight="600">"I want to explore</text>
+          <text x="12" y="76" fill="#374151" font-size="11" font-weight="600">Zen, Vipassana, or</text>
+          <text x="12" y="92" fill="#374151" font-size="11" font-weight="600">learn from experts."</text>
+        </g>
+
+        <!-- Lane 2 Card -->
+        <g class="flow-card" transform="translate(1148, 260)">
+          <rect width="156" height="135" rx="14" fill="#ffffff" stroke="#67e8f9" stroke-width="1.5" filter="url(#shadow-card)" />
+          <rect x="10" y="10" width="28" height="28" rx="8" fill="#cffafe" />
+          <text x="17" y="30" font-size="16">🏛️</text>
+          <text x="44" y="24" fill="#155e75" font-size="11" font-weight="800">100k+ CATALOG</text>
+          <text x="44" y="36" fill="#0891b2" font-size="9" font-weight="700">Traditions & Live</text>
+          <text x="12" y="60" fill="#374151" font-size="11" font-weight="600">• 45 Book Chapters</text>
+          <text x="12" y="76" fill="#374151" font-size="11" font-weight="600">• Masterclasses (Dr. Jud)</text>
+          <text x="12" y="92" fill="#374151" font-size="11" font-weight="600">• Live Teacher Rooms</text>
+          <text x="12" y="114" fill="#0891b2" font-size="10" font-weight="800">5 Interest Circles</text>
+        </g>
+
+        <!-- Lane 3 Card -->
+        <g class="flow-card" transform="translate(1148, 470)">
+          <rect width="156" height="145" rx="14" fill="#ffffff" stroke="#67e8f9" stroke-width="1.5" filter="url(#shadow-card)" />
+          <rect x="10" y="10" width="28" height="28" rx="8" fill="#cffafe" />
+          <text x="17" y="30" font-size="16">🎵</text>
+          <text x="44" y="24" fill="#155e75" font-size="11" font-weight="800">AUDIO STREAM</text>
+          <text x="44" y="36" fill="#0891b2" font-size="9" font-weight="700">Singleton Engine</text>
+          <text x="12" y="58" fill="#4b5563" font-size="10.5">• 45 Narrated MP3 files</text>
+          <text x="12" y="74" fill="#4b5563" font-size="10.5">• Construction Player UI</text>
+          <text x="12" y="90" fill="#4b5563" font-size="10.5">• Floating Mini-Player bar</text>
+          <!-- Explicit Recipient Badge from Ebb -->
+          <rect x="10" y="105" width="136" height="22" rx="6" fill="#0891b2" />
+          <text x="14" y="120" fill="#ffffff" font-size="9" font-weight="700">⬅ Fed by Ebb AI Triage</text>
+        </g>
+
+        <!-- Lane 4 Card -->
+        <g class="flow-card" transform="translate(1148, 690)">
+          <rect width="156" height="130" rx="14" fill="#ffffff" stroke="#67e8f9" stroke-width="1.5" filter="url(#shadow-card)" />
+          <rect x="10" y="10" width="28" height="28" rx="8" fill="#cffafe" />
+          <text x="17" y="30" font-size="16">🤝</text>
+          <text x="44" y="24" fill="#155e75" font-size="11" font-weight="800">EXPANDED MIND</text>
+          <text x="44" y="36" fill="#0891b2" font-size="9" font-weight="700">Shared Sangha</text>
+          <text x="12" y="60" fill="#374151" font-size="11" font-weight="600">• Multi-tradition breadth</text>
+          <text x="12" y="76" fill="#374151" font-size="11" font-weight="600">• Meditating with 400+</text>
+          <text x="12" y="92" fill="#374151" font-size="11" font-weight="600">• AI Age Future-Ready</text>
+          <text x="12" y="112" fill="#166534" font-size="10" font-weight="700">Complete Human 2.0 ✓</text>
+        </g>
+
+        <!-- Direct Downward Arrows for Column 6 -->
+        <line x1="1226" y1="185" x2="1226" y2="258" stroke="#0891b2" stroke-width="2.5" marker-end="url(#arrow-explore)" class="flow-line" />
+        <line x1="1226" y1="395" x2="1226" y2="468" stroke="#0891b2" stroke-width="2.5" marker-end="url(#arrow-explore)" class="flow-line" />
+        <line x1="1226" y1="615" x2="1226" y2="688" stroke="#0891b2" stroke-width="2.5" marker-end="url(#arrow-explore)" class="flow-line" />
+      </g>
+
+
+      <!-- ==================================================== -->
+      <!-- CLEAN GUTTER ROUTING & JUMPER ARCS                   -->
+      <!-- ZERO lines run over headings or inside cards!        -->
+      <!-- All cross connections travel in dedicated gutters!   -->
+      <!-- ==================================================== -->
+
+      <!-- EBB AI HAND-OFF TO AUDIO PLAYER BRIDGE -->
+      <!-- Travels in Gutter 3-4 (y = 650) with jumper arcs over Col 3, 4, 5 -->
+      <!-- From Ebb Engine (x=490, y=615) down to y=650, across to x=1226, up to Audio Player -->
+      <g id="ebb-to-audio-bridge">
+        <!-- Path from Ebb Engine bottom (490, 615) down to gutter (490, 650) -->
+        <path
+          d="M 490,615 
+             L 490,650 
+             L 665,650 A 9 9 0 0 1 683,650 
+             L 849,650 A 9 9 0 0 1 867,650 
+             L 1033,650 A 9 9 0 0 1 1051,650 
+             L 1226,650 
+             L 1226,620"
+          fill="none"
+          stroke="#7c3aed"
+          stroke-width="2.5"
+          stroke-dasharray="6,4"
+          marker-end="url(#arrow-ebb)"
+          class="flow-line"
+        />
+
+        <!-- Clear explanatory callout pill placed comfortably in the white gutter -->
+        <rect x="715" y="638" width="280" height="24" rx="12" fill="#f3e8ff" stroke="#7c3aed" stroke-width="1.2" />
+        <text x="728" y="654" fill="#6b21a8" font-size="10.5" font-weight="800">
+          🌊 Ebb 1-Tap Handoff ➔ Launches Matched Audio
+        </text>
+      </g>
+
+
+      <!-- BOTTOM VAULT PRIVATE ENCRYPTION LINE -->
+      <!-- Travels in Gutter below Lane 4 (y = 865) -->
+      <g id="vault-privacy-bar">
+        <!-- Connecting Line linking all 6 columns to the private device vault -->
+        <path
+          d="M 306,820 
+             L 306,865 
+             L 490,865 
+             L 674,865 
+             L 858,865 
+             L 1042,865 
+             L 1226,865 
+             L 1226,820"
+          fill="none"
+          stroke="#16a34a"
+          stroke-width="2"
+          stroke-dasharray="5,4"
+          class="flow-line"
+        />
+
+        <!-- Centered Privacy Guarantee Badge -->
+        <rect x="520" y="852" width="360" height="26" rx="13" fill="#dcfce7" stroke="#16a34a" stroke-width="1.3" />
+        <text x="536" y="869" fill="#166534" font-size="11" font-weight="800">
+          🔒 100% Private On-Device Encrypted Vault · Zero Tracking
+        </text>
+      </g>
+
+    </svg>
+  </main>
+
+  <!-- USER-FRIENDLY LEGEND & NON-TECHNICAL SUMMARY -->
+  <footer class="w-full max-w-7xl mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+    <!-- Jumper Callout -->
+    <div class="p-4 rounded-2xl bg-white border border-[#e6dccb] shadow-xs">
+      <div class="flex items-center gap-2 mb-1.5">
+        <span class="text-base font-bold text-[#7c3aed]">↷</span>
+        <h4 class="text-xs font-bold text-[#17495e] uppercase tracking-wider">
+          How the Line Jumpers (Arcs) Work
+        </h4>
+      </div>
+      <p class="text-xs text-[#5a6663] leading-relaxed">
+        When the <strong>Ebb AI handoff</strong> crosses the other vertical tracks, it lifts cleanly up into a <strong>semi-circular arc (bridge)</strong>. This visual jumper guarantees zero tangling or confusion between separate features.
+      </p>
+    </div>
+
+    <!-- Ebb to Audio Connection -->
+    <div class="p-4 rounded-2xl bg-white border border-[#e6dccb] shadow-xs">
+      <div class="flex items-center gap-2 mb-1.5">
+        <span class="text-base">🌊</span>
+        <h4 class="text-xs font-bold text-[#7c3aed] uppercase tracking-wider">
+          Ebb's Direct Audio Connection
+        </h4>
+      </div>
+      <p class="text-xs text-[#5a6663] leading-relaxed">
+        Ebb is not just a chat window. After sensing your emotional state, Ebb's AI engine directly selects the exact tailored meditation or soundscape and presents an instant <strong>"Begin Now"</strong> handoff into the full Audio Player.
+      </p>
+    </div>
+
+    <!-- Audio Player In Production -->
+    <div class="p-4 rounded-2xl bg-white border border-[#e6dccb] shadow-xs">
+      <div class="flex items-center gap-2 mb-1.5">
+        <span class="text-base">🚧</span>
+        <h4 class="text-xs font-bold text-[#17495e] uppercase tracking-wider">
+          Audio "Under Construction" Player
+        </h4>
+      </div>
+      <p class="text-xs text-[#5a6663] leading-relaxed">
+        For studio sessions currently in production, the app launches a complete interactive player. Stakeholders can test audio immediately with the <strong>432Hz ambient drone synth</strong> or tap <strong>Upload MP3</strong> to try real recordings.
+      </p>
+    </div>
+  </footer>
+
+  <!-- JAVASCRIPT FOR INTERACTIVE HIGHLIGHTING -->
+  <script>
+    function highlightJourney(journeyKey) {
+      const groups = document.querySelectorAll('.flow-group');
+      const bridge = document.getElementById('ebb-to-audio-bridge');
+
+      groups.forEach(g => {
+        if (g.getAttribute('data-journey') === journeyKey) {
+          g.classList.remove('dimmed');
+          g.classList.add('highlighted');
+        } else {
+          g.classList.add('dimmed');
+          g.classList.remove('highlighted');
+        }
+      });
+
+      if (journeyKey === 'ebb' || journeyKey === 'explore') {
+        bridge.classList.remove('dimmed');
+        bridge.classList.add('highlighted');
+      } else {
+        bridge.classList.add('dimmed');
+        bridge.classList.remove('highlighted');
+      }
+
+      // Update button visual states
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.classList.remove('ring-2', 'ring-offset-2', 'ring-[#17495e]');
+      });
+      event.target.classList.add('ring-2', 'ring-offset-2', 'ring-[#17495e]');
+    }
+
+    function resetHighlights() {
+      document.querySelectorAll('.flow-group').forEach(g => {
+        g.classList.remove('dimmed', 'highlighted');
+      });
+      const bridge = document.getElementById('ebb-to-audio-bridge');
+      if (bridge) {
+        bridge.classList.remove('dimmed', 'highlighted');
+      }
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.classList.remove('ring-2', 'ring-offset-2', 'ring-[#17495e]');
+      });
+    }
+  </script>
+
+</body>
+</html>
