@@ -23,7 +23,8 @@ describe('Author Intro, Meditation Sections & Relaxing Bell Renaming', () => {
       authorIntroTsx.includes('Human 2.0: Awareness — Future Ready with AI'),
       'Must mention book title'
     );
-    assert.ok(authorIntroTsx.includes('Skip to App'), 'Must provide a quick skip button');
+    assert.ok(authorIntroTsx.includes('ArrowRight') && authorIntroTsx.includes('Continue to App'), 'Must provide right arrow continue button without text');
+    assert.ok(!authorIntroTsx.includes('Skip to App'), 'Must remove Skip to App text');
     assert.ok(authorIntroTsx.includes('Enter Sleep Sanctuary'), 'Must provide primary CTA to enter sanctuary');
     assert.ok(authorIntroTsx.includes('VideoPlayer'), 'Must embed Author Video message');
 
@@ -60,9 +61,10 @@ describe('Author Intro, Meditation Sections & Relaxing Bell Renaming', () => {
     assert.ok(homeScreenTsx.includes("onNavigate('meditation_hub')"), 'Meditation box must navigate to meditation_hub');
     assert.ok(homeScreenTsx.includes('Explore All Series'), 'Must change subtext under Restorative Meditation');
 
-    // Uniform Top Header with User Profile circle next to Unlock All
+    // Top Header: Human 2.0 Audio Book and uniform circular buttons (Night, Unlock, Profile)
+    assert.ok(homeScreenTsx.includes('Human 2.0 Audio Book'), 'Header top left must be Human 2.0 Audio Book');
     assert.ok(homeScreenTsx.includes("onNavigate('profile')"), 'Must have User Profile button in top right');
-    assert.ok(homeScreenTsx.includes('w-9 h-9 rounded-full'), 'Profile and Night buttons must be uniform circular buttons');
+    assert.ok(homeScreenTsx.includes('w-9 h-9 rounded-full'), 'Profile, Unlock, and Night buttons must be uniform circular buttons');
     assert.ok(homeScreenTsx.includes('min-h-[44px]'), 'Buttons must adhere to min-h-[44px] touch target');
 
     // Author Profile near the Vault (NOT floating outside)

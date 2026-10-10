@@ -84,15 +84,15 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
           <div className="flex items-center gap-1.5">
             <span className="w-2 h-2 rounded-full bg-[#4ba377] inline-block animate-pulse" />
             <h1 className="font-serif-title text-2xl font-bold text-[#17495e] dark:text-[#e8b98a] leading-tight">
-              Sleep Sanctuary
+              Human 2.0 Audio Book
             </h1>
           </div>
           <p className="text-[11px] text-[#717e7a] dark:text-[#90a2ad]">
-            Calm nights · Restored nervous system
+            Awareness — Future Ready with AI
           </p>
         </div>
 
-        {/* Top Actions: Night Toggle, Unlock All, and User Profile Circle */}
+        {/* Top Actions: Night Toggle, Unlock All Circle, and User Profile Circle */}
         <div className="flex items-center gap-2">
           {onToggleDark && (
             <motion.button
@@ -111,7 +111,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
             </motion.button>
           )}
 
-          {/* Sovereign Tier Pill */}
+          {/* Sovereign Tier Circle Button: Uniform with Profile & Night */}
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
@@ -119,12 +119,11 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
               audioEngine.playBreathChime('inhale');
               onNavigate('subscription');
             }}
-            className="h-9 px-3.5 rounded-full bg-gradient-to-r from-[#d9a44a]/20 to-[#e8b98a]/30 border border-[#d9a44a]/60 shadow-xs flex items-center gap-1.5 text-xs font-bold text-[#8e6724] dark:text-[#e8b98a] cursor-pointer min-h-[44px]"
-            title="Sovereign Membership Status"
-            aria-label="Unlock All Sovereign Membership"
+            className="w-9 h-9 rounded-full bg-gradient-to-tr from-[#d9a44a]/20 to-[#e8b98a]/30 border border-[#d9a44a]/60 shadow-xs flex items-center justify-center text-[#8e6724] dark:text-[#e8b98a] hover:bg-[#d9a44a]/30 transition-all cursor-pointer min-h-[44px] min-w-[44px]"
+            title={isPremium ? 'Sovereign Membership' : 'Unlock All'}
+            aria-label={isPremium ? 'Sovereign Membership' : 'Unlock All'}
           >
-            <Crown size={14} className="text-[#8e6724] dark:text-[#e8b98a] fill-current" />
-            <span>{isPremium ? 'Sovereign' : 'Unlock All'}</span>
+            <Crown size={15} className="text-[#8e6724] dark:text-[#e8b98a] fill-current" />
           </motion.button>
 
           {/* User Profile Button: Small Circle in Top Right Corner Next to Unlock All */}

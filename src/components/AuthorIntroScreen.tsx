@@ -33,10 +33,11 @@ export const AuthorIntroScreen: React.FC<AuthorIntroScreenProps> = ({ onContinue
         <button
           type="button"
           onClick={onContinue}
-          className="text-xs font-semibold text-[#8fd0ff]/80 hover:text-white px-3 py-1.5 rounded-full border border-white/10 hover:border-white/30 transition-all cursor-pointer backdrop-blur-xs flex items-center gap-1"
+          className="w-9 h-9 rounded-full border border-white/10 hover:border-white/30 hover:bg-white/10 text-[#8fd0ff]/80 hover:text-white transition-all cursor-pointer backdrop-blur-xs flex items-center justify-center min-h-[44px] min-w-[44px]"
+          title="Continue to App"
+          aria-label="Continue to App"
         >
-          <span>Skip to App</span>
-          <ArrowRight size={13} />
+          <ArrowRight size={16} />
         </button>
       </div>
 
