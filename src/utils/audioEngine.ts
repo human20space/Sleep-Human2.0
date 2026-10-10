@@ -247,7 +247,7 @@ class AudioEngine {
     return this.toggleSolfeggioTone(432);
   }
 
-  // Resonant Temple Bell Soundscape (Periodic harmonic singing bowl & bell strikes)
+  // Resonant Relaxing Bell Soundscape (Periodic harmonic singing bowl & bell strikes)
   public toggleBellSound(baseFreq: number = 260): boolean {
     this.initContext();
     if (!this.ctx) return false;
@@ -279,7 +279,7 @@ class AudioEngine {
       this.activeSoundType = 'bell_sound';
       return true;
     } catch (e) {
-      console.warn('Temple bell sound error', e);
+      console.warn('Relaxing bell sound error', e);
       return false;
     }
   }

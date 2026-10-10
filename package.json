@@ -8,7 +8,7 @@
     "build": "tsc -b && vite build",
     "lint": "oxlint",
     "preview": "vite preview",
-    "test:e2e": "node --experimental-strip-types --test tests/e2e/tier1_features.test.ts tests/e2e/tier2_boundaries.test.ts tests/e2e/tier3_combinations.test.ts tests/e2e/tier4_scenarios.test.ts tests/e2e/phase1_data_foundation.test.ts tests/e2e/phase2_admin_shell.test.ts tests/e2e/phase3_content_pages.test.ts tests/e2e/meditation_sections.test.ts",
+    "test:e2e": "node --experimental-strip-types --test tests/e2e/tier1_features.test.ts tests/e2e/tier2_boundaries.test.ts tests/e2e/tier3_combinations.test.ts tests/e2e/tier4_scenarios.test.ts tests/e2e/phase1_data_foundation.test.ts tests/e2e/phase2_admin_shell.test.ts tests/e2e/phase3_content_pages.test.ts tests/e2e/meditation_sections.test.ts tests/e2e/author_intro_and_meditation_sections.test.ts",
     "cap:sync": "cap sync",
     "cap:build": "npm run build && npx cap sync"
   },

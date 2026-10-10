@@ -12,10 +12,21 @@ import {
   Bookmark,
   Zap,
   Lock,
+  Sparkles,
+  User,
 } from 'lucide-react';
 import type { Screen, SleepTrack } from '../types';
 import { SLEEP_TRACKS } from '../data/sleepCatalogData';
-import { useSleepContent, sleepContentService } from '../services/sleepContentService';
+import {
+  useSleepContent,
+  useSleepSections,
+  useSectionItems,
+  sleepContentService,
+  DEFAULT_SECTIONS,
+  DEFAULT_SECTION_ITEMS,
+  type SleepSection,
+  type SleepSectionItem,
+} from '../services/sleepContentService';
 import { useAudio } from '../context/AudioContext';
 import { audioEngine } from '../utils/audioEngine';
 import { hapticsEngine } from '../utils/haptics';
@@ -45,14 +56,61 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   } = useAudio();
 
   const { tracks } = useSleepContent();
+  const { sections } = useSleepSections();
+  const { items: allSectionItems } = useSectionItems();
   const isPremium = typeof window !== 'undefined' && localStorage.getItem('human2_is_premium') === 'true';
 
   const currentTracks = tracks.length > 0 ? tracks : SLEEP_TRACKS;
   const freeTracks = currentTracks.filter((t) => !t.isPremium);
   const soundscapeTracks = currentTracks.filter((t) => t.isPremium);
 
-  const heroTrack = currentTracks[0] || SLEEP_TRACKS[0]; // Sacred Temple Bell
+  const heroTrack = currentTracks[0] || SLEEP_TRACKS[0]; // Relaxing Bell
   const sosTrack = currentTracks.find((t) => t.category === 'sos') || currentTracks[2] || SLEEP_TRACKS[2]; // 90s SOS
+
+  const publishedMeditationSections = sections.filter(
+    (s) => s.isPublished !== false && s.sectionType !== 'audiobook'
+  );
+  const activeSections = publishedMeditationSections.length > 0
+    ? publishedMeditationSections
+    : DEFAULT_SECTIONS.filter((s) => s.sectionType === 'meditation');
+
+  const getItemsForSection = (sectionId: string) => {
+    const list = allSectionItems.filter((i) => i.sectionId === sectionId && i.isPublished !== false);
+    if (list.length > 0) return list.sort((a, b) => a.sortOrder - b.sortOrder);
+    return DEFAULT_SECTION_ITEMS.filter((i) => i.sectionId === sectionId && i.isPublished !== false).sort((a, b) => a.sortOrder - b.sortOrder);
+  };
+
+  const handlePlaySectionAudio = (item: SleepSectionItem, section: SleepSection) => {
+    hapticsEngine.trigger('tap');
+    const isLocked = item.access === 'paid' && !isPremium;
+    if (isLocked) {
+      audioEngine.playBreathChime('inhale');
+      onNavigate('subscription');
+      return;
+    }
+
+    const trackFromItem: SleepTrack = {
+      id: item.id,
+      title: item.title,
+      subtitle: item.subtitle || `${section.title} · ${item.access === 'free' ? 'Free Audio' : 'Full Audio'}`,
+      category: 'soundscape',
+      durationSeconds: item.durationSeconds || 600,
+      isPremium: item.access === 'paid',
+      audioEngineType: 'bell_sound',
+      audioUrl: item.audioPath?.startsWith('http') || item.audioPath?.startsWith('/audio') ? item.audioPath : '/audio/sample.mp3',
+      tags: ['meditation', section.slug],
+      description: item.description || '',
+      audioPath: item.audioPath,
+    };
+
+    sleepContentService.recordPlayEvent({ trackId: item.id, platform: 'web' });
+
+    if (currentTrack?.id === item.id) {
+      togglePlay();
+    } else {
+      playSleepTrack(trackFromItem);
+    }
+  };
 
   const handleTrackClick = (track: SleepTrack) => {
     hapticsEngine.trigger('tap');
@@ -87,8 +145,22 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
           </p>
         </div>
 
-        {/* Top Actions: Theme Toggle & Sovereign Pill */}
+        {/* Top Actions: Author Profile, Theme Toggle & Sovereign Pill */}
         <div className="flex items-center gap-1.5">
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => {
+              audioEngine.playBreathChime('inhale');
+              onNavigate('author_intro');
+            }}
+            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-white dark:bg-[#121e25] border border-[#e6dccb] dark:border-[#1c2c36] shadow-xs text-xs font-semibold text-[#17495e] dark:text-[#e8b98a] cursor-pointer"
+            title="Author Vinay Kapoor Profile"
+          >
+            <User size={13} className="text-[#17495e] dark:text-[#e8b98a]" />
+            <span>Author</span>
+          </motion.button>
+
           {onToggleDark && (
             <motion.button
               whileHover={{ scale: 1.05 }}
@@ -213,6 +285,150 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
             </motion.button>
           </div>
         </motion.div>
+
+        {/* 3.5. MEDITATION SECTIONS (SLEEP MEDITATION & SERIES WITH FREE / PAID AUDIOS) */}
+        {activeSections.map((sec) => {
+          const items = getItemsForSection(sec.id);
+          const freeItemsCount = items.filter((i) => i.access === 'free').length;
+          const paidItemsCount = items.filter((i) => i.access === 'paid').length;
+
+          return (
+            <div
+              key={sec.id}
+              className="bg-white dark:bg-[#121e25] p-4.5 rounded-3xl border border-[#e6dccb] dark:border-[#1d2e38] shadow-xs space-y-3.5 transition-all"
+            >
+              {/* Section Header */}
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2 mb-1 flex-wrap">
+                    <span className="text-[9.5px] uppercase font-mono font-bold tracking-widest text-[#17495e] dark:text-[#e8b98a] bg-[#17495e]/10 dark:bg-[#e8b98a]/15 px-2.5 py-0.5 rounded-full flex items-center gap-1">
+                      <Sparkles size={11} className="text-[#17495e] dark:text-[#e8b98a]" />
+                      <span>{sec.badge || 'Meditation Series'}</span>
+                    </span>
+                    <span className="text-[9.5px] font-mono font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-950/60 px-2 py-0.5 rounded-full">
+                      {freeItemsCount} Free Audios
+                    </span>
+                  </div>
+                  <h3 className="font-serif-title text-base font-bold text-[#17495e] dark:text-[#f1ede6] leading-tight">
+                    {sec.title}
+                  </h3>
+                  {sec.subtitle && (
+                    <p className="text-[11px] text-[#5a6663] dark:text-[#98abb6] mt-0.5 line-clamp-2">
+                      {sec.subtitle}
+                    </p>
+                  )}
+                </div>
+
+                {/* Pricing Badge */}
+                <div className="shrink-0 text-right">
+                  <span className="inline-block px-3 py-1 rounded-full bg-gradient-to-r from-[#d9a44a]/20 to-[#e8b98a]/30 border border-[#d9a44a]/60 text-xs font-bold text-[#8e6724] dark:text-[#e8b98a] font-mono shadow-2xs">
+                    {sec.priceDisplay || sec.priceAed || 'AED 49'}
+                  </span>
+                  <span className="block text-[9px] text-[#838c89] dark:text-[#7f94a0] font-mono mt-0.5">
+                    {sec.pricingType === 'standalone' ? 'Standalone Series' : 'Lifetime Access'}
+                  </span>
+                </div>
+              </div>
+
+              {/* Audios in this section */}
+              <div className="space-y-2 pt-1">
+                {items.map((item, idx) => {
+                  const isCurrentItemPlaying = currentTrack?.id === item.id && isPlaying;
+                  const isLocked = item.access === 'paid' && !isPremium;
+
+                  return (
+                    <motion.div
+                      key={item.id}
+                      whileHover={{ scale: 1.01 }}
+                      whileTap={{ scale: 0.99 }}
+                      onClick={() => handlePlaySectionAudio(item, sec)}
+                      className={`p-3 rounded-2xl border transition-all cursor-pointer flex items-center justify-between gap-3 ${
+                        isCurrentItemPlaying
+                          ? 'bg-[#17495e]/10 dark:bg-[#e8b98a]/15 border-[#17495e] dark:border-[#e8b98a]'
+                          : 'bg-[#fbf9f5] dark:bg-[#16252e] border-[#e6dccb]/70 dark:border-[#1e323d] hover:border-[#17495e]/40 dark:hover:border-[#e8b98a]/40'
+                      }`}
+                    >
+                      {/* Left: Play Icon & Number */}
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div
+                          className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 transition-colors ${
+                            isCurrentItemPlaying
+                              ? 'bg-[#17495e] dark:bg-[#e8b98a] text-white dark:text-[#0b1317]'
+                              : item.access === 'free'
+                              ? 'bg-emerald-100 dark:bg-emerald-950/70 text-emerald-800 dark:text-emerald-300'
+                              : 'bg-amber-100 dark:bg-amber-950/70 text-amber-800 dark:text-amber-300'
+                          }`}
+                        >
+                          {isCurrentItemPlaying ? (
+                            <Pause size={14} className="fill-current" />
+                          ) : isLocked ? (
+                            <Lock size={14} />
+                          ) : (
+                            <Play size={14} className="fill-current ml-0.5" />
+                          )}
+                        </div>
+
+                        <div className="min-w-0">
+                          <div className="flex items-center gap-2">
+                            <span className="text-[10px] font-mono text-[#838c89] shrink-0">
+                              #{idx + 1}
+                            </span>
+                            <h4 className="text-xs font-bold text-[#17495e] dark:text-[#f1ede6] truncate leading-tight">
+                              {item.title}
+                            </h4>
+                          </div>
+                          {item.subtitle && (
+                            <p className="text-[10px] text-[#5a6663] dark:text-[#98abb6] truncate mt-0.5">
+                              {item.subtitle}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Right: Badge & Duration */}
+                      <div className="flex items-center gap-2 shrink-0">
+                        <span className="text-[10px] font-mono text-[#838c89] dark:text-[#8aa0ad]">
+                          {item.durationFormatted || `${Math.round(item.durationSeconds / 60)}m`}
+                        </span>
+
+                        {item.access === 'free' ? (
+                          <span className="px-2 py-0.5 rounded-full text-[9px] font-bold font-mono tracking-wider bg-emerald-100 dark:bg-emerald-950/70 text-emerald-800 dark:text-emerald-300 border border-emerald-300/40">
+                            FREE AUDIO
+                          </span>
+                        ) : (
+                          <span className="px-2 py-0.5 rounded-full text-[9px] font-bold font-mono tracking-wider bg-gradient-to-r from-[#d9a44a]/25 to-[#e8b98a]/35 text-[#8e6724] dark:text-[#e8b98a] border border-[#d9a44a]/50 flex items-center gap-1">
+                            <Lock size={9} />
+                            <span>{isPremium ? 'UNLOCKED' : `PAID · ${sec.priceDisplay || 'AED 49'}`}</span>
+                          </span>
+                        )}
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </div>
+
+              {/* Series Unlock Banner */}
+              {!isPremium && paidItemsCount > 0 && (
+                <div className="pt-1 flex items-center justify-between text-xs px-1">
+                  <span className="text-[10.5px] text-[#717e7a] dark:text-[#8ea0ac]">
+                    {paidItemsCount} advanced meditations locked
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      audioEngine.playBreathChime('inhale');
+                      onNavigate('subscription');
+                    }}
+                    className="text-[11px] font-bold text-[#17495e] dark:text-[#e8b98a] hover:underline flex items-center gap-1 cursor-pointer"
+                  >
+                    <span>Unlock Series ({sec.priceDisplay})</span>
+                    <ChevronRight size={12} />
+                  </button>
+                </div>
+              )}
+            </div>
+          );
+        })}
 
         {/* 3. ACUTE 90-SECOND RACING MIND RESET (CENTER SOS) */}
         <motion.div

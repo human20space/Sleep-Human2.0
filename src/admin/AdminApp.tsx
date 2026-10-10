@@ -353,7 +353,7 @@ export const AdminApp: React.FC<AdminAppProps> = ({
               </div>
               <div className="bg-white border border-[#E6DCCB] rounded-2xl p-5 shadow-2xs space-y-1">
                 <span className="text-xs text-[#5A6663]">Top Free Track</span>
-                <div className="text-base font-bold font-serif-title text-[#1F2A28] truncate">Sacred Temple Bell</div>
+                <div className="text-base font-bold font-serif-title text-[#1F2A28] truncate">Relaxing Bell</div>
                 <span className="text-[10px] text-[#1F5F78] font-mono font-bold">194 plays (40.2%)</span>
               </div>
             </div>
@@ -385,7 +385,7 @@ export const AdminApp: React.FC<AdminAppProps> = ({
                   </thead>
                   <tbody className="divide-y divide-[#E6DCCB]/40 font-mono text-[11px]">
                     {[
-                      { time: 'Just now', item: 'Sacred Temple Bell (Free)', platform: 'Web PWA', status: 'Completed' },
+                      { time: 'Just now', item: 'Relaxing Bell (Free)', platform: 'Web PWA', status: 'Completed' },
                       { time: '3 min ago', item: 'Chapter 1: The Foundation', platform: 'iOS Capacitor', status: 'Active (22m)' },
                       { time: '11 min ago', item: 'Deep Ocean Waves', platform: 'Android Capacitor', status: 'Completed' },
                       { time: '19 min ago', item: 'Acute SOS Reset (90s)', platform: 'Web', status: 'Completed' },

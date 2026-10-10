@@ -134,7 +134,7 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       {
         id: 'sleep-free-1',
         type: 'sleep_track',
-        title: 'Sacred Temple Bell',
+        title: 'Relaxing Bell',
         subtitle: 'Harmonic bell resonance',
         positionSeconds: 340,
         durationSeconds: 1200,

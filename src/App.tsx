@@ -10,6 +10,7 @@ const AdminApp = React.lazy(() => import('./admin/AdminApp'));
 const AdminLogin = React.lazy(() => import('./admin/AdminLogin'));
 import { syncAdminRobotsMeta } from './admin/adminSeo';
 import { SplashScreen } from './components/SplashScreen';
+import { AuthorIntroScreen } from './components/AuthorIntroScreen';
 import { HomeScreen } from './components/HomeScreen';
 import { PauseScreen } from './components/PauseScreen';
 import { MirrorScreen } from './components/MirrorScreen';
@@ -220,7 +221,20 @@ export function AppContent() {
               transition={{ duration: 0.35, ease: 'easeInOut' }}
               className="absolute inset-0 z-50"
             >
-              <SplashScreen onComplete={() => setCurrentScreen('home')} />
+              <SplashScreen onComplete={() => setCurrentScreen('author_intro')} />
+            </motion.div>
+          )}
+
+          {currentScreen === 'author_intro' && (
+            <motion.div
+              key="author_intro"
+              initial={{ opacity: 0, scale: 0.98 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.98 }}
+              transition={{ duration: 0.28, ease: 'easeOut' }}
+              className="flex-1 w-full h-full flex flex-col overflow-hidden"
+            >
+              <AuthorIntroScreen onContinue={() => setCurrentScreen('home')} />
             </motion.div>
           )}
 

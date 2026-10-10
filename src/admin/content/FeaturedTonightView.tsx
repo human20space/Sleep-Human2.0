@@ -145,7 +145,7 @@ export const FeaturedTonightView: React.FC = () => {
           <span>Frictionless First-Time Experience Requirement</span>
         </h4>
         <p className="leading-relaxed">
-          The headline hero track is loaded directly by first-time visitors transitioning from the splash screen ("Begin awareness"). For maximum conversion and calm engagement, Tonight's Featured track should be a 100% Free soundscape (such as Sacred Temple Bell) that plays immediately with zero login or paywall popups.
+          The headline hero track is loaded directly by first-time visitors transitioning from the splash screen ("Begin awareness"). For maximum conversion and calm engagement, Tonight's Featured track should be a 100% Free soundscape (such as Relaxing Bell) that plays immediately with zero login or paywall popups.
         </p>
       </div>
 

@@ -1,5 +1,6 @@
 export type Screen = 
   | 'splash' 
+  | 'author_intro'
   | 'home' 
   | 'pause' 
   | 'mirror' 

@@ -190,7 +190,7 @@ export const TrackEditorModal: React.FC<TrackEditorModalProps> = ({
                 type="text"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                placeholder="e.g. Sacred Temple Bell"
+                placeholder="e.g. Relaxing Bell"
                 className={`w-full px-3.5 py-2.5 rounded-xl border text-xs bg-white focus:outline-none focus:ring-2 focus:ring-[#1F5F78]/20 focus:border-[#1F5F78] ${
                   errors.title ? 'border-red-500' : 'border-[#E6DCCB]'
                 }`}
@@ -270,7 +270,7 @@ export const TrackEditorModal: React.FC<TrackEditorModalProps> = ({
                 className="w-full px-3 py-2.5 rounded-xl border border-[#E6DCCB] text-xs bg-white focus:outline-none focus:ring-2 focus:ring-[#1F5F78]/20 focus:border-[#1F5F78]"
               >
                 <option value="">Stream CDN (Default)</option>
-                <option value="bell_sound">bell_sound (Temple Bell)</option>
+                <option value="bell_sound">bell_sound (Relaxing Bell)</option>
                 <option value="ocean_rain">ocean_rain (Procedural Rain)</option>
                 <option value="sos_reset">sos_reset (Acute 90s Pacer)</option>
                 <option value="delta_binaural">delta_binaural (Delta Sync)</option>

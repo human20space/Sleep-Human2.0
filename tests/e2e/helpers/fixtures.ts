@@ -38,14 +38,14 @@ export const REFERENCE_SLEEP_CATALOG: SleepTrackSpec[] = [
   // 3 Free Tracks
   {
     id: 'sleep-free-1',
-    title: 'Sacred Temple Bell',
+    title: 'Relaxing Bell',
     subtitle: 'Deep harmonic bell resonance for stillness and sleep',
     category: 'soundscape',
     durationSeconds: 1200,
     isPremium: false,
     audioEngineType: 'bell_sound',
-    tags: ['Bell', 'Temple', 'Free', 'Stillness'],
-    description: 'Resonant Tibetan temple bell strikes with warm decaying harmonics to quiet nocturnal thoughts.',
+    tags: ['Bell', 'Relaxing', 'Free', 'Stillness'],
+    description: 'Resonant relaxing bell strikes with warm decaying harmonics to quiet nocturnal thoughts.',
   },
   {
     id: 'sleep-free-3',

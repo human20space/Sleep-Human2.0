@@ -35,10 +35,10 @@ describe('Tier 4: Real-World Application Scenarios', () => {
     let currentScreen = 'sleep';
     assert.equal(currentScreen, 'sleep');
 
-    // 3. User browses curated catalog, discovers free soundscape "Sacred Temple Bell"
+    // 3. User browses curated catalog, discovers free soundscape "Relaxing Bell"
     const freeTrack = REFERENCE_SLEEP_CATALOG.find(t => t.id === 'sleep-free-1');
     assert.ok(freeTrack, 'Free track must exist in catalog');
-    assert.equal(freeTrack.title, 'Sacred Temple Bell');
+    assert.equal(freeTrack.title, 'Relaxing Bell');
     assert.equal(freeTrack.isPremium, false);
 
     // 4. User taps Play button (verifying touch target >= 44px)
