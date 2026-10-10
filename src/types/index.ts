@@ -32,6 +32,7 @@ export interface AudioChapter {
   driveUrl: string;
   driveId?: string;
   streamUrl?: string;
+  dbId?: string;
 }
 
 export type AudioCategory = 
@@ -168,6 +169,7 @@ export interface SleepTrack {
   audioUrl?: string;
   tags: string[];
   description: string;
+  dbId?: string;
 }
 
 export type PlayableTrack =

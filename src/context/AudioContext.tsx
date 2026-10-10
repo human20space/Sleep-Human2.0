@@ -3,6 +3,7 @@ import type { AudioChapter, SleepTrack, PlayableTrack, ContinueListeningItem } f
 import { AUDIO_CHAPTERS } from '../data/audioChaptersData';
 import { audioEngine } from '../utils/audioEngine';
 import { hapticsEngine } from '../utils/haptics';
+import { sleepContentService } from '../services/sleepContentService';
 
 interface AudioContextType {
   currentChapter: AudioChapter;
@@ -375,6 +376,8 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       position: 0,
       duration: chapter.durationMinutes * 60,
     });
+
+    sleepContentService.recordPlayEvent({ chapterId: chapter.id, platform: 'web' });
   };
 
   // Play a Curated Sleep Track (Polymorphic HTML5 or Web Audio Synthesizer)
@@ -445,6 +448,8 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       position: 0,
       duration: track.durationSeconds,
     });
+
+    sleepContentService.recordPlayEvent({ trackId: track.id, platform: 'web' });
   };
 
   // Toggle Play / Pause

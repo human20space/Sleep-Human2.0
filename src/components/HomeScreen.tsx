@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import type { Screen, SleepTrack } from '../types';
 import { SLEEP_TRACKS } from '../data/sleepCatalogData';
+import { useSleepContent, sleepContentService } from '../services/sleepContentService';
 import { useAudio } from '../context/AudioContext';
 import { audioEngine } from '../utils/audioEngine';
 import { hapticsEngine } from '../utils/haptics';
@@ -43,14 +44,16 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
     continueListening,
   } = useAudio();
 
+  const { tracks } = useSleepContent();
   const isPremium = typeof window !== 'undefined' && localStorage.getItem('human2_is_premium') === 'true';
 
-  const freeTracks = SLEEP_TRACKS.filter((t) => !t.isPremium);
-  const solfeggioTracks = SLEEP_TRACKS.filter((t) => t.category === 'solfeggio');
-  const sleepcastTracks = SLEEP_TRACKS.filter((t) => t.category === 'sleepcast' || t.category === 'body_scan');
+  const currentTracks = tracks.length > 0 ? tracks : SLEEP_TRACKS;
+  const freeTracks = currentTracks.filter((t) => !t.isPremium);
+  const solfeggioTracks = currentTracks.filter((t) => t.category === 'solfeggio');
+  const sleepcastTracks = currentTracks.filter((t) => t.category === 'sleepcast' || t.category === 'body_scan');
 
-  const heroTrack = SLEEP_TRACKS[0]; // Sacred Temple Bell
-  const sosTrack = SLEEP_TRACKS.find((t) => t.id === 'sleep-free-4') || SLEEP_TRACKS[3]; // 90s SOS
+  const heroTrack = currentTracks[0] || SLEEP_TRACKS[0]; // Sacred Temple Bell
+  const sosTrack = currentTracks.find((t) => t.id === 'sleep-free-4') || currentTracks[3] || SLEEP_TRACKS[3]; // 90s SOS
 
   const handleTrackClick = (track: SleepTrack) => {
     hapticsEngine.trigger('tap');
@@ -59,6 +62,8 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
       onNavigate('subscription');
       return;
     }
+
+    sleepContentService.recordPlayEvent({ trackId: track.id, platform: 'web' });
 
     if (currentTrack?.id === track.id) {
       togglePlay();
@@ -263,7 +268,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                 <div
                   key={item.id}
                   onClick={() => {
-                    const matched = SLEEP_TRACKS.find((t) => t.id === item.id);
+                    const matched = currentTracks.find((t) => t.id === item.id);
                     if (matched) handleTrackClick(matched);
                     else onNavigate('audio_chapters');
                   }}
@@ -424,7 +429,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                 Sleepcasts & Night Masterclasses
               </span>
               <span className="text-[10px] text-[#838c89] dark:text-[#98abb6]">
-                Dr. Matthew Walker, Yoga Nidra, and somatic releases
+                Clinical Sleepcasts, Yoga Nidra, and somatic releases
               </span>
             </div>
             <Crown size={14} className="text-[#8e6724] dark:text-[#e8b98a]" />

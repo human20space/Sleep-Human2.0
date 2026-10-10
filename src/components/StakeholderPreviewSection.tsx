@@ -279,7 +279,7 @@ export const StakeholderPreviewSection: React.FC<StakeholderPreviewSectionProps>
         </div>
 
         <p className="text-[11px] text-[#5a6663] dark:text-[#98abb6] leading-relaxed">
-          Secular Mindfulness, Soto Zen, Vipassana, Kundalini, Stoic, Advaita Vedanta, plus masterclasses from Dr. Matthew Walker, Tara Brach, Jud Brewer & Vinay Kapoor.
+          Secular Mindfulness, Soto Zen, Vipassana, Kundalini, Stoic, Advaita Vedanta, plus masterclasses from Tara Brach, Jud Brewer & Vinay Kapoor.
         </p>
 
         <div className="mt-2.5 pt-2 border-t border-[#e6dccb]/60 dark:border-[#1d2e38] flex items-center justify-between text-[10.5px]">

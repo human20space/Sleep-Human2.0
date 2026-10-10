@@ -72,8 +72,8 @@ export const SLEEP_TRACKS: SleepTrack[] = [
   },
   {
     id: 'sleep-prem-3',
-    title: 'Dr. Matthew Walker Sleep Architecture',
-    subtitle: 'Guided neurological wind-down and circadian sync',
+    title: 'Clinical Sleep Architecture & Circadian Descent',
+    subtitle: 'Guided neurological wind-down and sleep spindle induction',
     category: 'sleepcast',
     durationSeconds: 2100,
     isPremium: true,

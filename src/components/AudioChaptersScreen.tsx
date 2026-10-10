@@ -25,6 +25,7 @@ import {
 import type { Screen } from '../types';
 import { AUDIO_CHAPTERS, AUDIO_PARTS } from '../data/audioChaptersData';
 import { useAudio } from '../context/AudioContext';
+import { useSleepContent, sleepContentService } from '../services/sleepContentService';
 
 interface AudioChaptersScreenProps {
   onBack: () => void;
@@ -62,8 +63,11 @@ export const AudioChaptersScreen: React.FC<AudioChaptersScreenProps> = ({ onBack
     triggerAudiobookPaywall,
   } = useAudio();
 
+  const { chapters } = useSleepContent();
+  const chapterList = chapters.length > 0 ? chapters : AUDIO_CHAPTERS;
+
   // Filter chapters based on selected part and search query
-  const filteredChapters = AUDIO_CHAPTERS.filter((chapter) => {
+  const filteredChapters = chapterList.filter((chapter) => {
     const matchesPart = selectedPart === null || chapter.partNumber === selectedPart;
     const matchesSearch =
       chapter.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -516,6 +520,7 @@ export const AudioChaptersScreen: React.FC<AudioChaptersScreenProps> = ({ onBack
                       triggerAudiobookPaywall();
                       return;
                     }
+                    sleepContentService.recordPlayEvent({ chapterId: chapter.id, platform: 'web' });
                     playChapter(chapter);
                   }}
                   className={`p-3.5 rounded-2xl border transition-all cursor-pointer ${

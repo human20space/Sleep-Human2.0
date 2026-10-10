@@ -19,6 +19,7 @@ import { audioEngine } from '../utils/audioEngine';
 import { useAudio } from '../context/AudioContext';
 import { SLEEP_TRACKS } from '../data/sleepCatalogData';
 import { AUDIO_CHAPTERS } from '../data/audioChaptersData';
+import { sleepContentService, useSleepContent } from '../services/sleepContentService';
 
 interface VaultScreenProps {
   onBack: () => void;
@@ -82,9 +83,13 @@ export const VaultScreen: React.FC<VaultScreenProps> = ({
     URL.revokeObjectURL(url);
   };
 
+  const { tracks: sleepTracks, chapters: audioChapters } = useSleepContent();
+  const currentTracks = sleepTracks.length > 0 ? sleepTracks : sleepContentService.getCachedTracks();
+  const currentChapters = audioChapters.length > 0 ? audioChapters : sleepContentService.getCachedChapters();
+
   const handlePlayContinueItem = (item: typeof continueListening[0]) => {
     if (item.type === 'sleep_track') {
-      const track = SLEEP_TRACKS.find((t) => t.id === item.id);
+      const track = currentTracks.find((t) => t.id === item.id) || SLEEP_TRACKS.find((t) => t.id === item.id);
       if (track) {
         if (track.isPremium && !isPremium) {
           onNavigate?.('subscription');
@@ -93,7 +98,7 @@ export const VaultScreen: React.FC<VaultScreenProps> = ({
         playSleepTrack(track);
       }
     } else {
-      const chapter = AUDIO_CHAPTERS.find((c) => c.id === item.id);
+      const chapter = currentChapters.find((c) => c.id === item.id) || AUDIO_CHAPTERS.find((c) => c.id === item.id);
       if (chapter) {
         if (chapter.chapterNumber > 3 && !isPremium) {
           onNavigate?.('subscription');
@@ -105,7 +110,7 @@ export const VaultScreen: React.FC<VaultScreenProps> = ({
   };
 
   const handlePlayFavorite = (favId: string) => {
-    const sleepTrack = SLEEP_TRACKS.find((t) => t.id === favId);
+    const sleepTrack = currentTracks.find((t) => t.id === favId) || SLEEP_TRACKS.find((t) => t.id === favId);
     if (sleepTrack) {
       if (sleepTrack.isPremium && !isPremium) {
         onNavigate?.('subscription');
@@ -114,7 +119,7 @@ export const VaultScreen: React.FC<VaultScreenProps> = ({
       playSleepTrack(sleepTrack);
       return;
     }
-    const chapter = AUDIO_CHAPTERS.find((c) => c.id === favId);
+    const chapter = currentChapters.find((c) => c.id === favId) || AUDIO_CHAPTERS.find((c) => c.id === favId);
     if (chapter) {
       if (chapter.chapterNumber > 3 && !isPremium) {
         onNavigate?.('subscription');
@@ -128,7 +133,7 @@ export const VaultScreen: React.FC<VaultScreenProps> = ({
   // Resolve metadata for favorited items
   const resolvedFavorites = favorites
     .map((favId) => {
-      const st = SLEEP_TRACKS.find((t) => t.id === favId);
+      const st = currentTracks.find((t) => t.id === favId) || SLEEP_TRACKS.find((t) => t.id === favId);
       if (st) {
         return {
           id: st.id,
@@ -141,7 +146,7 @@ export const VaultScreen: React.FC<VaultScreenProps> = ({
           type: 'sleep_track' as const,
         };
       }
-      const ch = AUDIO_CHAPTERS.find((c) => c.id === favId);
+      const ch = currentChapters.find((c) => c.id === favId) || AUDIO_CHAPTERS.find((c) => c.id === favId);
       if (ch) {
         return {
           id: ch.id,

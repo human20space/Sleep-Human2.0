@@ -82,7 +82,7 @@ export const SubscriptionScreen: React.FC<SubscriptionScreenProps> = ({ onBack, 
       icon: Crown,
       title: 'World Expert Masterclasses',
       free: 'Locked',
-      sovereign: 'Dr. Walker, Dr. Jud & Tara Brach',
+      sovereign: 'Dr. Jud & Tara Brach',
       highlight: false
     },
     {

@@ -82,7 +82,7 @@ Human 2.0 has been successfully transformed into an installable, high-performanc
        5. *528Hz Miracle Cell Repair* (DNA restoration frequency, 40m)
        6. *Delta Wave Deep Sleep Induction* (2Hz binaural beat, 45m)
        7. *Yoga Nidra: The Conscious Dream* (Non-Sleep Deep Rest, 35m)
-       8. *Dr. Walker's 4-Phase Sleep Cycle* (Clinical sleep architecture, 50m)
+       8. *Clinical Sleep Architecture & Circadian Descent* (Clinical sleep architecture, 35m)
        9. *Stardust Over The Himalayas* (Bedtime meditation story, 42m)
        10. *Autumn Rain on Cedar Roof* (Natural acoustic immersion, 60m)
        11. *Celestial Tibetan Singing Bowls* (Grounding harmonics, 60m)
