@@ -17,30 +17,19 @@ const PROJECT_ROOT = path.resolve(__dirname, '../..');
 describe('Phase 1 Verification: Data Foundation & Matthew Walker Removal', () => {
 
   test('1. Dr. Matthew Walker attribution removal verification', () => {
-    // Check sleep-prem-3 in catalog
+    // Verify sleep-prem-3 removed from catalog and fixtures
     const track3 = SLEEP_TRACKS.find((t) => t.id === 'sleep-prem-3');
-    assert.ok(track3, 'sleep-prem-3 must exist');
-    assert.equal(track3.title, 'Clinical Sleep Architecture & Circadian Descent');
-    assert.equal(track3.subtitle, 'Guided neurological wind-down and sleep spindle induction');
-    assert.deepEqual(track3.tags, ['Science', 'Guided', 'Sovereign', 'Sleepcast']);
-    assert.equal(track3.description, 'Evidence-based cognitive descent into restorative non-REM slumber.');
-
-    // Check test fixture reference
+    assert.equal(track3, undefined, 'sleep-prem-3 must be removed under solfeggio/sleepcast removal');
     const fixtureTrack3 = REFERENCE_SLEEP_CATALOG.find((t) => t.id === 'sleep-prem-3');
-    assert.ok(fixtureTrack3, 'Fixture sleep-prem-3 must exist');
-    assert.equal(fixtureTrack3.title, 'Clinical Sleep Architecture & Circadian Descent');
+    assert.equal(fixtureTrack3, undefined, 'Fixture sleep-prem-3 must be removed');
 
-    // Check masterclass-sleep-science in extendedMindfulnessData
+    // Verify masterclass-sleep-science removed from extendedMindfulnessData
     const masterclass = MASTERCLASSES.find((m) => m.id === 'masterclass-sleep-science');
-    assert.ok(masterclass, 'masterclass-sleep-science must exist');
-    assert.ok(!masterclass.teacher.includes('Matthew Walker'), 'Teacher must not be Matthew Walker');
-    assert.ok(!masterclass.subtitle?.includes('Matthew Walker'), 'Subtitle must not include Matthew Walker');
-    assert.ok(!masterclass.description.includes('Matthew Walker'), 'Description must not include Matthew Walker');
+    assert.equal(masterclass, undefined, 'masterclass-sleep-science must be removed');
 
     // Check HomeScreen.tsx
     const homeScreenContent = fs.readFileSync(path.join(PROJECT_ROOT, 'src/components/HomeScreen.tsx'), 'utf-8');
     assert.ok(!homeScreenContent.includes('Dr. Matthew Walker'), 'HomeScreen must not mention Dr. Matthew Walker');
-    assert.ok(homeScreenContent.includes('Clinical Sleepcasts, Yoga Nidra, and somatic releases'), 'HomeScreen must include Clinical Sleepcasts copy');
 
     // Check SubscriptionScreen.tsx
     const subScreenContent = fs.readFileSync(path.join(PROJECT_ROOT, 'src/components/SubscriptionScreen.tsx'), 'utf-8');
@@ -156,19 +145,19 @@ describe('Phase 1 Verification: Data Foundation & Matthew Walker Removal', () =>
   test('5. SleepContentService local offline fallback & resilience', async () => {
     // Unconfigured environment should fall back seamlessly to local static data
     const tracks = await sleepContentService.getTracks();
-    assert.equal(tracks.length, 16, 'Must return 16 sleep tracks in offline/fallback mode');
+    assert.equal(tracks.length, 9, 'Must return 9 sleep tracks in offline/fallback mode');
 
     const chapters = await sleepContentService.getAudiobookChapters();
     assert.equal(chapters.length, 45, 'Must return 45 audiobook chapters in offline/fallback mode');
 
     const categories = await sleepContentService.getCategories();
-    assert.equal(categories.length, 5, 'Must return 5 categories in offline/fallback mode');
+    assert.equal(categories.length, 3, 'Must return 3 categories in offline/fallback mode');
 
     const plans = await sleepContentService.getPlans();
     assert.equal(plans.length, 3, 'Must return 3 subscription plans in offline/fallback mode');
 
     // Synchronous getters must immediately provide full local data
-    assert.equal(sleepContentService.getCachedTracks().length, 16);
+    assert.equal(sleepContentService.getCachedTracks().length, 9);
     assert.equal(sleepContentService.getCachedChapters().length, 45);
 
     // Recording play events must not throw in unconfigured or offline mode
@@ -188,5 +177,41 @@ describe('Phase 1 Verification: Data Foundation & Matthew Walker Removal', () =>
     assert.ok(envContent.includes('VITE_SUPABASE_ANON_KEY'), '.env.example must mention VITE_SUPABASE_ANON_KEY');
     assert.ok(!/VITE_.*SERVICE_ROLE/i.test(envContent), '.env.example must not export service role keys');
     assert.ok(!/SUPABASE_SERVICE_ROLE/i.test(envContent), '.env.example must not contain service role key variables');
+  });
+
+  test('7. Migration 004 & Rollback 004 Solfeggio & Sleepcast deactivation compliance', () => {
+    const mig004Path = path.join(PROJECT_ROOT, 'supabase/migrations/004_sleep_remove_solfeggio_sleepcasts.sql');
+    const roll004Path = path.join(PROJECT_ROOT, 'supabase/migrations/rollback/004_sleep_remove_solfeggio_sleepcasts_rollback.sql');
+
+    assert.ok(fs.existsSync(mig004Path), 'Migration 004 must exist');
+    assert.ok(fs.existsSync(roll004Path), 'Rollback 004 must exist');
+
+    const migContent = fs.readFileSync(mig004Path, 'utf-8');
+    const rollContent = fs.readFileSync(roll004Path, 'utf-8');
+
+    // Verify 7 deactivated track slugs
+    const removedSlugs = [
+      'sleep-free-2',
+      'sleep-prem-1',
+      'sleep-prem-2',
+      'sleep-prem-3',
+      'sleep-prem-8',
+      'sleep-prem-9',
+      'sleep-prem-12',
+    ];
+
+    for (const slug of removedSlugs) {
+      assert.ok(migContent.includes(slug), `Migration 004 must deactivate ${slug}`);
+      assert.ok(rollContent.includes(slug), `Rollback 004 must restore ${slug}`);
+    }
+
+    // Verify category deactivation & rollback restoration
+    assert.ok(migContent.includes("'solfeggio'"), 'Migration 004 must deactivate solfeggio');
+    assert.ok(migContent.includes("'sleepcast'"), 'Migration 004 must deactivate sleepcast');
+    assert.ok(migContent.includes('is_published = false'), 'Migration 004 must set is_published = false');
+
+    assert.ok(rollContent.includes("'solfeggio'"), 'Rollback 004 must restore solfeggio');
+    assert.ok(rollContent.includes("'sleepcast'"), 'Rollback 004 must restore sleepcast');
+    assert.ok(rollContent.includes('is_published = true'), 'Rollback 004 must set is_published = true');
   });
 });

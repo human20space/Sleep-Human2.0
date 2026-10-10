@@ -49,11 +49,10 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
 
   const currentTracks = tracks.length > 0 ? tracks : SLEEP_TRACKS;
   const freeTracks = currentTracks.filter((t) => !t.isPremium);
-  const solfeggioTracks = currentTracks.filter((t) => t.category === 'solfeggio');
-  const sleepcastTracks = currentTracks.filter((t) => t.category === 'sleepcast' || t.category === 'body_scan');
+  const soundscapeTracks = currentTracks.filter((t) => t.isPremium);
 
   const heroTrack = currentTracks[0] || SLEEP_TRACKS[0]; // Sacred Temple Bell
-  const sosTrack = currentTracks.find((t) => t.id === 'sleep-free-4') || currentTracks[3] || SLEEP_TRACKS[3]; // 90s SOS
+  const sosTrack = currentTracks.find((t) => t.category === 'sos') || currentTracks[2] || SLEEP_TRACKS[2]; // 90s SOS
 
   const handleTrackClick = (track: SleepTrack) => {
     hapticsEngine.trigger('tap');
@@ -130,7 +129,36 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
       </div>
 
       <div className="w-full max-w-4xl mx-auto px-4 space-y-4 pt-1">
-        {/* 2. TONIGHT'S BEDTIME IMMERSION HERO CARD */}
+        {/* 2. DEDICATED LISTEN SECTION (AUDIOBOOK 45 CHAPTERS) */}
+        <motion.div
+          whileHover={{ scale: 1.01 }}
+          whileTap={{ scale: 0.99 }}
+          onClick={() => {
+            audioEngine.playBreathChime('inhale');
+            onNavigate('audio_chapters');
+          }}
+          className="p-4 rounded-3xl bg-gradient-to-r from-[#17495e] via-[#1f5f78] to-[#17495e] text-white shadow-xs cursor-pointer flex items-center justify-between min-h-[48px]"
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-2xl bg-white/15 text-[#e8b98a] flex items-center justify-center shrink-0">
+              <Headphones size={18} />
+            </div>
+            <div>
+              <span className="text-[9.5px] uppercase font-mono font-bold tracking-wider text-[#e8b98a] block">
+                Dedicated Listen Section
+              </span>
+              <h4 className="font-serif-title text-xs font-bold text-white">
+                Human 2.0 Audiobook (45 Chapters)
+              </h4>
+              <p className="text-[10.5px] text-white/80">
+                Chapter 1 Free Sample (25m) · Full audiobook in the Listen tab
+              </p>
+            </div>
+          </div>
+          <ChevronRight size={16} className="text-[#e8b98a]" />
+        </motion.div>
+
+        {/* 3. TONIGHT'S BEDTIME IMMERSION HERO CARD */}
         <motion.div
           whileHover={{ scale: 1.01 }}
           className="bg-gradient-to-br from-[#17495e] via-[#1c556d] to-[#123645] text-white p-4.5 rounded-3xl shadow-sm border border-[#17495e]/50 relative overflow-hidden"
@@ -306,11 +334,11 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
               </span>
             </div>
             <span className="text-[9.5px] bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 font-bold px-2 py-0.5 rounded-full font-mono">
-              4 FREE TRACKS
+              {freeTracks.length} FREE TRACKS
             </span>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
             {freeTracks.map((track) => (
               <motion.div
                 key={track.id}
@@ -322,7 +350,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                 <div>
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-[9px] uppercase font-mono font-bold text-[#3c7858] dark:text-[#52a378]">
-                      {track.category}
+                      {track.category.replace('_', ' ')}
                     </span>
                     <button
                       type="button"
@@ -355,88 +383,22 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
           </div>
         </div>
 
-        {/* 7. SOLFEGGIO FREQUENCIES & DELTA BINAURAL BEATS */}
+        {/* 7. SOUNDSCAPES & SOMATIC SANCTUARY */}
         <div className="space-y-2.5 pt-1">
           <div className="flex items-center justify-between px-1">
             <div>
               <span className="text-[10.5px] font-bold uppercase tracking-wider text-[#8e6724] dark:text-[#e8b98a] block">
-                Solfeggio Frequencies & Binaurals
+                Soundscapes & Somatic Sanctuary
               </span>
               <span className="text-[10px] text-[#838c89] dark:text-[#98abb6]">
-                Deep neurological resonance & slow-wave delta sleep
+                Acoustic nature sanctuaries, Tibetan bowls & body scans
               </span>
             </div>
             <Crown size={14} className="text-[#8e6724] dark:text-[#e8b98a]" />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-            {solfeggioTracks.map((track) => {
-              const isLocked = track.isPremium && !isPremium;
-
-              return (
-                <div
-                  key={track.id}
-                  onClick={() => handleTrackClick(track)}
-                  className="p-3.5 rounded-2xl bg-white dark:bg-[#121e25] border border-[#e6dccb] dark:border-[#1d2e38] flex items-center justify-between cursor-pointer hover:border-[#17495e]/40 shadow-xs"
-                >
-                  <div className="flex items-center gap-3 min-w-0">
-                    <div className="w-9 h-9 rounded-xl bg-[#efe9df] dark:bg-[#1a2d38] text-[#17495e] dark:text-[#e8b98a] flex items-center justify-center font-bold text-xs shrink-0">
-                      {isLocked ? <Lock size={14} /> : <Volume2 size={14} />}
-                    </div>
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-1.5">
-                        <h4 className="text-xs font-bold text-[#17495e] dark:text-[#f1ede6] truncate">
-                          {track.title}
-                        </h4>
-                        {isLocked && (
-                          <span className="text-[8.5px] bg-[#d9a44a]/20 text-[#8e6724] dark:text-[#e8b98a] px-1.5 py-0.2 rounded font-mono font-bold">
-                            PRO
-                          </span>
-                        )}
-                      </div>
-                      <p className="text-[10.5px] text-[#5a6663] dark:text-[#98abb6] truncate">
-                        {track.subtitle}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-2 shrink-0 ml-2">
-                    <span className="text-[10px] font-mono text-[#838c89]">
-                      {Math.floor(track.durationSeconds / 60)}m
-                    </span>
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        toggleFavorite(track.id);
-                      }}
-                      className="text-[#838c89] hover:text-[#d9a44a]"
-                    >
-                      <Bookmark size={14} className={favorites.includes(track.id) ? 'fill-[#d9a44a] text-[#d9a44a]' : ''} />
-                    </button>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* 8. SLEEPCAST STORIES & NIGHT MASTERCLASSES */}
-        <div className="space-y-2.5 pt-1">
-          <div className="flex items-center justify-between px-1">
-            <div>
-              <span className="text-[10.5px] font-bold uppercase tracking-wider text-[#8e6724] dark:text-[#e8b98a] block">
-                Sleepcasts & Night Masterclasses
-              </span>
-              <span className="text-[10px] text-[#838c89] dark:text-[#98abb6]">
-                Clinical Sleepcasts, Yoga Nidra, and somatic releases
-              </span>
-            </div>
-            <Crown size={14} className="text-[#8e6724] dark:text-[#e8b98a]" />
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-            {sleepcastTracks.map((track) => {
+            {soundscapeTracks.map((track) => {
               const isLocked = track.isPremium && !isPremium;
 
               return (
@@ -486,34 +448,6 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
             })}
           </div>
         </div>
-
-        {/* 9. STANDALONE AUDIOBOOK PROMO BANNER */}
-        <motion.div
-          whileHover={{ scale: 1.01 }}
-          onClick={() => {
-            audioEngine.playBreathChime('inhale');
-            onNavigate('audio_chapters');
-          }}
-          className="p-4 rounded-3xl bg-gradient-to-r from-[#17495e] via-[#1f5f78] to-[#17495e] text-white shadow-xs cursor-pointer flex items-center justify-between"
-        >
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-white/15 text-[#e8b98a] flex items-center justify-center shrink-0">
-              <Headphones size={18} />
-            </div>
-            <div>
-              <span className="text-[9.5px] uppercase font-mono font-bold tracking-wider text-[#e8b98a] block">
-                Dedicated Listen Section
-              </span>
-              <h4 className="font-serif-title text-xs font-bold text-white">
-                Human 2.0 Audiobook (45 Chapters)
-              </h4>
-              <p className="text-[10.5px] text-white/80">
-                Chapters 1–3 Free · Full audiobook in the Listen tab
-              </p>
-            </div>
-          </div>
-          <ChevronRight size={16} className="text-[#e8b98a]" />
-        </motion.div>
       </div>
     </div>
   );

@@ -81,7 +81,12 @@ self.addEventListener('fetch', (event) => {
   const request = event.request;
   const url = new URL(request.url);
 
-  // 1. Only intercept GET requests
+  // 1. Service Worker Bypass: Requests starting with /admin immediately bypass the service worker and go straight to network
+  if (url.pathname.startsWith('/admin')) {
+    return;
+  }
+
+  // 2. Only intercept GET requests
   if (request.method !== 'GET') {
     return;
   }

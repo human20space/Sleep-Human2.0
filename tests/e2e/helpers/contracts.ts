@@ -89,10 +89,10 @@ export interface SleepTrackSpec {
   id: string;
   title: string;
   subtitle: string;
-  category: 'sleepcast' | 'solfeggio' | 'soundscape' | 'sos' | 'body_scan';
+  category: 'soundscape' | 'sos' | 'body_scan';
   durationSeconds: number;
   isPremium: boolean;
-  audioEngineType?: 'solfeggio_432' | 'solfeggio_528' | 'delta_binaural' | 'ocean_rain' | 'sos_reset';
+  audioEngineType?: 'solfeggio_432' | 'solfeggio_528' | 'delta_binaural' | 'ocean_rain' | 'sos_reset' | 'bell_sound';
   audioUrl?: string;
   tags: string[];
   description: string;
@@ -105,18 +105,18 @@ export function validateSleepCatalogSpec(catalog: SleepTrackSpec[]): { valid: bo
     return { valid: false, errors: ['Catalog must be an array'] };
   }
 
-  if (catalog.length < 12 || catalog.length > 20) {
-    errors.push(`Expected catalog track count between 12 and 20, got ${catalog.length}`);
+  if (catalog.length < 8 || catalog.length > 12) {
+    errors.push(`Expected catalog track count between 8 and 12, got ${catalog.length}`);
   }
 
   const freeTracks = catalog.filter(t => !t.isPremium);
   const premiumTracks = catalog.filter(t => t.isPremium);
 
-  if (freeTracks.length < 3 || freeTracks.length > 5) {
-    errors.push(`Expected 3 to 5 free tracks (specifically 4), got ${freeTracks.length}`);
+  if (freeTracks.length < 2 || freeTracks.length > 4) {
+    errors.push(`Expected 2 to 4 free tracks (specifically 3), got ${freeTracks.length}`);
   }
 
-  const requiredCategories = ['sleepcast', 'solfeggio', 'soundscape', 'sos', 'body_scan'];
+  const requiredCategories = ['soundscape', 'sos', 'body_scan'];
   for (const cat of requiredCategories) {
     if (!catalog.some(t => t.category === cat)) {
       errors.push(`Missing required category "${cat}" in sleep catalog`);

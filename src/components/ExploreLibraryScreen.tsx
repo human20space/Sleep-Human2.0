@@ -66,7 +66,7 @@ export const ExploreLibraryScreen: React.FC<ExploreLibraryScreenProps> = ({
     let matchesCategory = true;
     if (activeCategory === 'foundations') matchesCategory = session.category === 'foundations';
     else if (activeCategory === 'sos') matchesCategory = session.category === 'sos';
-    else if (activeCategory === 'sleep') matchesCategory = session.category === 'sleepcast' || session.category === 'sleep_story';
+    else if (activeCategory === 'sleep') matchesCategory = session.category === 'sleep_story';
     else if (activeCategory === 'traditions') matchesCategory = session.category === 'tradition';
     else if (activeCategory === 'masterclasses') matchesCategory = session.category === 'masterclass';
     else if (activeCategory === 'goals') matchesCategory = session.category === 'goal_program';
@@ -89,11 +89,11 @@ export const ExploreLibraryScreen: React.FC<ExploreLibraryScreenProps> = ({
     { id: 'all' as LibraryCategory, label: 'All 100k+', icon: Sparkles },
     { id: 'foundations' as LibraryCategory, label: 'Beginner Path (7d)', icon: Compass },
     { id: 'sos' as LibraryCategory, label: 'SOS Acute (1-3m)', icon: Zap },
-    { id: 'sleep' as LibraryCategory, label: 'Sleepcasts & Stories', icon: Moon },
+    { id: 'sleep' as LibraryCategory, label: 'Sleep Stories & Wind-Down', icon: Moon },
     { id: 'traditions' as LibraryCategory, label: 'Traditions (Zen/Vipassana/Kundalini)', icon: BookOpen },
     { id: 'masterclasses' as LibraryCategory, label: 'Masterclasses', icon: GraduationCap },
     { id: 'goals' as LibraryCategory, label: 'Goal Programs (Anxiety/Focus)', icon: Target },
-    { id: 'breath_sound' as LibraryCategory, label: 'Breath & 432Hz Sound', icon: Wind },
+    { id: 'breath_sound' as LibraryCategory, label: 'Breath & Soundscapes', icon: Wind },
   ];
 
   return (

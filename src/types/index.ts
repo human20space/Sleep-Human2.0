@@ -33,6 +33,11 @@ export interface AudioChapter {
   driveId?: string;
   streamUrl?: string;
   dbId?: string;
+  access?: 'free' | 'pro';
+  durationSeconds?: number;
+  audioPath?: string;
+  isPublished?: boolean;
+  playCount?: number;
 }
 
 export type AudioCategory = 
@@ -162,7 +167,7 @@ export interface SleepTrack {
   id: string;
   title: string;
   subtitle: string;
-  category: 'sleepcast' | 'solfeggio' | 'soundscape' | 'sos' | 'body_scan';
+  category: 'soundscape' | 'sos' | 'body_scan';
   durationSeconds: number;
   isPremium: boolean;
   audioEngineType?: 'solfeggio_432' | 'solfeggio_528' | 'delta_binaural' | 'ocean_rain' | 'sos_reset' | 'bell_sound';
@@ -170,6 +175,12 @@ export interface SleepTrack {
   tags: string[];
   description: string;
   dbId?: string;
+  isPublished?: boolean;
+  isFreeShelf?: boolean;
+  isFeaturedTonight?: boolean;
+  sortOrder?: number;
+  playCount?: number;
+  audioPath?: string;
 }
 
 export type PlayableTrack =

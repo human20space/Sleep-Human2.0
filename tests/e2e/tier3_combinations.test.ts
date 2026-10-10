@@ -54,15 +54,11 @@ describe('Tier 3: Cross-Feature Pairwise Combinations', () => {
   });
 
   // Combination 3: Frictionless Free Tier (F8) + Procedural Audio Engine (F12)
-  test('Pairwise 3 [F8 + F12]: Free procedural track (432Hz) synthesizes offline without network dependency', () => {
-    const freeProceduralTrack = REFERENCE_SLEEP_CATALOG.find(t => !t.isPremium && t.audioEngineType === 'solfeggio_432');
+  test('Pairwise 3 [F8 + F12]: Free procedural track (ocean rain) synthesizes offline without network dependency', () => {
+    const freeProceduralTrack = REFERENCE_SLEEP_CATALOG.find(t => !t.isPremium && t.audioEngineType === 'ocean_rain');
     assert.ok(freeProceduralTrack);
     assert.equal(freeProceduralTrack.isPremium, false);
-    assert.equal(freeProceduralTrack.audioEngineType, 'solfeggio_432');
-
-    // Verify frequency constant
-    const solfeggio432Freq = 432;
-    assert.equal(solfeggio432Freq, 432);
+    assert.equal(freeProceduralTrack.audioEngineType, 'ocean_rain');
   });
 
   // Combination 4: Sovereign / Audiobook Plan (F9) + Audiobook Section (F10)
@@ -84,15 +80,15 @@ describe('Tier 3: Cross-Feature Pairwise Combinations', () => {
   });
 
   // Combination 5: Sovereign Plan (F9) + Sleep Catalog (F7)
-  test('Pairwise 5 [F9 + F7]: Sovereign unlock transitions all 12 premium sleep tracks from locked to unlocked', () => {
+  test('Pairwise 5 [F9 + F7]: Sovereign unlock transitions all 6 premium sleep tracks from locked to unlocked', () => {
     const vault = new MockLocalStorageVault();
     const catalog = REFERENCE_SLEEP_CATALOG;
 
     const getAccessibleTracks = () => catalog.filter(t => !t.isPremium || vault.isSovereign());
-    assert.equal(getAccessibleTracks().length, 4);
+    assert.equal(getAccessibleTracks().length, 3);
 
     vault.setSovereign(true);
-    assert.equal(getAccessibleTracks().length, 16);
+    assert.equal(getAccessibleTracks().length, 9);
   });
 
   // Combination 6: Favourites Storage (F11) + Sleep Catalog (F7)
@@ -186,7 +182,7 @@ describe('Tier 3: Cross-Feature Pairwise Combinations', () => {
   });
 
   // Combination 14: Frictionless Free Tier (F8) + Continue Listening (F11)
-  test('Pairwise 14 [F8 + F11]: Free sleepcast playback saves progress without requiring user login or ID', () => {
+  test('Pairwise 14 [F8 + F11]: Free sleep track playback saves progress without requiring user login or ID', () => {
     const vault = new MockLocalStorageVault();
     const freeTrack = REFERENCE_SLEEP_CATALOG[0];
 
@@ -205,11 +201,11 @@ describe('Tier 3: Cross-Feature Pairwise Combinations', () => {
   });
 
   // Combination 15: Sovereign Plan (F9) + Audio Engine (F12)
-  test('Pairwise 15 [F9 + F12]: Sovereign unlock simulation triggers 528Hz Solfeggio confirmation frequency', () => {
-    const SOLFEGGIO_528_HZ = 528;
-    assert.equal(SOLFEGGIO_528_HZ, 528);
-    // Solfeggio 528Hz is exact frequency of transformation and DNA repair
-    assert.ok(SOLFEGGIO_528_HZ > 432);
+  test('Pairwise 15 [F9 + F12]: Sovereign unlock simulation triggers 528Hz confirmation chime frequency', () => {
+    const CHIME_528_HZ = 528;
+    assert.equal(CHIME_528_HZ, 528);
+    // 528Hz bowl chime frequency for sovereign confirmation
+    assert.ok(CHIME_528_HZ > 432);
   });
 
   // Combination 16: Standalone Mode (F6) + 360px Mobile Layout (F12)

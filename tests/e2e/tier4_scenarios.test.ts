@@ -23,7 +23,7 @@ describe('Tier 4: Real-World Application Scenarios', () => {
   // --------------------------------------------------------------------------
   // Scenario 1: Bedtime Immersion
   // --------------------------------------------------------------------------
-  test('Scenario 1: Bedtime Immersion - First-time user launches app, immediately plays free sleepcast without login modal', async () => {
+  test('Scenario 1: Bedtime Immersion - First-time user launches app, immediately plays free sleep track without login modal', async () => {
     // 1. First-time launch: user has blank local storage
     const vault = new MockLocalStorageVault();
     vault.clear();
@@ -134,8 +134,8 @@ describe('Tier 4: Real-World Application Scenarios', () => {
     vault.clear();
     assert.equal(vault.isSovereign(), false);
 
-    // 1. User discovers locked premium track "528Hz Miracle Cell Repair"
-    const lockedTrack = REFERENCE_SLEEP_CATALOG.find(t => t.id === 'sleep-prem-1');
+    // 1. User discovers locked premium track "Himalayan Singing Bowls Drone"
+    const lockedTrack = REFERENCE_SLEEP_CATALOG.find(t => t.id === 'sleep-prem-4');
     assert.ok(lockedTrack);
     assert.equal(lockedTrack.isPremium, true);
 
@@ -237,8 +237,8 @@ describe('Tier 4: Real-World Application Scenarios', () => {
     // 1. User has active state with favorites and custom sleep timer
     const vault = new MockLocalStorageVault();
     vault.setSovereign(true);
-    vault.toggleFavorite('sleep-free-2');
-    vault.toggleFavorite('sleep-prem-1');
+    vault.toggleFavorite('sleep-free-1');
+    vault.toggleFavorite('sleep-prem-4');
     assert.equal(vault.getFavorites().length, 2);
 
     // 2. Background service worker detects new deployment push
@@ -282,6 +282,6 @@ describe('Tier 4: Real-World Application Scenarios', () => {
     // 5. After refresh, local storage vault retains 100% of user data
     assert.equal(vault.isSovereign(), true);
     assert.equal(vault.getFavorites().length, 2);
-    assert.deepEqual(vault.getFavorites(), ['sleep-free-2', 'sleep-prem-1']);
+    assert.deepEqual(vault.getFavorites(), ['sleep-free-1', 'sleep-prem-4']);
   });
 });

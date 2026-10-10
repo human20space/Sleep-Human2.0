@@ -214,62 +214,16 @@ export const DAILY_CALM_SESSION: ConstructionAudioSession = {
 };
 
 // ==========================================
-// 4. SLEEPCASTS, WIND-DOWN ROUTINES & SLEEP STORIES
-// The strongest sleep library
+// 4. SLEEP STORIES & WIND-DOWN ROUTINES
+// Acoustic sleep and bedtime sanctuary
 // ==========================================
 export const SLEEP_LIBRARY: ConstructionAudioSession[] = [
-  // Sleepcasts
-  {
-    id: 'sleepcast-kyoto-rain',
-    title: 'Sleepcast: Rain on Kyoto Bamboo Groves',
-    subtitle: 'Ambient descriptive room journey · 45 min',
-    category: 'sleepcast',
-    teacher: 'Arthur Pendelton',
-    teacherRole: 'Sleepcast Narrator',
-    durationFormatted: '45:00',
-    durationSeconds: 2700,
-    description: 'Step into a tranquil wooden pavilion nestled in the Arashiyama bamboo forest as gentle nocturnal rain patters softly against slate roof tiles.',
-    keyTakeaway: 'Surrender all forward momentum into the rhythmic cadence of rainfall.',
-    tags: ['Sleepcast', 'Rain', 'Nature', 'Ambient Room'],
-    audioFileStatus: 'in_production',
-    expectedAssetPath: 'public/audio/sleep/kyoto_rain.mp3',
-  },
-  {
-    id: 'sleepcast-alpine-train',
-    title: 'Sleepcast: Midnight Sleeper Train Through the Swiss Alps',
-    subtitle: 'Rhythmic rail motion & snowy vistas',
-    category: 'sleepcast',
-    teacher: 'Clara Moreau',
-    teacherRole: 'Sleepcast Narrator',
-    durationFormatted: '50:00',
-    durationSeconds: 3000,
-    description: 'Listen to the soothing rhythmic clatter of carriage wheels over rail tracks as you gaze out at moonlit pine valleys and snow-draped chalets.',
-    keyTakeaway: 'Let the rhythm of the journey rock your waking thoughts into slumber.',
-    tags: ['Sleepcast', 'Train', 'Snow', 'Rhythmic'],
-    audioFileStatus: 'in_production',
-    expectedAssetPath: 'public/audio/sleep/alpine_train.mp3',
-  },
-  {
-    id: 'sleepcast-desert-observatory',
-    title: 'Sleepcast: The Starlit Atacama Desert Observatory',
-    subtitle: 'Infinite cosmic quietude',
-    category: 'sleepcast',
-    teacher: 'Gabriel Thorne',
-    teacherRole: 'Sleepcast Narrator',
-    durationFormatted: '45:00',
-    durationSeconds: 2700,
-    description: 'Under the clearest, darkest skies on Earth, gentle whispers describe the Milky Way arching silently over ancient terracotta sands.',
-    keyTakeaway: 'Feel how vast the universe is, and how safe it is to let go.',
-    tags: ['Sleepcast', 'Cosmos', 'Stars', 'Deep Sleep'],
-    audioFileStatus: 'in_production',
-    expectedAssetPath: 'public/audio/sleep/desert_observatory.mp3',
-  },
   // Wind-down Routines
   {
     id: 'winddown-somatic-unwind',
     title: 'Wind-Down: Deep Somatic Body Melt',
     subtitle: 'Bedtime progressive neural down-regulation',
-    category: 'sleepcast',
+    category: 'sleep_story',
     teacher: 'Dr. Marcus Vance',
     teacherRole: 'Neuro-Somatic Clinician',
     durationFormatted: '16:00',
@@ -333,17 +287,17 @@ export const SLEEP_LIBRARY: ConstructionAudioSession[] = [
 // ==========================================
 export const BREADTH_COLLECTION: ConstructionAudioSession[] = [
   {
-    id: 'soundscape-theta-waves',
-    title: '432Hz Stillness & Theta Deep Wave Resonance',
-    subtitle: 'Binaural frequency for neural coherence',
+    id: 'soundscape-ocean-tides',
+    title: 'Deep Ocean Tides & Coastal Rain',
+    subtitle: 'Natural pink noise acoustic sanctuary',
     category: 'soundscape',
     teacher: 'Human 2.0 Sound Labs',
     durationFormatted: '60:00',
     durationSeconds: 3600,
-    description: 'Scientifically tuned harmonic frequency designed to entrain brainwaves into relaxed theta states (4–8 Hz) for creativity and calm.',
-    tags: ['Soundscape', '432Hz', 'Binaural', 'Theta'],
+    description: 'Acoustic recordings of gentle rolling surf and soft coastal rain designed to quiet mental chatter and encourage effortless nervous system relaxation.',
+    tags: ['Soundscape', 'Ocean', 'Rain', 'Nature'],
     audioFileStatus: 'in_production',
-    expectedAssetPath: 'public/audio/soundscapes/theta_432hz.mp3',
+    expectedAssetPath: 'public/audio/soundscapes/ocean_tides.mp3',
   },
   {
     id: 'soundscape-tibetan-bowls',
@@ -390,21 +344,6 @@ export const BREADTH_COLLECTION: ConstructionAudioSession[] = [
 // 6. MASTERCLASSES FROM SUBJECT EXPERTS
 // ==========================================
 export const MASTERCLASSES: ConstructionAudioSession[] = [
-  {
-    id: 'masterclass-sleep-science',
-    title: 'The Neurobiology of Deep Rest & Circadian Health',
-    subtitle: '4-Part Masterclass in Sleep Architecture & Circadian Rest',
-    category: 'masterclass',
-    teacher: 'Clinical Sleep Research Faculty',
-    teacherRole: 'Neuroscience & Sleep Medicine Research',
-    durationFormatted: '65:00',
-    durationSeconds: 3900,
-    description: 'Evidence-based masterclass decoding the architecture of REM vs Deep NREM sleep, caffeine half-lives, light hygiene, and restorative brain cleanses.',
-    keyTakeaway: 'Sleep is the single most effective thing we can do to reset our brain and body health each day.',
-    tags: ['Masterclass', 'Sleep Science', 'Neuroscience', 'Expert'],
-    audioFileStatus: 'in_production',
-    expectedAssetPath: 'public/audio/masterclasses/sleep_science.mp3',
-  },
   {
     id: 'masterclass-anxiety-habit',
     title: 'Unwinding Real-Life Anxiety: Breaking the Habit Loop',
@@ -633,7 +572,7 @@ export const LIVE_SESSIONS: LiveSession[] = [
   },
   {
     id: 'live-sleep-deep-rest',
-    title: 'Bedtime Deep Sleepcast & Sound Induction',
+    title: 'Bedtime Somatic Wind-Down & Sound Induction',
     teacher: 'Dr. Marcus Vance',
     teacherRole: 'Neuro-Somatic Clinician',
     tradition: 'Sleep & Sound',
@@ -742,9 +681,9 @@ export const EBB_MOOD_RESPONSES: EbbMoodOption[] = [
     label: 'Can’t Sleep',
     feeling: 'I am lying in bed, exhausted, but my brain refuses to power down.',
     reflection: 'Sleep is not something you force; it is an environment you allow. Let’s transfer the burden of thinking onto gentle sound.',
-    recommendationTitle: 'Sleepcast: Rain on Kyoto Bamboo Groves',
+    recommendationTitle: 'Wind-Down: Deep Somatic Body Melt',
     recommendedSession: SLEEP_LIBRARY[0],
-    quickActionText: 'Start Sleepcast (45m) →',
+    quickActionText: 'Start Somatic Melt (16m) →',
   },
   {
     id: 'angry',

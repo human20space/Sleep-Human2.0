@@ -302,16 +302,16 @@ describe('Feature 6 Boundaries: Custom Install Experience', () => {
 // FEATURE 7 BOUNDARIES: Curated Sleep Catalog
 // ============================================================================
 describe('Feature 7 Boundaries: Curated Sleep Catalog', () => {
-  test('F7_B1: catalog with fewer than 12 tracks fails validation boundary', () => {
-    const subCatalog = REFERENCE_SLEEP_CATALOG.slice(0, 11);
+  test('F7_B1: catalog with fewer than 8 tracks fails validation boundary', () => {
+    const subCatalog = REFERENCE_SLEEP_CATALOG.slice(0, 7);
     const res = validateSleepCatalogSpec(subCatalog);
     assert.equal(res.valid, false);
-    assert.ok(res.errors.some(e => e.includes('between 12 and 20')));
+    assert.ok(res.errors.some(e => e.includes('between 8 and 12')));
   });
 
-  test('F7_B2: catalog with more than 20 tracks fails validation boundary', () => {
+  test('F7_B2: catalog with more than 12 tracks fails validation boundary', () => {
     const overCatalog: SleepTrackSpec[] = [...REFERENCE_SLEEP_CATALOG];
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 5; i++) {
       overCatalog.push({ ...REFERENCE_SLEEP_CATALOG[0], id: `extra-${i}` });
     }
     const res = validateSleepCatalogSpec(overCatalog);
@@ -367,13 +367,13 @@ describe('Feature 8 Boundaries: Frictionless Free Tier', () => {
     const switchTrack = (newId: string) => {
       currentPlayingId = newId;
     };
-    switchTrack('sleep-free-2');
-    assert.equal(currentPlayingId, 'sleep-free-2');
+    switchTrack('sleep-free-3');
+    assert.equal(currentPlayingId, 'sleep-free-3');
   });
 
   test('F8_B4: free track with missing audioUrl falls back to procedural synthesis', () => {
-    const track = REFERENCE_SLEEP_CATALOG[1]; // 432Hz procedural
-    assert.equal(track.audioEngineType, 'solfeggio_432');
+    const track = REFERENCE_SLEEP_CATALOG[1]; // Midnight Ocean Rain procedural
+    assert.equal(track.audioEngineType, 'ocean_rain');
     assert.equal(track.audioUrl, undefined);
   });
 
@@ -412,13 +412,13 @@ describe('Feature 9 Boundaries: Single Sovereign Paid Plan', () => {
     assert.equal(isSovereignNormalized, true);
   });
 
-  test('F9_B4: downgrade / revocation simulation locks all 12 premium tracks immediately', () => {
+  test('F9_B4: downgrade / revocation simulation locks all 6 premium tracks immediately', () => {
     const vault = new MockLocalStorageVault();
     vault.setSovereign(true);
     assert.equal(vault.isSovereign(), true);
     vault.setSovereign(false);
     const lockedCount = REFERENCE_SLEEP_CATALOG.filter(t => t.isPremium && !vault.isSovereign()).length;
-    assert.equal(lockedCount, 12);
+    assert.equal(lockedCount, 6);
   });
 
   test('F9_B5: sovereign status query when vault throws exception defaults safely to false', () => {

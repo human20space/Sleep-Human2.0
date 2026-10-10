@@ -199,7 +199,7 @@ export const StakeholderPreviewSection: React.FC<StakeholderPreviewSectionProps>
               Sleep Library
             </span>
             <h4 className="text-xs font-semibold text-[#17495e] dark:text-[#f1ede6] truncate leading-tight">
-              Sleepcasts & Stories
+              Sleep Stories & Sanctuary
             </h4>
           </div>
         </motion.div>

@@ -299,18 +299,18 @@ describe('Feature 6: Custom Install Experience', () => {
 describe('Feature 7: Curated Sleep Catalog (12-20 tracks)', () => {
   const catalog = REFERENCE_SLEEP_CATALOG;
 
-  test('F7.1: sleep catalog track count is between 12 and 20 (specifically 16)', () => {
-    assert.ok(catalog.length >= 12 && catalog.length <= 20);
-    assert.equal(catalog.length, 16);
+  test('F7.1: sleep catalog track count is between 8 and 12 (specifically 9)', () => {
+    assert.ok(catalog.length >= 8 && catalog.length <= 12);
+    assert.equal(catalog.length, 9);
   });
 
-  test('F7.2: catalog covers all 5 required categories', () => {
+  test('F7.2: catalog covers all 3 required categories (soundscape, sos, body_scan)', () => {
     const categories = new Set(catalog.map(t => t.category));
-    assert.ok(categories.has('sleepcast'));
-    assert.ok(categories.has('solfeggio'));
     assert.ok(categories.has('soundscape'));
     assert.ok(categories.has('sos'));
     assert.ok(categories.has('body_scan'));
+    assert.ok(!categories.has('solfeggio'));
+    assert.ok(!categories.has('sleepcast'));
   });
 
   test('F7.3: all catalog tracks have positive valid durations (>= 60s)', () => {
@@ -326,8 +326,7 @@ describe('Feature 7: Curated Sleep Catalog (12-20 tracks)', () => {
 
   test('F7.5: procedural audio engine types mapped across catalog', () => {
     const proceduralTracks = catalog.filter(t => t.audioEngineType);
-    assert.ok(proceduralTracks.some(t => t.audioEngineType === 'solfeggio_432'));
-    assert.ok(proceduralTracks.some(t => t.audioEngineType === 'solfeggio_528'));
+    assert.ok(proceduralTracks.some(t => t.audioEngineType === 'bell_sound'));
     assert.ok(proceduralTracks.some(t => t.audioEngineType === 'ocean_rain'));
     assert.ok(proceduralTracks.some(t => t.audioEngineType === 'sos_reset'));
   });
@@ -340,8 +339,8 @@ describe('Feature 8: Frictionless Free Tier (Zero Login)', () => {
   const catalog = REFERENCE_SLEEP_CATALOG;
   const freeTracks = catalog.filter(t => !t.isPremium);
 
-  test('F8.1: free tier contains exactly 4 sleep recordings', () => {
-    assert.equal(freeTracks.length, 4);
+  test('F8.1: free tier contains exactly 3 sleep recordings', () => {
+    assert.equal(freeTracks.length, 3);
   });
 
   test('F8.2: zero-login playback requires no auth token, userId, or login barrier', () => {
@@ -404,7 +403,7 @@ describe('Feature 9: Single Sovereign Paid Plan Simulation', () => {
     assert.equal(vault.isSovereign(), true);
   });
 
-  test('F9.2: sovereign unlock opens all 12 premium sleep catalog tracks', () => {
+  test('F9.2: sovereign unlock opens all 6 premium sleep catalog tracks', () => {
     const vault = new MockLocalStorageVault();
     vault.setSovereign(true);
     const catalog = REFERENCE_SLEEP_CATALOG;

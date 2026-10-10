@@ -1,7 +1,7 @@
 import type { SleepTrack } from '../types';
 
 export const SLEEP_TRACKS: SleepTrack[] = [
-  // 4 Free Tracks (Playable immediately with zero login)
+  // 3 Free Tracks (Playable immediately with zero login)
   {
     id: 'sleep-free-1',
     title: 'Sacred Temple Bell',
@@ -12,17 +12,6 @@ export const SLEEP_TRACKS: SleepTrack[] = [
     audioEngineType: 'bell_sound',
     tags: ['Bell', 'Temple', 'Free', 'Stillness'],
     description: 'Resonant Tibetan temple bell strikes with warm decaying harmonics to quiet nocturnal thoughts.',
-  },
-  {
-    id: 'sleep-free-2',
-    title: '432Hz Deep Theta Drift',
-    subtitle: 'Harmonic natural tuning for peaceful sleep induction',
-    category: 'solfeggio',
-    durationSeconds: 1800,
-    isPremium: false,
-    audioEngineType: 'solfeggio_432',
-    tags: ['432Hz', 'Solfeggio', 'Free', 'Soundscape'],
-    description: 'Pure resonant tones tuned to organic harmonic ratios for calming the vagus nerve.',
   },
   {
     id: 'sleep-free-3',
@@ -47,39 +36,7 @@ export const SLEEP_TRACKS: SleepTrack[] = [
     description: 'A fast-acting somatic pacing rhythm that halts nocturnal rumination spirals.',
   },
 
-  // 12 Sovereign Premium Tracks
-  {
-    id: 'sleep-prem-1',
-    title: '528Hz Miracle Cell Repair',
-    subtitle: 'DNA restoration frequency with warm cello pad',
-    category: 'solfeggio',
-    durationSeconds: 2400,
-    isPremium: true,
-    audioEngineType: 'solfeggio_528',
-    tags: ['528Hz', 'Sovereign', 'Transformation', 'Pad'],
-    description: 'Solfeggio resonance facilitating cellular decompression and deep nocturnal repair.',
-  },
-  {
-    id: 'sleep-prem-2',
-    title: 'Delta 2Hz Deep Sleepwave',
-    subtitle: 'Sub-audible binaural beat for stage 4 restorative sleep',
-    category: 'solfeggio',
-    durationSeconds: 2700,
-    isPremium: true,
-    audioEngineType: 'delta_binaural',
-    tags: ['Delta', 'Binaural', 'Sovereign', '2Hz'],
-    description: 'Entrains brainwave rhythms into profound slow-wave regenerative sleep.',
-  },
-  {
-    id: 'sleep-prem-3',
-    title: 'Clinical Sleep Architecture & Circadian Descent',
-    subtitle: 'Guided neurological wind-down and sleep spindle induction',
-    category: 'sleepcast',
-    durationSeconds: 2100,
-    isPremium: true,
-    tags: ['Science', 'Guided', 'Sovereign', 'Sleepcast'],
-    description: 'Evidence-based cognitive descent into restorative non-REM slumber.',
-  },
+  // 6 Sovereign Premium Tracks
   {
     id: 'sleep-prem-4',
     title: 'Himalayan Singing Bowls Drone',
@@ -122,27 +79,6 @@ export const SLEEP_TRACKS: SleepTrack[] = [
     description: 'Tranquil Japanese forest acoustic sanctuary captured during late night mist.',
   },
   {
-    id: 'sleep-prem-8',
-    title: 'Theta-Delta Dream Bridge',
-    subtitle: 'Hypnagogic transition tone generator for lucid dreamers',
-    category: 'solfeggio',
-    durationSeconds: 3000,
-    isPremium: true,
-    audioEngineType: 'delta_binaural',
-    tags: ['Dreaming', 'Theta', 'Delta', 'Sovereign'],
-    description: 'Gliding binaural modulation easing the mind across the hypnagogic threshold.',
-  },
-  {
-    id: 'sleep-prem-9',
-    title: 'Unwinding the Modern Nervous System',
-    subtitle: 'Vagal nerve stimulation storytelling with Vinay Kapoor',
-    category: 'sleepcast',
-    durationSeconds: 1600,
-    isPremium: true,
-    tags: ['Nervous System', 'Sleepcast', 'Sovereign'],
-    description: 'Deactivating autonomic sympathetic overdrive with gentle mindful imagery.',
-  },
-  {
     id: 'sleep-prem-10',
     title: 'Full Body Somatic Melt',
     subtitle: 'Heavy gravity relaxation technique for insomnia',
@@ -159,18 +95,7 @@ export const SLEEP_TRACKS: SleepTrack[] = [
     category: 'soundscape',
     durationSeconds: 2400,
     isPremium: true,
-    audioEngineType: 'solfeggio_432',
     tags: ['Synth Pad', 'Ambient', 'Sovereign'],
     description: 'Low-frequency warm atmospheric pad grounding anxious minds.',
-  },
-  {
-    id: 'sleep-prem-12',
-    title: 'Stardust Reverie Sleepcast',
-    subtitle: 'Cosmic voyage through distant quiet constellations',
-    category: 'sleepcast',
-    durationSeconds: 1950,
-    isPremium: true,
-    tags: ['Cosmic', 'Stardust', 'Sleepcast', 'Sovereign'],
-    description: 'Perspective-shifting journey through calm deep space silence.',
   },
 ];

@@ -1,9 +1,14 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import type { Screen, UserInsight, AwarenessMoment, MirrorSession, ConstructionAudioSession } from './types';
 import { INITIAL_USER_INSIGHTS } from './data/bookContent';
 import { AudioProvider, useAudio } from './context/AudioContext';
 import { PhoneFrame } from './components/PhoneFrame';
+
+// Lazy-loaded Admin Shell (Isolated in separate chunk)
+const AdminApp = React.lazy(() => import('./admin/AdminApp'));
+const AdminLogin = React.lazy(() => import('./admin/AdminLogin'));
+import { syncAdminRobotsMeta } from './admin/adminSeo';
 import { SplashScreen } from './components/SplashScreen';
 import { HomeScreen } from './components/HomeScreen';
 import { PauseScreen } from './components/PauseScreen';
@@ -507,6 +512,78 @@ export function AppContent() {
 }
 
 export function App() {
+  const [pathname, setPathname] = useState<string>(() => {
+    if (typeof window !== 'undefined') {
+      return window.location.pathname;
+    }
+    return '/';
+  });
+
+  const normalizedPath = pathname.replace(/\/+$/, '') || '/';
+
+  useEffect(() => {
+    const handlePopState = () => {
+      setPathname(window.location.pathname);
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
+  // Synchronize dynamic SEO robots meta tag for admin pages
+  useEffect(() => {
+    syncAdminRobotsMeta(normalizedPath.startsWith('/admin'));
+  }, [normalizedPath]);
+
+  const navigateTo = (newPath: string) => {
+    if (typeof window !== 'undefined') {
+      window.history.pushState({}, '', newPath);
+      setPathname(newPath);
+    }
+  };
+
+  // Route: /admin/login
+  if (normalizedPath === '/admin/login') {
+    return (
+      <Suspense
+        fallback={
+          <div className="min-h-screen bg-[#F7F3EC] flex items-center justify-center p-6 text-[#1F2A28]">
+            <div className="text-xs text-[#5A6663] flex items-center gap-2 font-mono">
+              <span className="w-2 h-2 rounded-full bg-[#1F5F78] animate-ping" />
+              <span>Loading admin login...</span>
+            </div>
+          </div>
+        }
+      >
+        <AdminLogin
+          onLoginSuccess={() => navigateTo('/admin')}
+          onNavigateHome={() => navigateTo('/')}
+        />
+      </Suspense>
+    );
+  }
+
+  // Route: /admin (or /admin/*)
+  if (normalizedPath === '/admin' || normalizedPath.startsWith('/admin/')) {
+    return (
+      <Suspense
+        fallback={
+          <div className="min-h-screen bg-[#F7F3EC] flex items-center justify-center p-6 text-[#1F2A28]">
+            <div className="text-xs text-[#5A6663] flex items-center gap-2 font-mono">
+              <span className="w-2 h-2 rounded-full bg-[#1F5F78] animate-ping" />
+              <span>Loading admin console...</span>
+            </div>
+          </div>
+        }
+      >
+        <AdminApp
+          onNavigateHome={() => navigateTo('/')}
+          onNavigateLogin={() => navigateTo('/admin/login')}
+        />
+      </Suspense>
+    );
+  }
+
+  // Consumer Application (wrapped in AudioProvider and inside PhoneFrame)
   return (
     <AudioProvider>
       <AppContent />

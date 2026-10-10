@@ -261,7 +261,7 @@ export const VaultScreen: React.FC<VaultScreenProps> = ({
 
           {continueListening.length === 0 ? (
             <div className="bg-white dark:bg-[#14232c] p-4 rounded-2xl border border-[#e6dccb] dark:border-[#1d2e38] text-center text-xs text-[#838c89] dark:text-[#98abb6] transition-colors">
-              No listening history yet. Start a sleepcast or audiobook chapter to track progress here.
+              No listening history yet. Start a sleep track or audiobook chapter to track progress here.
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
