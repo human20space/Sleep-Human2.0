@@ -248,6 +248,35 @@ export const VaultScreen: React.FC<VaultScreenProps> = ({
           </div>
         )}
 
+        {/* 1.5. AUTHOR PROFILE IN VAULT */}
+        <div
+          onClick={() => {
+            audioEngine.playBreathChime('inhale');
+            onNavigate?.('author_intro');
+          }}
+          className="bg-white dark:bg-[#121e25] p-3.5 rounded-2xl border border-[#e6dccb] dark:border-[#1d2e38] shadow-xs cursor-pointer hover:border-[#17495e]/30 transition-all flex items-center justify-between"
+          role="button"
+          tabIndex={0}
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-full bg-[#17495e] dark:bg-[#1f5f78] text-[#e8b98a] flex items-center justify-center font-serif-title font-bold text-xs shadow-xs shrink-0">
+              VK
+            </div>
+            <div>
+              <span className="text-[9.5px] uppercase font-mono font-bold text-[#8e6724] dark:text-[#e8b98a] block">
+                Author & Creator
+              </span>
+              <h4 className="font-serif-title font-bold text-xs text-[#17495e] dark:text-[#f1ede6]">
+                Vinay Kapoor
+              </h4>
+              <p className="text-[10px] text-[#5a6663] dark:text-[#98abb6]">
+                Human 2.0: Awareness — Future Ready with AI
+              </p>
+            </div>
+          </div>
+          <Sparkles size={15} className="text-[#8e6724] dark:text-[#e8b98a] shrink-0" />
+        </div>
+
         {/* 2. CONTINUE LISTENING SHELF */}
         <div className="space-y-2">
           <div className="flex items-center justify-between px-1">

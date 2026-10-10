@@ -19,13 +19,7 @@ import type { Screen, SleepTrack } from '../types';
 import { SLEEP_TRACKS } from '../data/sleepCatalogData';
 import {
   useSleepContent,
-  useSleepSections,
-  useSectionItems,
   sleepContentService,
-  DEFAULT_SECTIONS,
-  DEFAULT_SECTION_ITEMS,
-  type SleepSection,
-  type SleepSectionItem,
 } from '../services/sleepContentService';
 import { useAudio } from '../context/AudioContext';
 import { audioEngine } from '../utils/audioEngine';
@@ -56,8 +50,6 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   } = useAudio();
 
   const { tracks } = useSleepContent();
-  const { sections } = useSleepSections();
-  const { items: allSectionItems } = useSectionItems();
   const isPremium = typeof window !== 'undefined' && localStorage.getItem('human2_is_premium') === 'true';
 
   const currentTracks = tracks.length > 0 ? tracks : SLEEP_TRACKS;
@@ -66,53 +58,6 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
 
   const heroTrack = currentTracks[0] || SLEEP_TRACKS[0]; // Relaxing Bell
   const sosTrack = currentTracks.find((t) => t.category === 'sos') || currentTracks[2] || SLEEP_TRACKS[2]; // 90s SOS
-
-  const [selectedMeditationFilter, setSelectedMeditationFilter] = React.useState<string>('all');
-
-  const publishedMeditationSections = sections.filter(
-    (s) => s.isPublished !== false && s.sectionType !== 'audiobook'
-  );
-  const activeSections = publishedMeditationSections.length > 0
-    ? publishedMeditationSections
-    : DEFAULT_SECTIONS.filter((s) => s.sectionType === 'meditation');
-
-  const getItemsForSection = (sectionId: string) => {
-    const list = allSectionItems.filter((i) => i.sectionId === sectionId && i.isPublished !== false);
-    if (list.length > 0) return list.sort((a, b) => a.sortOrder - b.sortOrder);
-    return DEFAULT_SECTION_ITEMS.filter((i) => i.sectionId === sectionId && i.isPublished !== false).sort((a, b) => a.sortOrder - b.sortOrder);
-  };
-
-  const handlePlaySectionAudio = (item: SleepSectionItem, section: SleepSection) => {
-    hapticsEngine.trigger('tap');
-    const isLocked = item.access === 'paid' && !isPremium;
-    if (isLocked) {
-      audioEngine.playBreathChime('inhale');
-      onNavigate('subscription');
-      return;
-    }
-
-    const trackFromItem: SleepTrack = {
-      id: item.id,
-      title: item.title,
-      subtitle: item.subtitle || `${section.title} · ${item.access === 'free' ? 'Free Audio' : 'Full Audio'}`,
-      category: 'soundscape',
-      durationSeconds: item.durationSeconds || 600,
-      isPremium: item.access === 'paid',
-      audioEngineType: 'bell_sound',
-      audioUrl: item.audioPath?.startsWith('http') || item.audioPath?.startsWith('/audio') ? item.audioPath : '/audio/sample.mp3',
-      tags: ['meditation', section.slug],
-      description: item.description || '',
-      audioPath: item.audioPath,
-    };
-
-    sleepContentService.recordPlayEvent({ trackId: item.id, platform: 'web' });
-
-    if (currentTrack?.id === item.id) {
-      togglePlay();
-    } else {
-      playSleepTrack(trackFromItem);
-    }
-  };
 
   const handleTrackClick = (track: SleepTrack) => {
     hapticsEngine.trigger('tap');
@@ -147,40 +92,21 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
           </p>
         </div>
 
-        {/* Top Actions: User Profile, Theme Toggle & Sovereign Pill */}
-        <div className="flex items-center gap-1.5">
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => {
-              audioEngine.playBreathChime('inhale');
-              onNavigate('profile');
-            }}
-            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-white dark:bg-[#121e25] border border-[#e6dccb] dark:border-[#1c2c36] shadow-xs text-xs font-semibold text-[#17495e] dark:text-[#e8b98a] cursor-pointer"
-            title="User Profile"
-          >
-            <User size={13} className="text-[#17495e] dark:text-[#e8b98a]" />
-            <span>Profile</span>
-          </motion.button>
-
+        {/* Top Actions: Night Toggle, Unlock All, and User Profile Circle */}
+        <div className="flex items-center gap-2">
           {onToggleDark && (
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={onToggleDark}
-              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-white dark:bg-[#121e25] border border-[#e6dccb] dark:border-[#1c2c36] shadow-xs text-xs font-semibold text-[#17495e] dark:text-[#e8b98a] cursor-pointer"
+              className="w-9 h-9 rounded-full bg-white dark:bg-[#121e25] border border-[#e6dccb] dark:border-[#1c2c36] shadow-xs flex items-center justify-center text-[#17495e] dark:text-[#e8b98a] hover:bg-[#f7f3ec] dark:hover:bg-[#1a2d38] transition-colors cursor-pointer min-h-[44px] min-w-[44px]"
               title={isDark ? 'Daylight Mode' : 'Night Sanctuary'}
+              aria-label={isDark ? 'Daylight Mode' : 'Night Sanctuary'}
             >
               {isDark ? (
-                <>
-                  <Sun size={13} className="text-[#e8b98a]" />
-                  <span>Daylight</span>
-                </>
+                <Sun size={15} className="text-[#e8b98a]" />
               ) : (
-                <>
-                  <Moon size={13} className="text-[#17495e]" />
-                  <span>Night</span>
-                </>
+                <Moon size={15} className="text-[#17495e]" />
               )}
             </motion.button>
           )}
@@ -193,11 +119,27 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
               audioEngine.playBreathChime('inhale');
               onNavigate('subscription');
             }}
-            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-gradient-to-r from-[#d9a44a]/20 to-[#e8b98a]/30 border border-[#d9a44a]/60 shadow-xs text-xs font-bold text-[#8e6724] dark:text-[#e8b98a] cursor-pointer"
+            className="h-9 px-3.5 rounded-full bg-gradient-to-r from-[#d9a44a]/20 to-[#e8b98a]/30 border border-[#d9a44a]/60 shadow-xs flex items-center gap-1.5 text-xs font-bold text-[#8e6724] dark:text-[#e8b98a] cursor-pointer min-h-[44px]"
             title="Sovereign Membership Status"
+            aria-label="Unlock All Sovereign Membership"
           >
-            <Crown size={13} className="text-[#8e6724] dark:text-[#e8b98a] fill-current" />
+            <Crown size={14} className="text-[#8e6724] dark:text-[#e8b98a] fill-current" />
             <span>{isPremium ? 'Sovereign' : 'Unlock All'}</span>
+          </motion.button>
+
+          {/* User Profile Button: Small Circle in Top Right Corner Next to Unlock All */}
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => {
+              audioEngine.playBreathChime('inhale');
+              onNavigate('profile');
+            }}
+            className="w-9 h-9 rounded-full bg-white dark:bg-[#121e25] border border-[#e6dccb] dark:border-[#1c2c36] shadow-xs flex items-center justify-center text-[#17495e] dark:text-[#e8b98a] hover:bg-[#f7f3ec] dark:hover:bg-[#1a2d38] transition-colors cursor-pointer min-h-[44px] min-w-[44px]"
+            title="User Profile"
+            aria-label="User Profile"
+          >
+            <User size={15} className="text-[#17495e] dark:text-[#e8b98a]" />
           </motion.button>
         </div>
       </div>
@@ -248,8 +190,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
             whileTap={{ scale: 0.98 }}
             onClick={() => {
               audioEngine.playBreathChime('inhale');
-              const el = document.getElementById('meditation-collection-view');
-              if (el) el.scrollIntoView({ behavior: 'smooth' });
+              onNavigate('meditation_hub');
             }}
             className="aspect-square min-h-[48px] p-3.5 sm:p-4 rounded-3xl bg-gradient-to-br from-[#1e4a3e] via-[#245a4c] to-[#1a4237] text-white shadow-xs border border-[#245a4c]/60 cursor-pointer flex flex-col justify-between relative overflow-hidden group"
           >
@@ -270,12 +211,12 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                 Meditation
               </h3>
               <p className="text-[9.5px] text-white/75 line-clamp-1 mt-0.5">
-                Sleep & Women
+                Explore All Series
               </p>
             </div>
 
             <div className="flex items-center justify-between pt-1 border-t border-white/15 text-[9.5px] text-[#91e5c3] font-semibold">
-              <span>Browse 30+</span>
+              <span>Browse Series</span>
               <ChevronRight size={13} className="group-hover:translate-x-0.5 transition-transform" />
             </div>
           </motion.div>
@@ -336,189 +277,6 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
             </motion.button>
           </div>
         </motion.div>
-
-        {/* 3.5. MEDITATION SECTIONS (SLEEP MEDITATION & SERIES WITH FREE / PAID AUDIOS) */}
-        <div id="meditation-collection-view" className="space-y-3 pt-1">
-          <div className="flex items-center justify-between px-1">
-            <div className="flex items-center gap-1.5">
-              <Sparkles size={14} className="text-[#17495e] dark:text-[#e8b98a]" />
-              <span className="text-xs font-bold font-serif-title text-[#17495e] dark:text-[#e8b98a]">
-                Meditation Collections
-              </span>
-            </div>
-            <span className="text-[10px] text-[#717e7a] dark:text-[#90a2ad]">
-              Sleep · Women · Short Practices
-            </span>
-          </div>
-
-          {/* Filter Tabs for Meditation: All, Sleep Meditation, Meditation for Women, Short Meditations */}
-          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar">
-            {[
-              { id: 'all', label: 'All Series' },
-              { id: 'sleep-meditation', label: 'Sleep Meditation (19)' },
-              { id: 'meditation-women', label: 'Meditation for Women (8)' },
-              { id: 'short-meditations', label: 'Short Meditations (3)' },
-            ].map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setSelectedMeditationFilter(tab.id)}
-                className={`px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
-                  selectedMeditationFilter === tab.id
-                    ? 'bg-[#17495e] dark:bg-[#e8b98a] text-white dark:text-[#0b1317] shadow-xs'
-                    : 'bg-white dark:bg-[#121e25] text-[#5a6663] dark:text-[#98abb6] border border-[#e6dccb] dark:border-[#1d2e38] hover:bg-[#f7f3ec]'
-                }`}
-              >
-                {tab.label}
-              </button>
-            ))}
-          </div>
-
-          {/* Render active meditation sections: activeSections.map */}
-          {activeSections
-            .filter((sec) => selectedMeditationFilter === 'all' || sec.slug === selectedMeditationFilter)
-            .map((sec) => {
-          const items = getItemsForSection(sec.id);
-          const freeItemsCount = items.filter((i) => i.access === 'free').length;
-          const paidItemsCount = items.filter((i) => i.access === 'paid').length;
-
-          return (
-            <div
-              key={sec.id}
-              className="bg-white dark:bg-[#121e25] p-4.5 rounded-3xl border border-[#e6dccb] dark:border-[#1d2e38] shadow-xs space-y-3.5 transition-all"
-            >
-              {/* Section Header */}
-              <div className="flex items-start justify-between gap-3">
-                <div className="min-w-0">
-                  <div className="flex items-center gap-2 mb-1 flex-wrap">
-                    <span className="text-[9.5px] uppercase font-mono font-bold tracking-widest text-[#17495e] dark:text-[#e8b98a] bg-[#17495e]/10 dark:bg-[#e8b98a]/15 px-2.5 py-0.5 rounded-full flex items-center gap-1">
-                      <Sparkles size={11} className="text-[#17495e] dark:text-[#e8b98a]" />
-                      <span>{sec.badge || 'Meditation Series'}</span>
-                    </span>
-                    <span className="text-[9.5px] font-mono font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-950/60 px-2 py-0.5 rounded-full">
-                      {freeItemsCount} Free Audios
-                    </span>
-                  </div>
-                  <h3 className="font-serif-title text-base font-bold text-[#17495e] dark:text-[#f1ede6] leading-tight">
-                    {sec.title}
-                  </h3>
-                  {sec.subtitle && (
-                    <p className="text-[11px] text-[#5a6663] dark:text-[#98abb6] mt-0.5 line-clamp-2">
-                      {sec.subtitle}
-                    </p>
-                  )}
-                </div>
-
-                {/* Pricing Badge */}
-                <div className="shrink-0 text-right">
-                  <span className="inline-block px-3 py-1 rounded-full bg-gradient-to-r from-[#d9a44a]/20 to-[#e8b98a]/30 border border-[#d9a44a]/60 text-xs font-bold text-[#8e6724] dark:text-[#e8b98a] font-mono shadow-2xs">
-                    {sec.priceDisplay || sec.priceAed || 'AED 49'}
-                  </span>
-                  <span className="block text-[9px] text-[#838c89] dark:text-[#7f94a0] font-mono mt-0.5">
-                    {sec.pricingType === 'standalone' ? 'Standalone Series' : 'Lifetime Access'}
-                  </span>
-                </div>
-              </div>
-
-              {/* Audios in this section */}
-              <div className="space-y-2 pt-1">
-                {items.map((item, idx) => {
-                  const isCurrentItemPlaying = currentTrack?.id === item.id && isPlaying;
-                  const isLocked = item.access === 'paid' && !isPremium;
-
-                  return (
-                    <motion.div
-                      key={item.id}
-                      whileHover={{ scale: 1.01 }}
-                      whileTap={{ scale: 0.99 }}
-                      onClick={() => handlePlaySectionAudio(item, sec)}
-                      className={`p-3 rounded-2xl border transition-all cursor-pointer flex items-center justify-between gap-3 ${
-                        isCurrentItemPlaying
-                          ? 'bg-[#17495e]/10 dark:bg-[#e8b98a]/15 border-[#17495e] dark:border-[#e8b98a]'
-                          : 'bg-[#fbf9f5] dark:bg-[#16252e] border-[#e6dccb]/70 dark:border-[#1e323d] hover:border-[#17495e]/40 dark:hover:border-[#e8b98a]/40'
-                      }`}
-                    >
-                      {/* Left: Play Icon & Number */}
-                      <div className="flex items-center gap-3 min-w-0">
-                        <div
-                          className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 transition-colors ${
-                            isCurrentItemPlaying
-                              ? 'bg-[#17495e] dark:bg-[#e8b98a] text-white dark:text-[#0b1317]'
-                              : item.access === 'free'
-                              ? 'bg-emerald-100 dark:bg-emerald-950/70 text-emerald-800 dark:text-emerald-300'
-                              : 'bg-amber-100 dark:bg-amber-950/70 text-amber-800 dark:text-amber-300'
-                          }`}
-                        >
-                          {isCurrentItemPlaying ? (
-                            <Pause size={14} className="fill-current" />
-                          ) : isLocked ? (
-                            <Lock size={14} />
-                          ) : (
-                            <Play size={14} className="fill-current ml-0.5" />
-                          )}
-                        </div>
-
-                        <div className="min-w-0">
-                          <div className="flex items-center gap-2">
-                            <span className="text-[10px] font-mono text-[#838c89] shrink-0">
-                              #{idx + 1}
-                            </span>
-                            <h4 className="text-xs font-bold text-[#17495e] dark:text-[#f1ede6] truncate leading-tight">
-                              {item.title}
-                            </h4>
-                          </div>
-                          {item.subtitle && (
-                            <p className="text-[10px] text-[#5a6663] dark:text-[#98abb6] truncate mt-0.5">
-                              {item.subtitle}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* Right: Badge & Duration */}
-                      <div className="flex items-center gap-2 shrink-0">
-                        <span className="text-[10px] font-mono text-[#838c89] dark:text-[#8aa0ad]">
-                          {item.durationFormatted || `${Math.round(item.durationSeconds / 60)}m`}
-                        </span>
-
-                        {item.access === 'free' ? (
-                          <span className="px-2 py-0.5 rounded-full text-[9px] font-bold font-mono tracking-wider bg-emerald-100 dark:bg-emerald-950/70 text-emerald-800 dark:text-emerald-300 border border-emerald-300/40">
-                            FREE AUDIO
-                          </span>
-                        ) : (
-                          <span className="px-2 py-0.5 rounded-full text-[9px] font-bold font-mono tracking-wider bg-gradient-to-r from-[#d9a44a]/25 to-[#e8b98a]/35 text-[#8e6724] dark:text-[#e8b98a] border border-[#d9a44a]/50 flex items-center gap-1">
-                            <Lock size={9} />
-                            <span>{isPremium ? 'UNLOCKED' : `PAID · ${sec.priceDisplay || 'AED 49'}`}</span>
-                          </span>
-                        )}
-                      </div>
-                    </motion.div>
-                  );
-                })}
-              </div>
-
-              {/* Series Unlock Banner */}
-              {!isPremium && paidItemsCount > 0 && (
-                <div className="pt-1 flex items-center justify-between text-xs px-1">
-                  <span className="text-[10.5px] text-[#717e7a] dark:text-[#8ea0ac]">
-                    {paidItemsCount} advanced meditations locked
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      audioEngine.playBreathChime('inhale');
-                      onNavigate('subscription');
-                    }}
-                    className="text-[11px] font-bold text-[#17495e] dark:text-[#e8b98a] hover:underline flex items-center gap-1 cursor-pointer"
-                  >
-                    <span>Unlock Series ({sec.priceDisplay})</span>
-                    <ChevronRight size={12} />
-                  </button>
-                </div>
-              )}
-            </div>
-          );
-        })}
-        </div>
 
         {/* 3. ACUTE 90-SECOND RACING MIND RESET (CENTER SOS) */}
         <motion.div
@@ -754,27 +512,56 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
             })}
           </div>
         </div>
-      </div>
 
-      {/* BOTTOM RIGHT: AUTHOR PROFILE BUTTON */}
-      <motion.button
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-        onClick={() => {
-          audioEngine.playBreathChime('inhale');
-          onNavigate('author_intro');
-        }}
-        className="fixed bottom-20 right-4 z-40 flex items-center gap-2 px-3 py-2 rounded-full bg-[#17495e] dark:bg-[#1f5f78] text-[#e8b98a] border border-[#e8b98a]/50 shadow-xl cursor-pointer backdrop-blur-md transition-all hover:brightness-110"
-        title="Author Vinay Kapoor Profile"
-      >
-        <div className="w-5.5 h-5.5 rounded-full bg-[#e8b98a] text-[#070b0e] font-serif-title font-bold text-[9.5px] flex items-center justify-center shadow-xs">
-          VK
+        {/* 8. PERSONAL AWARENESS VAULT & AUTHOR SANCTUARY */}
+        <div className="pt-2 pb-2">
+          <div className="bg-white dark:bg-[#121e25] p-4.5 rounded-3xl border border-[#e6dccb] dark:border-[#1d2e38] shadow-xs flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+            {/* Vault Entry */}
+            <button
+              type="button"
+              onClick={() => {
+                audioEngine.playBreathChime('inhale');
+                onNavigate('vault');
+              }}
+              className="flex items-center gap-3 text-left cursor-pointer p-2 rounded-2xl hover:bg-[#f7f3ec] dark:hover:bg-[#182730] transition-colors flex-1 min-h-[44px]"
+              title="Open Personal Awareness Vault"
+              aria-label="Open Personal Awareness Vault"
+            >
+              <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-[#17495e]/15 to-[#d9a44a]/20 text-[#17495e] dark:text-[#e8b98a] flex items-center justify-center shrink-0">
+                <Bookmark size={18} />
+              </div>
+              <div>
+                <h4 className="font-serif-title font-bold text-xs text-[#17495e] dark:text-[#f1ede6]">
+                  Personal Awareness Vault
+                </h4>
+                <p className="text-[10.5px] text-[#5a6663] dark:text-[#98abb6]">
+                  Your saved recordings, favorites & offline reflections
+                </p>
+              </div>
+            </button>
+
+            {/* Author Profile Entry Appearing Directly Near the Vault */}
+            <button
+              type="button"
+              onClick={() => {
+                audioEngine.playBreathChime('inhale');
+                onNavigate('author_intro');
+              }}
+              className="flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-2xl bg-gradient-to-r from-[#17495e] to-[#1f5f78] text-[#e8b98a] border border-[#e8b98a]/40 shadow-xs cursor-pointer hover:brightness-110 transition-all shrink-0 min-h-[44px]"
+              title="Author Vinay Kapoor Profile"
+              aria-label="Author Vinay Kapoor Profile"
+            >
+              <div className="w-6 h-6 rounded-full bg-[#e8b98a] text-[#070b0e] font-serif-title font-bold text-[10px] flex items-center justify-center shadow-xs">
+                VK
+              </div>
+              <div className="text-left pr-0.5">
+                <span className="text-[11px] font-bold text-white block leading-tight">Author Profile</span>
+                <span className="text-[9px] text-[#e8b98a] block leading-none">Vinay Kapoor</span>
+              </div>
+            </button>
+          </div>
         </div>
-        <div className="text-left pr-0.5">
-          <span className="text-[10.5px] font-bold text-white block leading-tight">Author</span>
-          <span className="text-[8.5px] text-[#e8b98a] block leading-none">Vinay Kapoor</span>
-        </div>
-      </motion.button>
+      </div>
     </div>
   );
 };

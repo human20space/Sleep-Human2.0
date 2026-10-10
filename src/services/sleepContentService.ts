@@ -1759,9 +1759,10 @@ class SleepContentService {
       }
     }
 
-    const sections = includeUnpublished
+    const sections = (includeUnpublished
       ? this.cachedSections
-      : this.cachedSections.filter((s) => s.isPublished !== false);
+      : this.cachedSections.filter((s) => s.isPublished !== false)
+    ).slice().sort((a, b) => a.sortOrder - b.sortOrder);
 
     return sections.map((s) => {
       const items = this.cachedSectionItems.filter((i) => i.sectionId === s.id);
@@ -1874,6 +1875,36 @@ class SleepContentService {
       }
     }
     return true;
+  }
+
+  public async reorderSections(orderedIds: string[]): Promise<void> {
+    orderedIds.forEach((id, index) => {
+      const sec = this.cachedSections.find((s) => s.id === id);
+      if (sec) {
+        sec.sortOrder = index + 1;
+      }
+    });
+
+    this.cachedSections.sort((a, b) => a.sortOrder - b.sortOrder);
+    this.persistLocal('sections');
+    this.notify();
+
+    if (isSupabaseConfigured && supabase) {
+      const client = supabase;
+      try {
+        await Promise.all(
+          orderedIds.map((id, index) => {
+            if (isValidUuid(id)) {
+              return client.from('sleep_sections').update({ sort_order: index + 1 }).eq('id', id);
+            } else {
+              return client.from('sleep_sections').update({ sort_order: index + 1 }).eq('slug', id);
+            }
+          })
+        );
+      } catch (err) {
+        console.warn('[SleepContentService] Failed to persist section reordering to Supabase:', err);
+      }
+    }
   }
 
   // --- SECTION ITEMS CRUD (FREE & PAID AUDIOS) ---
@@ -2152,6 +2183,7 @@ export function useSleepSections() {
     isLoading,
     saveSection: (sec: Partial<SleepSection>) => sleepContentService.saveSection(sec),
     deleteSection: (id: string) => sleepContentService.deleteSection(id),
+    reorderSections: (ids: string[]) => sleepContentService.reorderSections(ids),
     refresh: () => sleepContentService.getSections(true),
   };
 }

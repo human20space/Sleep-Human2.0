@@ -9,6 +9,7 @@ export type Screen =
   | 'human_ai' 
   | 'vault' 
   | 'profile'
+  | 'meditation_hub'
   | 'audio_chapters'
   | 'reader'
   | 'ebb'

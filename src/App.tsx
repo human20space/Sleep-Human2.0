@@ -19,6 +19,7 @@ import { JourneyScreen } from './components/JourneyScreen';
 import { HumanAiScreen } from './components/HumanAiScreen';
 import { VaultScreen } from './components/VaultScreen';
 import { ProfileScreen } from './components/ProfileScreen';
+import { MeditationHubScreen } from './components/MeditationHubScreen';
 import { AudioChaptersScreen } from './components/AudioChaptersScreen';
 import { EbbCompanionScreen } from './components/EbbCompanionScreen';
 import { UnguidedTimerScreen } from './components/UnguidedTimerScreen';
@@ -374,6 +375,22 @@ export function AppContent() {
                 onNavigate={(screen) => setCurrentScreen(screen)}
                 isDark={isDark}
                 onToggleDark={handleToggleDark}
+              />
+            </motion.div>
+          )}
+
+          {currentScreen === 'meditation_hub' && (
+            <motion.div
+              key="meditation_hub"
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -15 }}
+              transition={{ duration: 0.28, ease: 'easeOut' }}
+              className="flex-1 w-full h-full flex flex-col overflow-hidden"
+            >
+              <MeditationHubScreen
+                onBack={() => setCurrentScreen('home')}
+                onNavigate={(screen) => setCurrentScreen(screen)}
               />
             </motion.div>
           )}

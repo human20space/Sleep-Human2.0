@@ -7,6 +7,8 @@ import {
   Trash2,
   ChevronDown,
   ChevronUp,
+  ArrowUp,
+  ArrowDown,
   Music,
   Sparkles,
   Lock,
@@ -53,19 +55,52 @@ export const SectionsView: React.FC = () => {
     return unsub;
   }, []);
 
-  // Filter sections
+  // Filter sections sorted by sortOrder
   const filteredSections = useMemo(() => {
-    return sections.filter((s) => {
-      if (!searchQuery) return true;
-      const q = searchQuery.toLowerCase();
-      return (
-        s.title.toLowerCase().includes(q) ||
-        s.slug.toLowerCase().includes(q) ||
-        s.subtitle?.toLowerCase().includes(q) ||
-        s.priceDisplay?.toLowerCase().includes(q)
-      );
-    });
+    return sections
+      .filter((s) => {
+        if (!searchQuery) return true;
+        const q = searchQuery.toLowerCase();
+        return (
+          s.title.toLowerCase().includes(q) ||
+          s.slug.toLowerCase().includes(q) ||
+          s.subtitle?.toLowerCase().includes(q) ||
+          s.priceDisplay?.toLowerCase().includes(q)
+        );
+      })
+      .slice()
+      .sort((a, b) => a.sortOrder - b.sortOrder);
   }, [sections, searchQuery]);
+
+  const handleMoveSection = async (secId: string, direction: 'up' | 'down', e: React.MouseEvent) => {
+    e.stopPropagation();
+    const sorted = [...sections].sort((a, b) => a.sortOrder - b.sortOrder);
+    const index = sorted.findIndex((s) => s.id === secId);
+    if (index < 0) return;
+    const targetIndex = direction === 'up' ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= sorted.length) return;
+
+    const currentItem = sorted[index];
+    const targetItem = sorted[targetIndex];
+    sorted[index] = targetItem;
+    sorted[targetIndex] = currentItem;
+
+    const orderedIds = sorted.map((s) => s.id);
+    try {
+      await sleepContentService.reorderSections(orderedIds);
+      setToast({
+        id: Date.now().toString(),
+        type: 'success',
+        text: `Section "${currentItem.title}" moved ${direction}.`,
+      });
+    } catch {
+      setToast({
+        id: Date.now().toString(),
+        type: 'error',
+        text: 'Failed to reorder section.',
+      });
+    }
+  };
 
   // Section Handlers
   const handleOpenNewSection = () => {
@@ -392,6 +427,38 @@ export const SectionsView: React.FC = () => {
                       <Plus size={13} />
                       <span>Add Audio</span>
                     </button>
+
+                    {/* Reorder Buttons (Move Up / Down) */}
+                    <div className="flex items-center gap-0.5 border border-[#E6DCCB] rounded-xl p-0.5 bg-white">
+                      <button
+                        type="button"
+                        disabled={filteredSections.indexOf(sec) === 0}
+                        onClick={(e) => handleMoveSection(sec.id, 'up', e)}
+                        className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
+                          filteredSections.indexOf(sec) === 0
+                            ? 'text-stone-300 cursor-not-allowed'
+                            : 'text-[#5A6663] hover:text-[#1F2A28] hover:bg-[#EFE9DF]'
+                        }`}
+                        title="Move Section Up"
+                        aria-label="Move Section Up"
+                      >
+                        <ArrowUp size={13} />
+                      </button>
+                      <button
+                        type="button"
+                        disabled={filteredSections.indexOf(sec) === filteredSections.length - 1}
+                        onClick={(e) => handleMoveSection(sec.id, 'down', e)}
+                        className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
+                          filteredSections.indexOf(sec) === filteredSections.length - 1
+                            ? 'text-stone-300 cursor-not-allowed'
+                            : 'text-[#5A6663] hover:text-[#1F2A28] hover:bg-[#EFE9DF]'
+                        }`}
+                        title="Move Section Down"
+                        aria-label="Move Section Down"
+                      >
+                        <ArrowDown size={13} />
+                      </button>
+                    </div>
 
                     <button
                       type="button"
