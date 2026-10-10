@@ -1,8 +1,10 @@
 import { supabase, isSupabaseConfigured } from '../lib/supabase.ts';
 import { SLEEP_TRACKS } from '../data/sleepCatalogData.ts';
 import { AUDIO_CHAPTERS } from '../data/audioChaptersData.ts';
-import type { SleepTrack, AudioChapter } from '../types/index.ts';
+import type { SleepTrack, AudioChapter, SleepSection, SleepSectionItem } from '../types/index.ts';
 import { useState, useEffect } from 'react';
+
+export type { SleepSection, SleepSectionItem };
 
 export interface SleepCategory {
   id: string;
@@ -111,6 +113,204 @@ export const DEFAULT_PLANS: SleepPlan[] = [
     googleProductId: 'space.human2.audiobook.lifetime',
     sortOrder: 3,
     isActive: true,
+  },
+];
+
+export const DEFAULT_SECTIONS: SleepSection[] = [
+  {
+    id: 'e1000000-0000-4000-8000-000000000001',
+    slug: 'sleep-meditation',
+    title: 'Sleep Meditation',
+    subtitle: 'Restorative guided practices for deep nervous system down-regulation',
+    description: 'Clinical somatic inductions designed to quiet cognitive loops and induce restorative delta sleep.',
+    sectionType: 'meditation',
+    pricingType: 'standalone',
+    priceDisplay: 'AED 49',
+    priceAed: 'AED 49',
+    priceUsd: '$12.99',
+    pricingTagline: 'Lifetime access to all sleep meditations',
+    badge: 'Clinical Rest',
+    sortOrder: 1,
+    isPublished: true,
+    freeCount: 2,
+    paidCount: 3,
+    itemsCount: 5,
+  },
+  {
+    id: 'e2000000-0000-4000-8000-000000000002',
+    slug: 'meditation-women',
+    title: 'Meditation for Women',
+    subtitle: 'Targeted cyclical rest, hormone balancing, and nighttime serenity',
+    description: 'Specialized nervous system grounding practices for hormonal shifts, luteal recovery, and feminine restoration.',
+    sectionType: 'meditation',
+    pricingType: 'standalone',
+    priceDisplay: 'AED 59',
+    priceAed: 'AED 59',
+    priceUsd: '$15.99',
+    pricingTagline: 'Complete series access + future updates',
+    badge: 'Women Rest',
+    sortOrder: 2,
+    isPublished: true,
+    freeCount: 1,
+    paidCount: 3,
+    itemsCount: 4,
+  },
+  {
+    id: 'e3000000-0000-4000-8000-000000000003',
+    slug: 'audiobook',
+    title: 'Human 2.0 Audiobook',
+    subtitle: 'The definitive 45-chapter neurological immersion and audio philosophy',
+    description: 'Chapter 1 free sample, full 45 chapters unlocked with standalone purchase or Sovereign membership.',
+    sectionType: 'audiobook',
+    pricingType: 'tiered',
+    priceDisplay: 'AED 39',
+    priceAed: 'AED 39',
+    priceUsd: '$9.99',
+    pricingTagline: 'All 45 Chapters · High bitrate offline audio',
+    badge: '45 Chapters',
+    sortOrder: 3,
+    isPublished: true,
+    freeCount: 1,
+    paidCount: 44,
+    itemsCount: 45,
+  },
+];
+
+export const DEFAULT_SECTION_ITEMS: SleepSectionItem[] = [
+  {
+    id: 'item-sm-1',
+    sectionId: 'e1000000-0000-4000-8000-000000000001',
+    title: 'Introductory Sleep Descent',
+    subtitle: 'Free introductory somatic grounding',
+    description: 'A 10-minute progressive body unwinding into quiet rest.',
+    durationSeconds: 600,
+    durationFormatted: '10:00',
+    access: 'free',
+    audioPath: '/audio/sample.mp3',
+    audioBucket: 'sleep-audio-free',
+    sortOrder: 1,
+    isPublished: true,
+    playCount: 142,
+  },
+  {
+    id: 'item-sm-2',
+    sectionId: 'e1000000-0000-4000-8000-000000000001',
+    title: 'Body Weighting & Delta Drop',
+    subtitle: 'Free neuromuscular release',
+    description: 'Releasing micro-tensions in the jaw, shoulders, and hips.',
+    durationSeconds: 900,
+    durationFormatted: '15:00',
+    access: 'free',
+    audioPath: '/audio/sample.mp3',
+    audioBucket: 'sleep-audio-free',
+    sortOrder: 2,
+    isPublished: true,
+    playCount: 98,
+  },
+  {
+    id: 'item-sm-3',
+    sectionId: 'e1000000-0000-4000-8000-000000000001',
+    title: 'Vagus Nerve Reset for Insomnia',
+    subtitle: 'Deep autonomic parasympathetic shift',
+    description: 'Vagal nerve stimulation pacing to stop middle-of-the-night waking.',
+    durationSeconds: 1500,
+    durationFormatted: '25:00',
+    access: 'paid',
+    audioPath: '/audio/pro_sample.mp3',
+    audioBucket: 'sleep-audio-pro',
+    sortOrder: 3,
+    isPublished: true,
+    playCount: 412,
+  },
+  {
+    id: 'item-sm-4',
+    sectionId: 'e1000000-0000-4000-8000-000000000001',
+    title: 'Yoga Nidra for Deep Awakening',
+    subtitle: 'Subconscious cleansing before slumber',
+    description: 'Traditional yogic sleep threshold visualization.',
+    durationSeconds: 1800,
+    durationFormatted: '30:00',
+    access: 'paid',
+    audioPath: '/audio/pro_sample.mp3',
+    audioBucket: 'sleep-audio-pro',
+    sortOrder: 4,
+    isPublished: true,
+    playCount: 305,
+  },
+  {
+    id: 'item-sm-5',
+    sectionId: 'e1000000-0000-4000-8000-000000000001',
+    title: 'Racing Mind Dissolution',
+    subtitle: 'Cognitive defusion for acute overthinking',
+    description: 'De-coupling cognitive narratives from bodily anxiety.',
+    durationSeconds: 1200,
+    durationFormatted: '20:00',
+    access: 'paid',
+    audioPath: '/audio/pro_sample.mp3',
+    audioBucket: 'sleep-audio-pro',
+    sortOrder: 5,
+    isPublished: true,
+    playCount: 221,
+  },
+  {
+    id: 'item-wm-1',
+    sectionId: 'e2000000-0000-4000-8000-000000000002',
+    title: 'Luteal Phase Softening',
+    subtitle: 'Free hormonal evening grounding',
+    description: 'Easing pre-menstrual sensory sensitivity and insomnia.',
+    durationSeconds: 720,
+    durationFormatted: '12:00',
+    access: 'free',
+    audioPath: '/audio/sample.mp3',
+    audioBucket: 'sleep-audio-free',
+    sortOrder: 1,
+    isPublished: true,
+    playCount: 88,
+  },
+  {
+    id: 'item-wm-2',
+    sectionId: 'e2000000-0000-4000-8000-000000000002',
+    title: 'Emotional Vessel Release',
+    subtitle: 'Letting down the day emotional cargo',
+    description: 'Releasing somatic emotional tension held in the solar plexus.',
+    durationSeconds: 1200,
+    durationFormatted: '20:00',
+    access: 'paid',
+    audioPath: '/audio/pro_sample.mp3',
+    audioBucket: 'sleep-audio-pro',
+    sortOrder: 2,
+    isPublished: true,
+    playCount: 164,
+  },
+  {
+    id: 'item-wm-3',
+    sectionId: 'e2000000-0000-4000-8000-000000000002',
+    title: 'Adrenal Recovery & Deep Peace',
+    subtitle: 'Restoring cortisol rhythm overnight',
+    description: 'Deep restorative autonomic pacification for burnout and high cortisol.',
+    durationSeconds: 1500,
+    durationFormatted: '25:00',
+    access: 'paid',
+    audioPath: '/audio/pro_sample.mp3',
+    audioBucket: 'sleep-audio-pro',
+    sortOrder: 3,
+    isPublished: true,
+    playCount: 198,
+  },
+  {
+    id: 'item-wm-4',
+    sectionId: 'e2000000-0000-4000-8000-000000000002',
+    title: 'Womb & Pelvic Breath Sanctum',
+    subtitle: 'Sacred feminine somatic unwinding',
+    description: 'Pelvic floor relaxation and deep grounding breath.',
+    durationSeconds: 1800,
+    durationFormatted: '30:00',
+    access: 'paid',
+    audioPath: '/audio/pro_sample.mp3',
+    audioBucket: 'sleep-audio-pro',
+    sortOrder: 4,
+    isPublished: true,
+    playCount: 142,
   },
 ];
 
@@ -240,6 +440,41 @@ interface RawPlanRow {
   is_active: boolean;
 }
 
+interface RawSectionRow {
+  id: string;
+  slug: string;
+  title: string;
+  subtitle?: string;
+  description?: string;
+  section_type: string;
+  pricing_type: string;
+  price_display: string;
+  price_aed?: string;
+  price_usd?: string;
+  pricing_tagline?: string;
+  badge?: string;
+  apple_product_id?: string;
+  google_product_id?: string;
+  sort_order: number;
+  is_published: boolean;
+}
+
+interface RawSectionItemRow {
+  id: string;
+  section_id: string;
+  title: string;
+  subtitle?: string;
+  description?: string;
+  duration_seconds: number;
+  duration_formatted: string;
+  access: string;
+  audio_path?: string;
+  audio_bucket?: string;
+  sort_order: number;
+  is_published: boolean;
+  play_count: number;
+}
+
 function resolveAudioUrl(path?: string | null): string | undefined {
   if (!path) return undefined;
   if (path.startsWith('http://') || path.startsWith('https://') || path.startsWith('blob:')) {
@@ -256,6 +491,13 @@ function resolveAudioUrl(path?: string | null): string | undefined {
     }
   }
   return undefined;
+}
+
+export function formatDuration(seconds: number): string {
+  if (!seconds || isNaN(seconds) || seconds <= 0) return '00:00';
+  const mins = Math.floor(seconds / 60);
+  const secs = Math.floor(seconds % 60);
+  return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
 }
 
 export function detectAudioDuration(file: File): Promise<number> {
@@ -438,11 +680,52 @@ function mapRowToPlan(row: RawPlanRow): SleepPlan {
   };
 }
 
+function mapRowToSection(row: RawSectionRow): SleepSection {
+  return {
+    id: row.id,
+    slug: row.slug,
+    title: row.title,
+    subtitle: row.subtitle,
+    description: row.description,
+    sectionType: (row.section_type || 'meditation') as SleepSection['sectionType'],
+    pricingType: (row.pricing_type || 'standalone') as SleepSection['pricingType'],
+    priceDisplay: row.price_display || 'AED 49',
+    priceAed: row.price_aed || 'AED 49',
+    priceUsd: row.price_usd || '$12.99',
+    pricingTagline: row.pricing_tagline,
+    badge: row.badge,
+    appleProductId: row.apple_product_id,
+    googleProductId: row.google_product_id,
+    sortOrder: row.sort_order ?? 0,
+    isPublished: row.is_published !== false,
+  };
+}
+
+function mapRowToSectionItem(row: RawSectionItemRow): SleepSectionItem {
+  return {
+    id: row.id,
+    sectionId: row.section_id,
+    title: row.title,
+    subtitle: row.subtitle,
+    description: row.description,
+    durationSeconds: row.duration_seconds || 0,
+    durationFormatted: row.duration_formatted || '00:00',
+    access: (row.access === 'free' ? 'free' : 'paid') as 'free' | 'paid',
+    audioPath: row.audio_path,
+    audioBucket: (row.audio_bucket || 'sleep-audio-pro') as 'sleep-audio-free' | 'sleep-audio-pro',
+    sortOrder: row.sort_order ?? 0,
+    isPublished: row.is_published !== false,
+    playCount: row.play_count || 0,
+  };
+}
+
 class SleepContentService {
   private cachedTracks: SleepTrack[] = [];
   private cachedChapters: AudioChapter[] = [];
   private cachedCategories: SleepCategory[] = [];
   private cachedPlans: SleepPlan[] = [];
+  private cachedSections: SleepSection[] = [];
+  private cachedSectionItems: SleepSectionItem[] = [];
   private cachedSettings: Record<string, unknown> = {};
 
   private trackSlugToUuid: Map<string, string> = new Map();
@@ -473,6 +756,8 @@ class SleepContentService {
     }));
     this.cachedCategories = [...DEFAULT_CATEGORIES];
     this.cachedPlans = [...DEFAULT_PLANS];
+    this.cachedSections = [...DEFAULT_SECTIONS];
+    this.cachedSectionItems = [...DEFAULT_SECTION_ITEMS];
     this.cachedSettings = { ...DEFAULT_SETTINGS };
 
     // 2. Restore local overrides if present
@@ -502,6 +787,22 @@ class SleepContentService {
           }
         }
 
+        const storedSections = localStorage.getItem('human2_admin_sections');
+        if (storedSections) {
+          const parsed = JSON.parse(storedSections);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            this.cachedSections = parsed;
+          }
+        }
+
+        const storedSectionItems = localStorage.getItem('human2_admin_section_items');
+        if (storedSectionItems) {
+          const parsed = JSON.parse(storedSectionItems);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            this.cachedSectionItems = parsed;
+          }
+        }
+
         const storedSettings = localStorage.getItem('human2_admin_settings');
         if (storedSettings) {
           const parsed = JSON.parse(storedSettings);
@@ -515,20 +816,25 @@ class SleepContentService {
     }
   }
 
-  private persistLocal(type: 'tracks' | 'chapters' | 'categories' | 'settings') {
-    if (typeof window === 'undefined') return;
-    try {
-      if (type === 'tracks') {
-        localStorage.setItem('human2_admin_tracks', JSON.stringify(this.cachedTracks));
-      } else if (type === 'chapters') {
-        localStorage.setItem('human2_admin_chapters', JSON.stringify(this.cachedChapters));
-      } else if (type === 'categories') {
-        localStorage.setItem('human2_admin_categories', JSON.stringify(this.cachedCategories));
-      } else if (type === 'settings') {
-        localStorage.setItem('human2_admin_settings', JSON.stringify(this.cachedSettings));
+  private persistLocal(type: 'tracks' | 'chapters' | 'categories' | 'settings' | 'sections' | 'section_items') {
+    if (typeof window !== 'undefined') {
+      try {
+        if (type === 'tracks') {
+          localStorage.setItem('human2_admin_tracks', JSON.stringify(this.cachedTracks));
+        } else if (type === 'chapters') {
+          localStorage.setItem('human2_admin_chapters', JSON.stringify(this.cachedChapters));
+        } else if (type === 'categories') {
+          localStorage.setItem('human2_admin_categories', JSON.stringify(this.cachedCategories));
+        } else if (type === 'sections') {
+          localStorage.setItem('human2_admin_sections', JSON.stringify(this.cachedSections));
+        } else if (type === 'section_items') {
+          localStorage.setItem('human2_admin_section_items', JSON.stringify(this.cachedSectionItems));
+        } else if (type === 'settings') {
+          localStorage.setItem('human2_admin_settings', JSON.stringify(this.cachedSettings));
+        }
+      } catch {
+        // ignore quota errors
       }
-    } catch {
-      // ignore quota errors
     }
   }
 
@@ -563,6 +869,25 @@ class SleepContentService {
 
   public getCachedPlans(): SleepPlan[] {
     return this.cachedPlans;
+  }
+
+  public getCachedSections(): SleepSection[] {
+    return this.cachedSections.map((s) => {
+      const items = this.cachedSectionItems.filter((i) => i.sectionId === s.id);
+      return {
+        ...s,
+        freeCount: items.filter((i) => i.access === 'free' && i.isPublished !== false).length,
+        paidCount: items.filter((i) => i.access === 'paid' && i.isPublished !== false).length,
+        itemsCount: items.length,
+      };
+    });
+  }
+
+  public getCachedSectionItems(sectionId?: string): SleepSectionItem[] {
+    if (sectionId) {
+      return this.cachedSectionItems.filter((i) => i.sectionId === sectionId);
+    }
+    return this.cachedSectionItems;
   }
 
   // --- TRACKS CRUD ---
@@ -1082,6 +1407,264 @@ class SleepContentService {
     }
   }
 
+  // --- SECTIONS CRUD ---
+  public async getSections(includeUnpublished = true): Promise<SleepSection[]> {
+    if (isSupabaseConfigured && supabase) {
+      try {
+        let query = supabase.from('sleep_sections').select('*').order('sort_order', { ascending: true });
+        if (!includeUnpublished) {
+          query = query.eq('is_published', true);
+        }
+        const { data, error } = await query;
+        if (!error && data && data.length > 0) {
+          this.cachedSections = data.map((item) => mapRowToSection(item as RawSectionRow));
+          this.persistLocal('sections');
+        }
+      } catch (err) {
+        console.warn('[SleepContentService] Failed to load sections from Supabase:', err);
+      }
+    }
+
+    const sections = includeUnpublished
+      ? this.cachedSections
+      : this.cachedSections.filter((s) => s.isPublished !== false);
+
+    return sections.map((s) => {
+      const items = this.cachedSectionItems.filter((i) => i.sectionId === s.id);
+      return {
+        ...s,
+        freeCount: items.filter((i) => i.access === 'free' && i.isPublished !== false).length,
+        paidCount: items.filter((i) => i.access === 'paid' && i.isPublished !== false).length,
+        itemsCount: items.length,
+      };
+    });
+  }
+
+  public async saveSection(sectionData: Partial<SleepSection>): Promise<SleepSection> {
+    const existingIndex = this.cachedSections.findIndex(
+      (s) => s.id === sectionData.id || (sectionData.slug && s.slug === sectionData.slug)
+    );
+    let savedSection: SleepSection;
+
+    if (existingIndex >= 0) {
+      savedSection = {
+        ...this.cachedSections[existingIndex],
+        ...sectionData,
+      } as SleepSection;
+      this.cachedSections[existingIndex] = savedSection;
+    } else {
+      const generatedId =
+        sectionData.id ||
+        (typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `sec-${Date.now()}`);
+      const slug =
+        sectionData.slug ||
+        (sectionData.title || 'section').toLowerCase().replace(/[^a-z0-9]+/g, '-');
+      savedSection = {
+        id: generatedId,
+        slug,
+        title: sectionData.title || 'New Meditation Section',
+        subtitle: sectionData.subtitle || '',
+        description: sectionData.description || '',
+        sectionType: sectionData.sectionType || 'meditation',
+        pricingType: sectionData.pricingType || 'standalone',
+        priceDisplay: sectionData.priceDisplay || sectionData.priceAed || 'AED 49',
+        priceAed: sectionData.priceAed || 'AED 49',
+        priceUsd: sectionData.priceUsd || '$12.99',
+        pricingTagline: sectionData.pricingTagline || 'One-time access',
+        badge: sectionData.badge || 'Meditation',
+        appleProductId: sectionData.appleProductId,
+        googleProductId: sectionData.googleProductId,
+        sortOrder: sectionData.sortOrder ?? this.cachedSections.length + 1,
+        isPublished: sectionData.isPublished !== false,
+      };
+      this.cachedSections.push(savedSection);
+    }
+
+    if (isSupabaseConfigured && supabase) {
+      try {
+        const payload = {
+          slug: savedSection.slug,
+          title: savedSection.title,
+          subtitle: savedSection.subtitle,
+          description: savedSection.description,
+          section_type: savedSection.sectionType,
+          pricing_type: savedSection.pricingType,
+          price_display: savedSection.priceDisplay,
+          price_aed: savedSection.priceAed,
+          price_usd: savedSection.priceUsd,
+          pricing_tagline: savedSection.pricingTagline,
+          badge: savedSection.badge,
+          sort_order: savedSection.sortOrder,
+          is_published: savedSection.isPublished,
+        };
+
+        if (isValidUuid(savedSection.id)) {
+          await supabase.from('sleep_sections').upsert({ id: savedSection.id, ...payload });
+        } else {
+          const { data } = await supabase
+            .from('sleep_sections')
+            .upsert(payload, { onConflict: 'slug' })
+            .select('id')
+            .single();
+          if (data?.id) savedSection.id = data.id;
+        }
+      } catch (err) {
+        console.warn('[SleepContentService] Section sync warning:', err);
+      }
+    }
+
+    this.persistLocal('sections');
+    this.notify();
+    return savedSection;
+  }
+
+  public async deleteSection(id: string): Promise<boolean> {
+    const existingIndex = this.cachedSections.findIndex((s) => s.id === id);
+    if (existingIndex >= 0) {
+      this.cachedSections.splice(existingIndex, 1);
+      this.cachedSectionItems = this.cachedSectionItems.filter((i) => i.sectionId !== id);
+      this.persistLocal('sections');
+      this.persistLocal('section_items');
+      this.notify();
+    }
+
+    if (isSupabaseConfigured && supabase) {
+      try {
+        if (isValidUuid(id)) {
+          await supabase.from('sleep_sections').delete().eq('id', id);
+        } else {
+          await supabase.from('sleep_sections').delete().eq('slug', id);
+        }
+      } catch (err) {
+        console.warn('[SleepContentService] Failed to delete section from Supabase:', err);
+      }
+    }
+    return true;
+  }
+
+  // --- SECTION ITEMS CRUD (FREE & PAID AUDIOS) ---
+  public async getSectionItems(sectionId?: string, includeUnpublished = true): Promise<SleepSectionItem[]> {
+    if (isSupabaseConfigured && supabase) {
+      try {
+        let query = supabase.from('sleep_section_items').select('*').order('sort_order', { ascending: true });
+        if (sectionId && isValidUuid(sectionId)) {
+          query = query.eq('section_id', sectionId);
+        }
+        if (!includeUnpublished) {
+          query = query.eq('is_published', true);
+        }
+        const { data, error } = await query;
+        if (!error && data && data.length > 0) {
+          const mapped = data.map((item) => mapRowToSectionItem(item as RawSectionItemRow));
+          if (sectionId) {
+            this.cachedSectionItems = [
+              ...this.cachedSectionItems.filter((i) => i.sectionId !== sectionId),
+              ...mapped,
+            ];
+          } else {
+            this.cachedSectionItems = mapped;
+          }
+          this.persistLocal('section_items');
+        }
+      } catch (err) {
+        console.warn('[SleepContentService] Failed to load section items from Supabase:', err);
+      }
+    }
+
+    let items = this.cachedSectionItems;
+    if (sectionId) {
+      items = items.filter((i) => i.sectionId === sectionId);
+    }
+    if (!includeUnpublished) {
+      items = items.filter((i) => i.isPublished !== false);
+    }
+    return items;
+  }
+
+  public async saveSectionItem(itemData: Partial<SleepSectionItem>): Promise<SleepSectionItem> {
+    const existingIndex = this.cachedSectionItems.findIndex((i) => i.id === itemData.id);
+    let savedItem: SleepSectionItem;
+
+    if (existingIndex >= 0) {
+      savedItem = {
+        ...this.cachedSectionItems[existingIndex],
+        ...itemData,
+      } as SleepSectionItem;
+      this.cachedSectionItems[existingIndex] = savedItem;
+    } else {
+      const generatedId =
+        itemData.id ||
+        (typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `item-${Date.now()}`);
+      savedItem = {
+        id: generatedId,
+        sectionId: itemData.sectionId || '',
+        title: itemData.title || 'Untitled Audio',
+        subtitle: itemData.subtitle || '',
+        description: itemData.description || '',
+        durationSeconds: itemData.durationSeconds || 0,
+        durationFormatted: itemData.durationFormatted || '00:00',
+        access: itemData.access || 'paid',
+        audioPath: itemData.audioPath,
+        audioBucket:
+          itemData.audioBucket || (itemData.access === 'free' ? 'sleep-audio-free' : 'sleep-audio-pro'),
+        sortOrder: itemData.sortOrder ?? this.cachedSectionItems.length + 1,
+        isPublished: itemData.isPublished !== false,
+        playCount: itemData.playCount || 0,
+      };
+      this.cachedSectionItems.push(savedItem);
+    }
+
+    if (isSupabaseConfigured && supabase) {
+      try {
+        const payload = {
+          section_id: savedItem.sectionId,
+          title: savedItem.title,
+          subtitle: savedItem.subtitle,
+          description: savedItem.description,
+          duration_seconds: savedItem.durationSeconds,
+          duration_formatted: savedItem.durationFormatted,
+          access: savedItem.access,
+          audio_path: savedItem.audioPath,
+          audio_bucket: savedItem.audioBucket,
+          sort_order: savedItem.sortOrder,
+          is_published: savedItem.isPublished,
+          play_count: savedItem.playCount,
+        };
+
+        if (isValidUuid(savedItem.id)) {
+          await supabase.from('sleep_section_items').upsert({ id: savedItem.id, ...payload });
+        } else {
+          const { data } = await supabase.from('sleep_section_items').insert(payload).select('id').single();
+          if (data?.id) savedItem.id = data.id;
+        }
+      } catch (err) {
+        console.warn('[SleepContentService] Section item sync warning:', err);
+      }
+    }
+
+    this.persistLocal('section_items');
+    this.notify();
+    return savedItem;
+  }
+
+  public async deleteSectionItem(id: string): Promise<boolean> {
+    const existingIndex = this.cachedSectionItems.findIndex((i) => i.id === id);
+    if (existingIndex >= 0) {
+      this.cachedSectionItems.splice(existingIndex, 1);
+      this.persistLocal('section_items');
+      this.notify();
+    }
+
+    if (isSupabaseConfigured && supabase && isValidUuid(id)) {
+      try {
+        await supabase.from('sleep_section_items').delete().eq('id', id);
+      } catch (err) {
+        console.warn('[SleepContentService] Failed to delete section item from Supabase:', err);
+      }
+    }
+    return true;
+  }
+
   public async recordPlayEvent(params: {
     trackId?: string;
     chapterId?: string;
@@ -1141,6 +1724,8 @@ class SleepContentService {
         this.getAudiobookChapters(true),
         this.getCategories(true),
         this.getPlans(),
+        this.getSections(true),
+        this.getSectionItems(undefined, true),
       ]);
     }
   }
@@ -1194,4 +1779,86 @@ export function useSleepContent() {
   }, []);
 
   return { tracks, chapters, categories, plans, isLoading };
+}
+
+export function useSleepSections() {
+  const [sections, setSections] = useState<SleepSection[]>(() => sleepContentService.getCachedSections());
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  useEffect(() => {
+    let isMounted = true;
+    setIsLoading(true);
+
+    const unsubscribe = sleepContentService.subscribe(() => {
+      if (isMounted) {
+        setSections([...sleepContentService.getCachedSections()]);
+      }
+    });
+
+    sleepContentService
+      .getSections(true)
+      .then((data) => {
+        if (isMounted) {
+          setSections(data);
+          setIsLoading(false);
+        }
+      })
+      .catch(() => {
+        if (isMounted) setIsLoading(false);
+      });
+
+    return () => {
+      isMounted = false;
+      unsubscribe();
+    };
+  }, []);
+
+  return {
+    sections,
+    isLoading,
+    saveSection: (sec: Partial<SleepSection>) => sleepContentService.saveSection(sec),
+    deleteSection: (id: string) => sleepContentService.deleteSection(id),
+    refresh: () => sleepContentService.getSections(true),
+  };
+}
+
+export function useSectionItems(sectionId?: string) {
+  const [items, setItems] = useState<SleepSectionItem[]>(() => sleepContentService.getCachedSectionItems(sectionId));
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  useEffect(() => {
+    let isMounted = true;
+    setIsLoading(true);
+
+    const unsubscribe = sleepContentService.subscribe(() => {
+      if (isMounted) {
+        setItems([...sleepContentService.getCachedSectionItems(sectionId)]);
+      }
+    });
+
+    sleepContentService
+      .getSectionItems(sectionId, true)
+      .then((data) => {
+        if (isMounted) {
+          setItems(data);
+          setIsLoading(false);
+        }
+      })
+      .catch(() => {
+        if (isMounted) setIsLoading(false);
+      });
+
+    return () => {
+      isMounted = false;
+      unsubscribe();
+    };
+  }, [sectionId]);
+
+  return {
+    items,
+    isLoading,
+    saveItem: (item: Partial<SleepSectionItem>) => sleepContentService.saveSectionItem(item),
+    deleteItem: (id: string) => sleepContentService.deleteSectionItem(id),
+    refresh: () => sleepContentService.getSectionItems(sectionId, true),
+  };
 }

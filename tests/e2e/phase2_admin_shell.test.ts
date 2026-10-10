@@ -173,6 +173,7 @@ describe('Phase 2 Verification: Admin Shell & Console Architecture', () => {
       'tracks',
       'categories',
       'featured',
+      'sections',
       'chapters',
       'screen_home',
       'screen_reset',
@@ -186,7 +187,7 @@ describe('Phase 2 Verification: Admin Shell & Console Architecture', () => {
       'settings_admins',
     ];
 
-    assert.equal(allSections.length, 16, 'Must have exactly 16 admin sections');
+    assert.equal(allSections.length, 17, 'Must have exactly 17 admin sections');
     assert.deepEqual(allSections, expectedSections);
   });
 

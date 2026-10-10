@@ -197,3 +197,41 @@ export interface ContinueListeningItem {
   updatedAt: number;
 }
 
+export interface SleepSection {
+  id: string;
+  slug: string;
+  title: string;
+  subtitle?: string;
+  description?: string;
+  sectionType: 'meditation' | 'audiobook' | 'soundscape' | 'custom';
+  pricingType: 'free' | 'standalone' | 'subscription' | 'tiered';
+  priceDisplay: string;
+  priceAed?: string;
+  priceUsd?: string;
+  pricingTagline?: string;
+  badge?: string;
+  appleProductId?: string;
+  googleProductId?: string;
+  sortOrder: number;
+  isPublished: boolean;
+  freeCount?: number;
+  paidCount?: number;
+  itemsCount?: number;
+}
+
+export interface SleepSectionItem {
+  id: string;
+  sectionId: string;
+  title: string;
+  subtitle?: string;
+  description?: string;
+  durationSeconds: number;
+  durationFormatted: string;
+  access: 'free' | 'paid';
+  audioPath?: string;
+  audioBucket?: 'sleep-audio-free' | 'sleep-audio-pro';
+  sortOrder: number;
+  isPublished: boolean;
+  playCount: number;
+}
+

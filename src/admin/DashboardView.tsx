@@ -12,6 +12,7 @@ import {
   Plus,
   ArrowRight,
   TrendingUp,
+  Layers,
 } from 'lucide-react';
 import type { AdminSection } from './adminNavigation';
 
@@ -21,6 +22,7 @@ interface DashboardStats {
   proTracks: number;
   audiobookChapters: number;
   categories: number;
+  sectionsCount?: number;
   drafts: number;
   plays7d: number;
   members: number;
@@ -32,7 +34,7 @@ export const DASHBOARD_SUBTITLE = 'What is published, and what is waiting on you
 interface DashboardViewProps {
   onNavigateSection: (section: AdminSection) => void;
   stats?: Partial<DashboardStats>;
-  onQuickAction?: (action: 'new_track' | 'new_chapter' | 'new_category' | 'edit_home') => void;
+  onQuickAction?: (action: 'new_track' | 'new_chapter' | 'new_category' | 'new_section' | 'edit_home') => void;
   subtitle?: string;
 }
 
@@ -47,6 +49,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
     proTracks: customStats?.proTracks ?? 6,
     audiobookChapters: customStats?.audiobookChapters ?? 45,
     categories: customStats?.categories ?? 3,
+    sectionsCount: customStats?.sectionsCount ?? 2,
     drafts: customStats?.drafts ?? 0,
     plays7d: customStats?.plays7d ?? 482,
     members: customStats?.members ?? 124,
@@ -96,6 +99,15 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
       section: 'chapters',
       color: 'bg-indigo-50 text-indigo-700 border-indigo-200',
       badge: 'Ch 1-45',
+    },
+    {
+      id: 'sections',
+      label: 'Meditation sections',
+      value: stats.sectionsCount ?? 2,
+      icon: Layers,
+      section: 'sections',
+      color: 'bg-rose-50 text-rose-700 border-rose-200',
+      badge: 'Separate pricing',
     },
     {
       id: 'categories',
@@ -204,7 +216,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           </button>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
           <button
             onClick={() => {
               if (onQuickAction) onQuickAction('new_track');
@@ -217,7 +229,27 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                 New track
               </div>
               <div className="text-[11px] text-[#5A6663]">
-                Upload soundscape, SOS, or body scan
+                Upload soundscape or SOS
+              </div>
+            </div>
+            <div className="w-8 h-8 rounded-lg bg-[#1F5F78] text-white flex items-center justify-center shrink-0">
+              <Plus size={16} />
+            </div>
+          </button>
+
+          <button
+            onClick={() => {
+              if (onQuickAction) onQuickAction('new_section');
+              else onNavigateSection('sections');
+            }}
+            className="p-4 rounded-xl border border-[#E6DCCB] bg-[#F7F3EC]/50 hover:bg-[#DCE9F0]/30 hover:border-[#1F5F78]/50 transition-all text-left flex items-center justify-between cursor-pointer group"
+          >
+            <div>
+              <div className="text-xs font-bold text-[#1F2A28] group-hover:text-[#1F5F78] transition-colors">
+                New section
+              </div>
+              <div className="text-[11px] text-[#5A6663]">
+                Meditation series & pricing
               </div>
             </div>
             <div className="w-8 h-8 rounded-lg bg-[#1F5F78] text-white flex items-center justify-center shrink-0">

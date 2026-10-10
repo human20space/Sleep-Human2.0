@@ -8,7 +8,8 @@ import { ChaptersView } from './content/ChaptersView';
 import { CategoriesView } from './content/CategoriesView';
 import { FeaturedTonightView } from './content/FeaturedTonightView';
 import { AppScreensView } from './content/AppScreensView';
-import { useSleepContent } from '../services/sleepContentService';
+import { SectionsView } from './content/SectionsView';
+import { useSleepContent, sleepContentService } from '../services/sleepContentService';
 import { ShieldAlert, LogOut } from 'lucide-react';
 import { useAdminSeo } from './adminSeo';
 
@@ -215,6 +216,10 @@ export const AdminApp: React.FC<AdminAppProps> = ({
       title: "Tonight's Featured",
       subtitle: 'Pin the headline free track on the consumer bedtime immersion card.',
     },
+    sections: {
+      title: 'Meditation & Audio Sections',
+      subtitle: 'Create meditation series, configure section pricing, and assign free vs paid audios.',
+    },
     chapters: {
       title: 'Audiobook Chapters',
       subtitle: 'Configure audio files, duration, and stream links for Chapters 1 to 45.',
@@ -272,6 +277,7 @@ export const AdminApp: React.FC<AdminAppProps> = ({
     proTracks: tracks.filter((t) => t.isPremium && t.isPublished !== false).length,
     audiobookChapters: chapters.length,
     categories: categories.length,
+    sectionsCount: sleepContentService.getCachedSections().length,
     drafts:
       tracks.filter((t) => t.isPublished === false).length +
       chapters.filter((c) => c.isPublished === false).length,
@@ -292,6 +298,7 @@ export const AdminApp: React.FC<AdminAppProps> = ({
               if (action === 'new_track') setActiveSection('tracks');
               else if (action === 'new_chapter') setActiveSection('chapters');
               else if (action === 'new_category') setActiveSection('categories');
+              else if (action === 'new_section') setActiveSection('sections');
               else if (action === 'edit_home') setActiveSection('screen_home');
             }}
           />
@@ -305,6 +312,9 @@ export const AdminApp: React.FC<AdminAppProps> = ({
 
       case 'featured':
         return <FeaturedTonightView />;
+
+      case 'sections':
+        return <SectionsView />;
 
       case 'chapters':
         return <ChaptersView />;

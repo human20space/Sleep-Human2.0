@@ -16,6 +16,7 @@ import {
   Moon,
   FileText,
   Shield,
+  Layers,
 } from 'lucide-react';
 
 export type AdminSection =
@@ -24,6 +25,7 @@ export type AdminSection =
   | 'tracks'
   | 'categories'
   | 'featured'
+  | 'sections'
   | 'chapters'
   | 'screen_home'
   | 'screen_reset'
@@ -66,6 +68,7 @@ export const ADMIN_NAV_GROUPS: NavGroup[] = [
   {
     group: 'LISTEN',
     items: [
+      { id: 'sections', label: 'Meditation Sections', icon: Layers },
       { id: 'chapters', label: 'Audiobook Chapters', icon: Headphones },
     ],
   },
