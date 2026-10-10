@@ -67,6 +67,8 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   const heroTrack = currentTracks[0] || SLEEP_TRACKS[0]; // Relaxing Bell
   const sosTrack = currentTracks.find((t) => t.category === 'sos') || currentTracks[2] || SLEEP_TRACKS[2]; // 90s SOS
 
+  const [selectedMeditationFilter, setSelectedMeditationFilter] = React.useState<string>('all');
+
   const publishedMeditationSections = sections.filter(
     (s) => s.isPublished !== false && s.sectionType !== 'audiobook'
   );
@@ -145,20 +147,20 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
           </p>
         </div>
 
-        {/* Top Actions: Author Profile, Theme Toggle & Sovereign Pill */}
+        {/* Top Actions: User Profile, Theme Toggle & Sovereign Pill */}
         <div className="flex items-center gap-1.5">
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => {
               audioEngine.playBreathChime('inhale');
-              onNavigate('author_intro');
+              onNavigate('profile');
             }}
             className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-white dark:bg-[#121e25] border border-[#e6dccb] dark:border-[#1c2c36] shadow-xs text-xs font-semibold text-[#17495e] dark:text-[#e8b98a] cursor-pointer"
-            title="Author Vinay Kapoor Profile"
+            title="User Profile"
           >
             <User size={13} className="text-[#17495e] dark:text-[#e8b98a]" />
-            <span>Author</span>
+            <span>Profile</span>
           </motion.button>
 
           {onToggleDark && (
@@ -201,34 +203,83 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
       </div>
 
       <div className="w-full max-w-4xl mx-auto px-4 space-y-4 pt-1">
-        {/* 2. DEDICATED LISTEN SECTION (AUDIOBOOK 45 CHAPTERS) */}
-        <motion.div
-          whileHover={{ scale: 1.01 }}
-          whileTap={{ scale: 0.99 }}
-          onClick={() => {
-            audioEngine.playBreathChime('inhale');
-            onNavigate('audio_chapters');
-          }}
-          className="p-4 rounded-3xl bg-gradient-to-r from-[#17495e] via-[#1f5f78] to-[#17495e] text-white shadow-xs cursor-pointer flex items-center justify-between min-h-[48px]"
-        >
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-white/15 text-[#e8b98a] flex items-center justify-center shrink-0">
-              <Headphones size={18} />
+        {/* 2. TOP COMPACT SQUARE BOXES: 1st AUDIO BOOK, 2nd MEDITATION */}
+        <div className="grid grid-cols-2 gap-3 pt-1">
+          {/* 1st Square: Audio Book */}
+          <motion.div
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => {
+              audioEngine.playBreathChime('inhale');
+              onNavigate('audio_chapters');
+            }}
+            className="aspect-square min-h-[48px] p-3.5 sm:p-4 rounded-3xl bg-gradient-to-br from-[#17495e] via-[#1f5f78] to-[#17495e] text-white shadow-xs border border-[#17495e]/60 cursor-pointer flex flex-col justify-between relative overflow-hidden group"
+          >
+            <div className="flex items-center justify-between">
+              <div className="w-9 h-9 rounded-2xl bg-white/15 text-[#e8b98a] flex items-center justify-center shrink-0">
+                <Headphones size={18} />
+              </div>
+              <span className="text-[8.5px] uppercase font-mono font-bold tracking-wider px-2 py-0.5 rounded-full bg-black/30 text-[#e8b98a]">
+                45 Ch
+              </span>
             </div>
+
             <div>
-              <span className="text-[9.5px] uppercase font-mono font-bold tracking-wider text-[#e8b98a] block">
+              <span className="text-[9px] uppercase font-mono font-bold tracking-wider text-[#e8b98a] block">
                 Dedicated Listen Section
               </span>
-              <h4 className="font-serif-title text-xs font-bold text-white">
+              <h3 className="font-serif-title text-sm sm:text-base font-bold text-white leading-tight">
+                Audio Book
+              </h3>
+              <p className="text-[9.5px] text-white/75 line-clamp-1 mt-0.5">
                 Human 2.0 Audiobook (45 Chapters)
-              </h4>
-              <p className="text-[10.5px] text-white/80">
-                Chapter 1 Free Sample (25m) · Full audiobook in the Listen tab
               </p>
             </div>
-          </div>
-          <ChevronRight size={16} className="text-[#e8b98a]" />
-        </motion.div>
+
+            <div className="flex items-center justify-between pt-1 border-t border-white/15 text-[9.5px] text-[#e8b98a] font-semibold">
+              <span>Ch 1 Free</span>
+              <ChevronRight size={13} className="group-hover:translate-x-0.5 transition-transform" />
+            </div>
+          </motion.div>
+
+          {/* 2nd Square: Meditation */}
+          <motion.div
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => {
+              audioEngine.playBreathChime('inhale');
+              const el = document.getElementById('meditation-collection-view');
+              if (el) el.scrollIntoView({ behavior: 'smooth' });
+            }}
+            className="aspect-square min-h-[48px] p-3.5 sm:p-4 rounded-3xl bg-gradient-to-br from-[#1e4a3e] via-[#245a4c] to-[#1a4237] text-white shadow-xs border border-[#245a4c]/60 cursor-pointer flex flex-col justify-between relative overflow-hidden group"
+          >
+            <div className="flex items-center justify-between">
+              <div className="w-9 h-9 rounded-2xl bg-white/15 text-[#91e5c3] flex items-center justify-center shrink-0">
+                <Sparkles size={18} />
+              </div>
+              <span className="text-[8.5px] uppercase font-mono font-bold tracking-wider px-2 py-0.5 rounded-full bg-black/30 text-[#91e5c3]">
+                Series
+              </span>
+            </div>
+
+            <div>
+              <span className="text-[9px] uppercase font-mono font-bold tracking-wider text-[#91e5c3] block">
+                Restorative
+              </span>
+              <h3 className="font-serif-title text-sm sm:text-base font-bold text-white leading-tight">
+                Meditation
+              </h3>
+              <p className="text-[9.5px] text-white/75 line-clamp-1 mt-0.5">
+                Sleep & Women
+              </p>
+            </div>
+
+            <div className="flex items-center justify-between pt-1 border-t border-white/15 text-[9.5px] text-[#91e5c3] font-semibold">
+              <span>Browse 30+</span>
+              <ChevronRight size={13} className="group-hover:translate-x-0.5 transition-transform" />
+            </div>
+          </motion.div>
+        </div>
 
         {/* 3. TONIGHT'S BEDTIME IMMERSION HERO CARD */}
         <motion.div
@@ -287,7 +338,45 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
         </motion.div>
 
         {/* 3.5. MEDITATION SECTIONS (SLEEP MEDITATION & SERIES WITH FREE / PAID AUDIOS) */}
-        {activeSections.map((sec) => {
+        <div id="meditation-collection-view" className="space-y-3 pt-1">
+          <div className="flex items-center justify-between px-1">
+            <div className="flex items-center gap-1.5">
+              <Sparkles size={14} className="text-[#17495e] dark:text-[#e8b98a]" />
+              <span className="text-xs font-bold font-serif-title text-[#17495e] dark:text-[#e8b98a]">
+                Meditation Collections
+              </span>
+            </div>
+            <span className="text-[10px] text-[#717e7a] dark:text-[#90a2ad]">
+              Sleep · Women · Short Practices
+            </span>
+          </div>
+
+          {/* Filter Tabs for Meditation: All, Sleep Meditation, Meditation for Women, Short Meditations */}
+          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar">
+            {[
+              { id: 'all', label: 'All Series' },
+              { id: 'sleep-meditation', label: 'Sleep Meditation (19)' },
+              { id: 'meditation-women', label: 'Meditation for Women (8)' },
+              { id: 'short-meditations', label: 'Short Meditations (3)' },
+            ].map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setSelectedMeditationFilter(tab.id)}
+                className={`px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
+                  selectedMeditationFilter === tab.id
+                    ? 'bg-[#17495e] dark:bg-[#e8b98a] text-white dark:text-[#0b1317] shadow-xs'
+                    : 'bg-white dark:bg-[#121e25] text-[#5a6663] dark:text-[#98abb6] border border-[#e6dccb] dark:border-[#1d2e38] hover:bg-[#f7f3ec]'
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Render active meditation sections: activeSections.map */}
+          {activeSections
+            .filter((sec) => selectedMeditationFilter === 'all' || sec.slug === selectedMeditationFilter)
+            .map((sec) => {
           const items = getItemsForSection(sec.id);
           const freeItemsCount = items.filter((i) => i.access === 'free').length;
           const paidItemsCount = items.filter((i) => i.access === 'paid').length;
@@ -429,6 +518,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
             </div>
           );
         })}
+        </div>
 
         {/* 3. ACUTE 90-SECOND RACING MIND RESET (CENTER SOS) */}
         <motion.div
@@ -665,6 +755,26 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
           </div>
         </div>
       </div>
+
+      {/* BOTTOM RIGHT: AUTHOR PROFILE BUTTON */}
+      <motion.button
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        onClick={() => {
+          audioEngine.playBreathChime('inhale');
+          onNavigate('author_intro');
+        }}
+        className="fixed bottom-20 right-4 z-40 flex items-center gap-2 px-3 py-2 rounded-full bg-[#17495e] dark:bg-[#1f5f78] text-[#e8b98a] border border-[#e8b98a]/50 shadow-xl cursor-pointer backdrop-blur-md transition-all hover:brightness-110"
+        title="Author Vinay Kapoor Profile"
+      >
+        <div className="w-5.5 h-5.5 rounded-full bg-[#e8b98a] text-[#070b0e] font-serif-title font-bold text-[9.5px] flex items-center justify-center shadow-xs">
+          VK
+        </div>
+        <div className="text-left pr-0.5">
+          <span className="text-[10.5px] font-bold text-white block leading-tight">Author</span>
+          <span className="text-[8.5px] text-[#e8b98a] block leading-none">Vinay Kapoor</span>
+        </div>
+      </motion.button>
     </div>
   );
 };

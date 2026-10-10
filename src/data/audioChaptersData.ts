@@ -1,7 +1,7 @@
 import type { AudioChapter } from '../types';
 
-export const GOOGLE_DRIVE_AUDIO_FOLDER = 'https://drive.google.com/drive/folders/1OqZnx9-aUMwhhaqYRzULuLjnT0iWQJ_0';
-export const GOOGLE_DRIVE_ROOT_FOLDER = 'https://drive.google.com/drive/folders/1HrwAUoWyIs7lavPCWRB_kQaSWKIi2OQr';
+export const GOOGLE_DRIVE_AUDIO_FOLDER = 'https://drive.google.com/drive/folders/1DXis35VMLpWOoVO9k4qLX9fMl0yV9e7w';
+export const GOOGLE_DRIVE_ROOT_FOLDER = 'https://drive.google.com/drive/folders/1DXis35VMLpWOoVO9k4qLX9fMl0yV9e7w';
 
 export const AUDIO_PARTS = [
   { partNumber: 1, title: 'Part 1: The Human Condition in the AI Age', chapters: 'Ch 1 - 7', desc: 'Understanding acceleration, outer success, and the risk of outsourcing awareness.' },

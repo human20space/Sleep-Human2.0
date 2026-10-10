@@ -48,6 +48,19 @@ describe('Author Intro, Meditation Sections & Relaxing Bell Renaming', () => {
     assert.ok(homeScreenTsx.includes('useSleepSections'), 'HomeScreen must consume useSleepSections()');
     assert.ok(homeScreenTsx.includes('useSectionItems'), 'HomeScreen must consume useSectionItems()');
 
+    // Square boxes for Audio Book (1st) and Meditation (2nd)
+    assert.ok(homeScreenTsx.includes('aspect-square'), 'Must feature square boxes');
+    assert.ok(homeScreenTsx.includes('Audio Book'), '1st square must feature Audio Book');
+    assert.ok(homeScreenTsx.includes('Meditation'), '2nd square must feature Meditation');
+
+    // Inside Meditation categories: Sleep meditation, Meditation for women
+    assert.ok(homeScreenTsx.includes('sleep-meditation'), 'Must feature sleep-meditation filter/section');
+    assert.ok(homeScreenTsx.includes('meditation-women'), 'Must feature meditation-women filter/section');
+
+    // Top Right: User Profile, Bottom Right: Author Profile
+    assert.ok(homeScreenTsx.includes("onNavigate('profile')"), 'Must have User Profile button in top right');
+    assert.ok(homeScreenTsx.includes("onNavigate('author_intro')"), 'Must have Author Profile button');
+
     // Meditation Sections rendering
     assert.ok(
       homeScreenTsx.includes('activeSections.map'),
@@ -68,10 +81,6 @@ describe('Author Intro, Meditation Sections & Relaxing Bell Renaming', () => {
     assert.ok(
       homeScreenTsx.includes('handlePlaySectionAudio'),
       'Must provide 1-click playback for free audios and paywall check for paid audios'
-    );
-    assert.ok(
-      homeScreenTsx.includes("onNavigate('author_intro')"),
-      'HomeScreen must include Author shortcut button'
     );
   });
 
