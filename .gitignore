@@ -32,6 +32,7 @@ dist-ssr
 # Media captures & recordings
 *.mp4
 *.mov
+!public/videos/*.mp4
 
 # Android & iOS build artifacts
 android/build

@@ -8,6 +8,9 @@ import {
   ChevronRight,
   Film,
   ArrowUpRight,
+  Volume2,
+  VolumeX,
+  Maximize2,
 } from 'lucide-react';
 import {
   HUMAN_STORIES,
@@ -30,6 +33,7 @@ export const StoriesScreen: React.FC<StoriesScreenProps> = ({ onBack, onNavigate
   const [selectedCategory, setSelectedCategory] = useState<StoryCategory | 'all'>('all');
   const [activeStory, setActiveStory] = useState<HumanStory>(HUMAN_STORIES[0]);
   const [isVideoPlaying, setIsVideoPlaying] = useState<boolean>(false);
+  const [isStoryMuted, setIsStoryMuted] = useState<boolean>(false);
   const [selectedFeeling, setSelectedFeeling] = useState<UserFeeling | null>('stressed');
   const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -39,13 +43,42 @@ export const StoriesScreen: React.FC<StoriesScreenProps> = ({ onBack, onNavigate
 
   const handleToggleVideo = () => {
     if (!videoRef.current) return;
-    if (isVideoPlaying) {
+    if (videoRef.current.paused) {
+      videoRef.current
+        .play()
+        .then(() => {
+          setIsVideoPlaying(true);
+        })
+        .catch((err) => {
+          console.warn('[StoriesScreen] Play blocked, falling back to muted:', err);
+          if (videoRef.current) {
+            videoRef.current.muted = true;
+            setIsStoryMuted(true);
+            videoRef.current
+              .play()
+              .then(() => setIsVideoPlaying(true))
+              .catch(() => {});
+          }
+        });
+    } else {
       videoRef.current.pause();
       setIsVideoPlaying(false);
-    } else {
-      audioEngine.playBreathChime('inhale');
-      videoRef.current.play().catch(() => {});
-      setIsVideoPlaying(true);
+    }
+  };
+
+  const handleToggleMute = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!videoRef.current) return;
+    const newMuted = !videoRef.current.muted;
+    videoRef.current.muted = newMuted;
+    setIsStoryMuted(newMuted);
+  };
+
+  const handleFullscreen = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!videoRef.current) return;
+    if (videoRef.current.requestFullscreen) {
+      videoRef.current.requestFullscreen();
     }
   };
 
@@ -113,18 +146,28 @@ export const StoriesScreen: React.FC<StoriesScreenProps> = ({ onBack, onNavigate
         {/* 3. FEATURED VIDEO FILM: "WHEN LIFE FEELS TOO MUCH" */}
         <div className="rounded-3xl overflow-hidden bg-gradient-to-br from-[#17495e] via-[#1f5f78] to-[#123645] text-white border border-[#17495e]/60 shadow-md">
           {/* Video Player Box */}
-          <div className="relative aspect-video bg-black/80 flex items-center justify-center overflow-hidden">
+          <div
+            className="relative aspect-video bg-black/80 flex items-center justify-center overflow-hidden cursor-pointer group"
+            onClick={handleToggleVideo}
+          >
             <video
               ref={videoRef}
               key={activeStory.videoUrl || activeStory.id}
               src={activeStory.videoUrl || '/videos/when-life-feels-too-much.mp4'}
               playsInline
+              preload="metadata"
+              onPlay={() => setIsVideoPlaying(true)}
+              onPause={() => setIsVideoPlaying(false)}
               onEnded={handleVideoEnded}
               className="w-full h-full object-cover"
             />
 
-            {/* Play/Pause Overlay Overlay */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/30 flex flex-col justify-between p-4 pointer-events-none">
+            {/* Play/Pause Overlay Overlay (visible when paused or on hover) */}
+            <div
+              className={`absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-black/40 flex flex-col justify-between p-4 pointer-events-none transition-opacity duration-300 ${
+                isVideoPlaying ? 'opacity-0 group-hover:opacity-100' : 'opacity-100'
+              }`}
+            >
               <div className="flex items-center justify-between">
                 <span className="text-[10px] uppercase font-mono font-bold tracking-widest px-2.5 py-1 rounded-full bg-[#d9a44a] text-black">
                   A Human 2.0 Story · {activeStory.durationFormatted}
@@ -146,19 +189,56 @@ export const StoriesScreen: React.FC<StoriesScreenProps> = ({ onBack, onNavigate
               </div>
             </div>
 
-            {/* Play Button Trigger */}
-            <button
-              type="button"
-              onClick={handleToggleVideo}
-              className="absolute w-14 h-14 rounded-full bg-[#e8b98a] text-[#070b0e] flex items-center justify-center shadow-lg hover:scale-105 active:scale-95 transition-all cursor-pointer pointer-events-auto"
-              aria-label={isVideoPlaying ? 'Pause Story Film' : 'Play Story Film'}
-            >
-              {isVideoPlaying ? (
-                <Pause size={24} className="fill-current" />
-              ) : (
+            {/* Center Play Button Trigger (when paused) */}
+            {!isVideoPlaying && (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleToggleVideo();
+                }}
+                className="absolute w-14 h-14 rounded-full bg-[#e8b98a] text-[#070b0e] flex items-center justify-center shadow-lg hover:scale-105 active:scale-95 transition-all cursor-pointer z-10"
+                aria-label="Play Story Film"
+              >
                 <Play size={24} className="fill-current translate-x-0.5" />
-              )}
-            </button>
+              </button>
+            )}
+
+            {/* Mini Controls Bar when playing */}
+            {isVideoPlaying && (
+              <div
+                className="absolute left-0 right-0 bottom-0 p-3 bg-gradient-to-t from-black/90 to-transparent flex items-center justify-between text-white opacity-0 group-hover:opacity-100 hover:opacity-100 transition-opacity z-10"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="flex items-center gap-3">
+                  <button
+                    type="button"
+                    onClick={handleToggleVideo}
+                    className="p-1 hover:text-[#e8b98a] transition-colors cursor-pointer"
+                    title="Pause"
+                  >
+                    <Pause size={16} />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleToggleMute}
+                    className="p-1 hover:text-[#e8b98a] transition-colors cursor-pointer"
+                    title={isStoryMuted ? 'Unmute' : 'Mute'}
+                  >
+                    {isStoryMuted ? <VolumeX size={16} /> : <Volume2 size={16} />}
+                  </button>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={handleFullscreen}
+                  className="p-1 hover:text-[#e8b98a] transition-colors cursor-pointer"
+                  title="Fullscreen"
+                >
+                  <Maximize2 size={16} />
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Under-Video Story Action Bar */}
