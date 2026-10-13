@@ -14,6 +14,7 @@ import {
   FEELING_RECOMMENDATIONS,
   type StoryCategory,
   type UserFeeling,
+  type HumanStory,
 } from '../data/storiesData';
 import { useLanguage } from '../i18n/LanguageContext';
 import { audioEngine } from '../utils/audioEngine';
@@ -27,6 +28,7 @@ interface StoriesScreenProps {
 export const StoriesScreen: React.FC<StoriesScreenProps> = ({ onBack, onNavigate }) => {
   const { t, isRtl } = useLanguage();
   const [selectedCategory, setSelectedCategory] = useState<StoryCategory | 'all'>('all');
+  const [activeStory, setActiveStory] = useState<HumanStory>(HUMAN_STORIES[0]);
   const [isVideoPlaying, setIsVideoPlaying] = useState<boolean>(false);
   const [selectedFeeling, setSelectedFeeling] = useState<UserFeeling | null>('stressed');
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -114,7 +116,8 @@ export const StoriesScreen: React.FC<StoriesScreenProps> = ({ onBack, onNavigate
           <div className="relative aspect-video bg-black/80 flex items-center justify-center overflow-hidden">
             <video
               ref={videoRef}
-              src="/videos/intro.mp4"
+              key={activeStory.videoUrl || activeStory.id}
+              src={activeStory.videoUrl || '/videos/when-life-feels-too-much.mp4'}
               playsInline
               onEnded={handleVideoEnded}
               className="w-full h-full object-cover"
@@ -124,20 +127,20 @@ export const StoriesScreen: React.FC<StoriesScreenProps> = ({ onBack, onNavigate
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/30 flex flex-col justify-between p-4 pointer-events-none">
               <div className="flex items-center justify-between">
                 <span className="text-[10px] uppercase font-mono font-bold tracking-widest px-2.5 py-1 rounded-full bg-[#d9a44a] text-black">
-                  A Human 2.0 Story · 2:32 min
+                  A Human 2.0 Story · {activeStory.durationFormatted}
                 </span>
                 <span className="text-[11px] font-mono text-white/80">
-                  Stress & Overwhelm
+                  {activeStory.theme || activeStory.categoryLabel}
                 </span>
               </div>
 
               <div className="flex items-end justify-between">
                 <div>
-                  <h2 className="font-serif-title text-lg sm:text-xl font-bold text-white leading-tight">
-                    WHEN LIFE FEELS TOO MUCH
+                  <h2 className="font-serif-title text-lg sm:text-xl font-bold text-white leading-tight uppercase">
+                    {activeStory.title}
                   </h2>
                   <p className="text-xs text-[#e8b98a] mt-0.5 line-clamp-1">
-                    From pressure and disconnection to connection, purpose and joy.
+                    {activeStory.subtitle}
                   </p>
                 </div>
               </div>
@@ -304,7 +307,15 @@ export const StoriesScreen: React.FC<StoriesScreenProps> = ({ onBack, onNavigate
                 whileHover={{ scale: 1.01 }}
                 onClick={() => {
                   audioEngine.playBreathChime('inhale');
-                  setSelectedFeeling('better');
+                  if (story.videoUrl) {
+                    setActiveStory(story);
+                    setIsVideoPlaying(false);
+                    if (videoRef.current) {
+                      videoRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                  } else {
+                    setSelectedFeeling('better');
+                  }
                 }}
                 className="p-4 rounded-3xl bg-white dark:bg-[#121e25] border border-[#e6dccb] dark:border-[#1d2e38] shadow-xs hover:shadow-sm transition-all cursor-pointer flex flex-col justify-between space-y-3"
               >
