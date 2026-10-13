@@ -1,0 +1,356 @@
+import React, { useState, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import {
+  ArrowLeft,
+  Play,
+  Pause,
+  Sparkles,
+  ChevronRight,
+  Film,
+  ArrowUpRight,
+} from 'lucide-react';
+import {
+  HUMAN_STORIES,
+  FEELING_RECOMMENDATIONS,
+  type StoryCategory,
+  type UserFeeling,
+} from '../data/storiesData';
+import { useLanguage } from '../i18n/LanguageContext';
+import { audioEngine } from '../utils/audioEngine';
+import type { Screen } from '../types';
+
+interface StoriesScreenProps {
+  onBack: () => void;
+  onNavigate: (screen: Screen) => void;
+}
+
+export const StoriesScreen: React.FC<StoriesScreenProps> = ({ onBack, onNavigate }) => {
+  const { t, isRtl } = useLanguage();
+  const [selectedCategory, setSelectedCategory] = useState<StoryCategory | 'all'>('all');
+  const [isVideoPlaying, setIsVideoPlaying] = useState<boolean>(false);
+  const [selectedFeeling, setSelectedFeeling] = useState<UserFeeling | null>('stressed');
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  const filteredStories = selectedCategory === 'all'
+    ? HUMAN_STORIES
+    : HUMAN_STORIES.filter((s) => s.category === selectedCategory);
+
+  const handleToggleVideo = () => {
+    if (!videoRef.current) return;
+    if (isVideoPlaying) {
+      videoRef.current.pause();
+      setIsVideoPlaying(false);
+    } else {
+      audioEngine.playBreathChime('inhale');
+      videoRef.current.play().catch(() => {});
+      setIsVideoPlaying(true);
+    }
+  };
+
+  const handleVideoEnded = () => {
+    setIsVideoPlaying(false);
+    setSelectedFeeling('overwhelmed');
+    audioEngine.playBreathChime('exhale');
+  };
+
+  const handleFeelingSelect = (feeling: UserFeeling) => {
+    audioEngine.playBreathChime('inhale');
+    setSelectedFeeling(feeling);
+  };
+
+  const handleLaunchRecommendation = (feeling: UserFeeling) => {
+    const rec = FEELING_RECOMMENDATIONS[feeling];
+    audioEngine.playBreathChime('exhale');
+    onNavigate(rec.targetScreen);
+  };
+
+  return (
+    <div className="flex-1 w-full h-full bg-[#f7f3ec] dark:bg-[#070b0e] text-[#1f2a28] dark:text-[#f2ede4] flex flex-col justify-between select-none relative overflow-y-auto pb-24 transition-colors">
+      {/* 1. TOP NAVIGATION BAR */}
+      <div className="w-full max-w-4xl mx-auto px-5 pt-4 pb-3 flex items-center justify-between sticky top-0 z-20 bg-[#f7f3ec]/95 dark:bg-[#070b0e]/95 backdrop-blur-md border-b border-[#e6dccb] dark:border-[#1d2e38]">
+        <button
+          type="button"
+          onClick={() => {
+            audioEngine.playBreathChime('exhale');
+            onBack();
+          }}
+          className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white dark:bg-[#121e25] border border-[#e6dccb] dark:border-[#1d2e38] text-xs font-semibold text-[#17495e] dark:text-[#e8b98a] shadow-2xs hover:bg-[#efe9df] dark:hover:bg-[#1b2b34] transition-all cursor-pointer min-h-[44px]"
+          title={t.backToHome}
+          aria-label={t.backToHome}
+        >
+          <ArrowLeft size={15} className={isRtl ? 'rotate-180' : ''} />
+          <span>{t.backToHome}</span>
+        </button>
+
+        <div className="text-right">
+          <span className="text-[10px] uppercase font-mono font-bold tracking-wider text-[#d9a44a] dark:text-[#e8b98a] block">
+            {t.storiesTag}
+          </span>
+          <span className="text-xs font-bold text-[#17495e] dark:text-[#e8b98a]">
+            Human 2.0 Stories
+          </span>
+        </div>
+      </div>
+
+      {/* 2. MAIN CONTENT CONTAINER */}
+      <div className="w-full max-w-4xl mx-auto px-4 space-y-6 pt-3 pb-8">
+        {/* HERO TITLE & POSITIONING */}
+        <div className="text-center space-y-1">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#17495e]/10 dark:bg-[#e8b98a]/15 text-[#17495e] dark:text-[#e8b98a] text-[10px] font-mono font-bold uppercase tracking-widest">
+            <Sparkles size={11} className="fill-current" />
+            <span>Real people. Real life. Real shifts.</span>
+          </div>
+          <h1 className="font-serif-title text-2xl sm:text-3xl font-bold text-[#17495e] dark:text-[#e8b98a] tracking-tight">
+            Human 2.0 Stories
+          </h1>
+          <p className="text-xs text-[#5a6663] dark:text-[#9eb2be] max-w-lg mx-auto">
+            Not just entertainment—a functional bridge from emotional pressure to connection, presence, and joy.
+          </p>
+        </div>
+
+        {/* 3. FEATURED VIDEO FILM: "WHEN LIFE FEELS TOO MUCH" */}
+        <div className="rounded-3xl overflow-hidden bg-gradient-to-br from-[#17495e] via-[#1f5f78] to-[#123645] text-white border border-[#17495e]/60 shadow-md">
+          {/* Video Player Box */}
+          <div className="relative aspect-video bg-black/80 flex items-center justify-center overflow-hidden">
+            <video
+              ref={videoRef}
+              src="/videos/intro.mp4"
+              playsInline
+              onEnded={handleVideoEnded}
+              className="w-full h-full object-cover"
+            />
+
+            {/* Play/Pause Overlay Overlay */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/30 flex flex-col justify-between p-4 pointer-events-none">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] uppercase font-mono font-bold tracking-widest px-2.5 py-1 rounded-full bg-[#d9a44a] text-black">
+                  A Human 2.0 Story · 2:32 min
+                </span>
+                <span className="text-[11px] font-mono text-white/80">
+                  Stress & Overwhelm
+                </span>
+              </div>
+
+              <div className="flex items-end justify-between">
+                <div>
+                  <h2 className="font-serif-title text-lg sm:text-xl font-bold text-white leading-tight">
+                    WHEN LIFE FEELS TOO MUCH
+                  </h2>
+                  <p className="text-xs text-[#e8b98a] mt-0.5 line-clamp-1">
+                    From pressure and disconnection to connection, purpose and joy.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Play Button Trigger */}
+            <button
+              type="button"
+              onClick={handleToggleVideo}
+              className="absolute w-14 h-14 rounded-full bg-[#e8b98a] text-[#070b0e] flex items-center justify-center shadow-lg hover:scale-105 active:scale-95 transition-all cursor-pointer pointer-events-auto"
+              aria-label={isVideoPlaying ? 'Pause Story Film' : 'Play Story Film'}
+            >
+              {isVideoPlaying ? (
+                <Pause size={24} className="fill-current" />
+              ) : (
+                <Play size={24} className="fill-current translate-x-0.5" />
+              )}
+            </button>
+          </div>
+
+          {/* Under-Video Story Action Bar */}
+          <div className="p-4 flex items-center justify-between bg-black/20 border-t border-white/10 text-xs">
+            <div className="flex items-center gap-2">
+              <Film size={15} className="text-[#e8b98a]" />
+              <span className="font-medium text-white/90">
+                Short cinematic journey from tension to inner sovereignty
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                audioEngine.playBreathChime('inhale');
+                setSelectedFeeling('overwhelmed');
+              }}
+              className="px-3 py-1.5 rounded-xl bg-white/15 hover:bg-white/25 text-[#e8b98a] font-bold text-xs flex items-center gap-1.5 transition-all cursor-pointer"
+            >
+              <span>Feeling Check-In</span>
+              <ChevronRight size={13} />
+            </button>
+          </div>
+        </div>
+
+        {/* 4. "HOW ARE YOU FEELING RIGHT NOW?" INTERACTIVE TRIAGE BAR */}
+        <div className="p-5 rounded-3xl bg-white dark:bg-[#101b22] border border-[#e6dccb] dark:border-[#1d2e38] shadow-xs space-y-4">
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <span className="text-[10px] uppercase font-mono font-bold tracking-widest text-[#d9a44a] dark:text-[#e8b98a] block">
+                Functional Bridge
+              </span>
+              <h3 className="font-serif-title text-base sm:text-lg font-bold text-[#17495e] dark:text-[#f2ede4]">
+                {t.howAreYouFeeling || 'How are you feeling right now?'}
+              </h3>
+              <p className="text-xs text-[#5a6663] dark:text-[#9eb2be]">
+                {t.howAreYouFeelingPrompt}
+              </p>
+            </div>
+          </div>
+
+          {/* Feeling Selection Pills */}
+          <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
+            {(Object.keys(FEELING_RECOMMENDATIONS) as UserFeeling[]).map((feeling) => {
+              const rec = FEELING_RECOMMENDATIONS[feeling];
+              const isSelected = selectedFeeling === feeling;
+              return (
+                <motion.button
+                  key={feeling}
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.97 }}
+                  type="button"
+                  onClick={() => handleFeelingSelect(feeling)}
+                  className={`py-2 px-2 rounded-2xl flex flex-col items-center justify-center gap-1 border transition-all cursor-pointer min-h-[56px] ${
+                    isSelected
+                      ? 'bg-[#17495e] dark:bg-[#1f5f78] text-white border-transparent shadow-sm'
+                      : 'bg-[#faf8f4] dark:bg-[#16252e] text-[#1f2a28] dark:text-[#f2ede4] border-[#e6dccb] dark:border-[#1d2e38] hover:bg-[#efe9df]'
+                  }`}
+                >
+                  <span className="text-lg">{rec.emoji}</span>
+                  <span className="text-[11px] font-bold leading-tight">
+                    {t.feelings[feeling] || rec.label}
+                  </span>
+                </motion.button>
+              );
+            })}
+          </div>
+
+          {/* Dynamic Smart Recommendation Card */}
+          {selectedFeeling && (
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={selectedFeeling}
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -6 }}
+                className="p-4 rounded-2xl bg-gradient-to-r from-[#17495e]/10 via-[#d9a44a]/10 to-transparent border border-[#d9a44a]/40 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3"
+              >
+                <div className="space-y-1 flex-1">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-mono uppercase tracking-wider font-bold text-[#8e6724] dark:text-[#e8b98a]">
+                      Recommended Action for {FEELING_RECOMMENDATIONS[selectedFeeling].label}
+                    </span>
+                  </div>
+                  <h4 className="text-sm font-bold text-[#17495e] dark:text-[#f2ede4]">
+                    {FEELING_RECOMMENDATIONS[selectedFeeling].recommendationTitle}
+                  </h4>
+                  <p className="text-xs text-[#5a6663] dark:text-[#9eb2be]">
+                    {FEELING_RECOMMENDATIONS[selectedFeeling].explanation}
+                  </p>
+                </div>
+
+                <motion.button
+                  whileHover={{ scale: 1.04 }}
+                  whileTap={{ scale: 0.96 }}
+                  type="button"
+                  onClick={() => handleLaunchRecommendation(selectedFeeling)}
+                  className="px-4 py-2.5 rounded-xl bg-[#17495e] dark:bg-[#e8b98a] text-white dark:text-[#070b0e] font-bold text-xs shadow-xs hover:brightness-110 flex items-center gap-1.5 shrink-0 cursor-pointer min-h-[44px]"
+                >
+                  <span>{t.recommendations.startNow}</span>
+                  <ArrowUpRight size={14} />
+                </motion.button>
+              </motion.div>
+            </AnimatePresence>
+          )}
+        </div>
+
+        {/* 5. STORY CATEGORIES SELECTOR */}
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <h3 className="font-serif-title text-lg font-bold text-[#17495e] dark:text-[#f2ede4]">
+              Explore Story Categories
+            </h3>
+            <span className="text-xs font-mono text-[#5a6663] dark:text-[#9eb2be]">
+              {filteredStories.length} stories
+            </span>
+          </div>
+
+          <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+            {[
+              { id: 'all', label: 'All Stories' },
+              { id: 'real_journeys', label: 'Real Journeys (Before & After)' },
+              { id: 'life_stories', label: 'Life Stories' },
+              { id: 'comeback_stories', label: 'Comeback Stories' },
+              { id: 'wisdom_stories', label: 'Wisdom Stories' },
+            ].map((cat) => (
+              <button
+                key={cat.id}
+                type="button"
+                onClick={() => setSelectedCategory(cat.id as StoryCategory | 'all')}
+                className={`px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all cursor-pointer min-h-[38px] ${
+                  selectedCategory === cat.id
+                    ? 'bg-[#17495e] dark:bg-[#e8b98a] text-white dark:text-[#070b0e] shadow-xs'
+                    : 'bg-white dark:bg-[#121e25] text-[#5a6663] dark:text-[#9eb2be] border border-[#e6dccb] dark:border-[#1d2e38] hover:bg-[#efe9df]'
+                }`}
+              >
+                {cat.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Stories Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 pt-1">
+            {filteredStories.map((story) => (
+              <motion.div
+                key={story.id}
+                whileHover={{ scale: 1.01 }}
+                onClick={() => {
+                  audioEngine.playBreathChime('inhale');
+                  setSelectedFeeling('better');
+                }}
+                className="p-4 rounded-3xl bg-white dark:bg-[#121e25] border border-[#e6dccb] dark:border-[#1d2e38] shadow-xs hover:shadow-sm transition-all cursor-pointer flex flex-col justify-between space-y-3"
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-[#17495e]/15 to-[#d9a44a]/20 text-[#17495e] dark:text-[#e8b98a] flex items-center justify-center text-lg shrink-0">
+                    {story.icon}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <span className="text-[10px] uppercase font-mono font-bold tracking-wider text-[#d9a44a] dark:text-[#e8b98a] block">
+                      {story.categoryLabel} · {story.durationFormatted}
+                    </span>
+                    <h4 className="font-serif-title text-sm sm:text-base font-bold text-[#17495e] dark:text-[#f2ede4] leading-tight mt-0.5">
+                      {story.title}
+                    </h4>
+                    <p className="text-xs text-[#5a6663] dark:text-[#9eb2be] line-clamp-2 mt-1">
+                      {story.subtitle}
+                    </p>
+                  </div>
+                </div>
+
+                {/* If it's a Real Journey, show the Before & After shift pills */}
+                {story.transformationDetails && (
+                  <div className="p-3 rounded-2xl bg-[#f7f3ec] dark:bg-[#16252e] border border-[#e6dccb]/70 dark:border-[#1d2e38] text-[11px] space-y-1.5">
+                    <div className="flex items-center justify-between text-[10px] text-[#8e6724] dark:text-[#e8b98a] font-bold">
+                      <span>{story.transformationDetails.person}</span>
+                      <span className="font-mono">{story.transformationDetails.role}</span>
+                    </div>
+                    <p className="text-[#717e7a] dark:text-[#8ea2b0] line-clamp-1 italic">
+                      <strong className="text-[#17495e] dark:text-[#f2ede4] not-italic">Shift: </strong>
+                      "{story.transformationDetails.shift}"
+                    </p>
+                    <p className="text-[#3c7858] dark:text-[#52a378] font-medium line-clamp-1">
+                      ✓ {story.transformationDetails.after}
+                    </p>
+                  </div>
+                )}
+
+                <div className="flex items-center justify-between pt-2 border-t border-[#e6dccb]/60 dark:border-[#1d2e38] text-xs text-[#17495e] dark:text-[#e8b98a] font-bold">
+                  <span>View Story Arc</span>
+                  <ChevronRight size={14} />
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};

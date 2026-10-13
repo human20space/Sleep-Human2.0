@@ -11,6 +11,8 @@ export type Screen =
   | 'profile'
   | 'meditation_hub'
   | 'audio_chapters'
+  | 'stories'
+  | 'music'
   | 'reader'
   | 'ebb'
   | 'explore'

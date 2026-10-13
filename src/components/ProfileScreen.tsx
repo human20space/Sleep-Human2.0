@@ -13,9 +13,11 @@ import {
   ExternalLink,
   ChevronRight,
   ShieldCheck,
+  Globe,
 } from 'lucide-react';
 import type { Screen } from '../types';
 import { audioEngine } from '../utils/audioEngine';
+import { useLanguage } from '../i18n/LanguageContext';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 
 interface ProfileScreenProps {
@@ -31,6 +33,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
   isDark,
   onToggleDark 
 }) => {
+  const { t, language, setLanguage } = useLanguage();
   const [userEmail, setUserEmail] = useState<string>(() => {
     if (typeof window !== 'undefined') {
       return localStorage.getItem('human2_user_email') || 'human2.0space@gmail.com';
@@ -307,6 +310,41 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
             </div>
           </div>
         )}
+
+        {/* 4.5 Language Selection Card */}
+        <div className="p-4 rounded-3xl bg-white dark:bg-[#121e25] border border-[#e6dccb] dark:border-[#1d2e38] shadow-xs space-y-3">
+          <div className="flex items-center gap-2">
+            <Globe size={16} className="text-[#17495e] dark:text-[#e8b98a]" />
+            <h4 className="font-serif-title font-bold text-xs text-[#17495e] dark:text-[#f1ede6]">
+              {t.selectLanguage} (English / العربية / हिन्दी)
+            </h4>
+          </div>
+
+          <div className="grid grid-cols-3 gap-2">
+            {[
+              { code: 'en', label: 'English', sub: 'Default' },
+              { code: 'ar', label: 'العربية', sub: 'Arabic (RTL)' },
+              { code: 'hi', label: 'हिन्दी', sub: 'Hindi' },
+            ].map((item) => (
+              <button
+                key={item.code}
+                type="button"
+                onClick={() => {
+                  audioEngine.playBreathChime('inhale');
+                  setLanguage(item.code as 'en' | 'ar' | 'hi');
+                }}
+                className={`p-2.5 rounded-2xl border text-center transition-all cursor-pointer min-h-[50px] flex flex-col items-center justify-center ${
+                  language === item.code
+                    ? 'bg-[#17495e] dark:bg-[#e8b98a] text-white dark:text-[#070b0e] border-transparent shadow-xs'
+                    : 'bg-[#faf8f4] dark:bg-[#16252e] text-[#1f2a28] dark:text-[#f2ede4] border-[#e6dccb] dark:border-[#1d2e38] hover:bg-[#efe9df]'
+                }`}
+              >
+                <span className="text-xs font-bold leading-tight block">{item.label}</span>
+                <span className="text-[9.5px] opacity-75 block mt-0.5">{item.sub}</span>
+              </button>
+            ))}
+          </div>
+        </div>
 
         {/* 5. Author Profile Shortcut */}
         <div

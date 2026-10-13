@@ -222,8 +222,18 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       setCurrentTime(initialTime);
     }
 
-    const handlePlay = () => setIsPlaying(true);
-    const handlePause = () => setIsPlaying(false);
+    const handlePlay = () => {
+      setIsPlaying(true);
+      if (typeof window !== 'undefined' && 'mediaSession' in navigator) {
+        navigator.mediaSession.playbackState = 'playing';
+      }
+    };
+    const handlePause = () => {
+      setIsPlaying(false);
+      if (typeof window !== 'undefined' && 'mediaSession' in navigator) {
+        navigator.mediaSession.playbackState = 'paused';
+      }
+    };
     const handleTimeUpdate = () => {
       if (audio) {
         setCurrentTime(audio.currentTime);
@@ -331,6 +341,52 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
   };
 
+  // Sync metadata and lock-screen controls via Web MediaSession API
+  const syncMediaSession = useCallback((title: string, subtitle?: string) => {
+    if (typeof window !== 'undefined' && 'mediaSession' in navigator && (window as unknown as { MediaMetadata?: typeof MediaMetadata }).MediaMetadata) {
+      try {
+        navigator.mediaSession.metadata = new MediaMetadata({
+          title: title,
+          artist: 'Vinay Kapoor',
+          album: subtitle ? `Human 2.0 · ${subtitle}` : 'Human 2.0: Awareness — Future Ready with AI',
+          artwork: [
+            { src: '/icons/icon-192.png', sizes: '192x192', type: 'image/png' },
+            { src: '/icons/icon-512.png', sizes: '512x512', type: 'image/png' },
+          ],
+        });
+
+        navigator.mediaSession.setActionHandler('play', () => {
+          if (audioRef.current) {
+            audioRef.current.play().then(() => setIsPlaying(true)).catch(() => {});
+          }
+        });
+        navigator.mediaSession.setActionHandler('pause', () => {
+          if (audioRef.current) {
+            audioRef.current.pause();
+            setIsPlaying(false);
+          }
+        });
+        navigator.mediaSession.setActionHandler('seekbackward', () => {
+          if (audioRef.current) {
+            audioRef.current.currentTime = Math.max(0, audioRef.current.currentTime - 15);
+          }
+        });
+        navigator.mediaSession.setActionHandler('seekforward', () => {
+          if (audioRef.current) {
+            audioRef.current.currentTime = Math.min(audioRef.current.duration || 9999, audioRef.current.currentTime + 30);
+          }
+        });
+        navigator.mediaSession.setActionHandler('seekto', (details) => {
+          if (audioRef.current && details.seekTime !== undefined) {
+            audioRef.current.currentTime = details.seekTime;
+          }
+        });
+      } catch {
+        // ignore on unsupported devices
+      }
+    }
+  }, []);
+
   // Play an Audiobook Chapter
   const playChapter = (chapter: AudioChapter) => {
     hapticsEngine.trigger('tap');
@@ -359,6 +415,8 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     } catch {
       // ignore
     }
+
+    syncMediaSession(`Ch. ${chapter.chapterNumber}: ${chapter.title}`, chapter.part);
 
     if (audioRef.current) {
       audioRef.current.currentTime = 0;
@@ -396,6 +454,7 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     setShowMiniPlayer(true);
     setCurrentTime(0);
     setDuration(track.durationSeconds);
+    syncMediaSession(track.title, track.subtitle);
 
     // If track uses procedural audio synthesis
     if (track.audioEngineType) {

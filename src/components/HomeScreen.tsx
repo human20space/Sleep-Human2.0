@@ -14,6 +14,8 @@ import {
   Lock,
   Sparkles,
   User,
+  Film,
+  Music,
 } from 'lucide-react';
 import type { Screen, SleepTrack } from '../types';
 import { SLEEP_TRACKS } from '../data/sleepCatalogData';
@@ -22,6 +24,7 @@ import {
   sleepContentService,
 } from '../services/sleepContentService';
 import { useAudio } from '../context/AudioContext';
+import { useLanguage } from '../i18n/LanguageContext';
 import { audioEngine } from '../utils/audioEngine';
 import { hapticsEngine } from '../utils/haptics';
 
@@ -37,6 +40,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   isDark,
   onToggleDark,
 }) => {
+  const { t, language, setLanguage, isRtl } = useLanguage();
   const {
     currentTrack,
     isPlaying,
@@ -83,25 +87,42 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
         <div>
           <div className="flex items-center gap-1.5">
             <span className="w-2 h-2 rounded-full bg-[#4ba377] inline-block animate-pulse" />
-            <h1 className="font-serif-title text-2xl font-bold text-[#17495e] dark:text-[#e8b98a] leading-tight">
-              Human 2.0 Audio Book
+            <h1 className="font-serif-title text-xl sm:text-2xl font-bold text-[#17495e] dark:text-[#e8b98a] leading-tight">
+              {t.appName || 'Human 2.0 Audio Book'}
             </h1>
           </div>
           <p className="text-[11px] text-[#717e7a] dark:text-[#90a2ad]">
-            Awareness — Future Ready with AI
+            {t.tagline}
           </p>
         </div>
 
-        {/* Top Actions: Night Toggle, Unlock All Circle, and User Profile Circle */}
+        {/* Top Actions: Language Toggle, Night Toggle, Unlock All Circle, and User Profile Circle */}
         <div className="flex items-center gap-2">
+          {/* Language Switcher Button */}
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => {
+              audioEngine.playBreathChime('inhale');
+              if (language === 'en') setLanguage('ar');
+              else if (language === 'ar') setLanguage('hi');
+              else setLanguage('en');
+            }}
+            className="w-9 h-9 rounded-full bg-white dark:bg-[#121e25] border border-[#e6dccb] dark:border-[#1c2c36] shadow-xs flex items-center justify-center text-xs font-mono font-bold text-[#17495e] dark:text-[#e8b98a] hover:bg-[#f7f3ec] dark:hover:bg-[#1a2d38] transition-colors cursor-pointer min-h-[44px] min-w-[44px]"
+            title={`Language: ${t.currentLangName} (Tap to change)`}
+            aria-label={`Switch Language: currently ${t.currentLangName}`}
+          >
+            {language === 'en' ? 'EN' : language === 'ar' ? 'ع' : 'हि'}
+          </motion.button>
+
           {onToggleDark && (
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={onToggleDark}
               className="w-9 h-9 rounded-full bg-white dark:bg-[#121e25] border border-[#e6dccb] dark:border-[#1c2c36] shadow-xs flex items-center justify-center text-[#17495e] dark:text-[#e8b98a] hover:bg-[#f7f3ec] dark:hover:bg-[#1a2d38] transition-colors cursor-pointer min-h-[44px] min-w-[44px]"
-              title={isDark ? 'Daylight Mode' : 'Night Sanctuary'}
-              aria-label={isDark ? 'Daylight Mode' : 'Night Sanctuary'}
+              title={isDark ? t.daylightMode : t.nightSanctuary}
+              aria-label={isDark ? t.daylightMode : t.nightSanctuary}
             >
               {isDark ? (
                 <Sun size={15} className="text-[#e8b98a]" />
@@ -111,7 +132,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
             </motion.button>
           )}
 
-          {/* Sovereign Tier Circle Button: Uniform with Profile & Night */}
+          {/* Sovereign Tier Circle Button */}
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
@@ -120,8 +141,8 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
               onNavigate('subscription');
             }}
             className="w-9 h-9 rounded-full bg-gradient-to-tr from-[#d9a44a]/20 to-[#e8b98a]/30 border border-[#d9a44a]/60 shadow-xs flex items-center justify-center text-[#8e6724] dark:text-[#e8b98a] hover:bg-[#d9a44a]/30 transition-all cursor-pointer min-h-[44px] min-w-[44px]"
-            title={isPremium ? 'Sovereign Membership' : 'Unlock All'}
-            aria-label={isPremium ? 'Sovereign Membership' : 'Unlock All'}
+            title={isPremium ? t.sovereign : t.unlockAll}
+            aria-label={isPremium ? t.sovereign : t.unlockAll}
           >
             <Crown size={15} className="text-[#8e6724] dark:text-[#e8b98a] fill-current" />
           </motion.button>
@@ -135,8 +156,8 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
               onNavigate('profile');
             }}
             className="w-9 h-9 rounded-full bg-white dark:bg-[#121e25] border border-[#e6dccb] dark:border-[#1c2c36] shadow-xs flex items-center justify-center text-[#17495e] dark:text-[#e8b98a] hover:bg-[#f7f3ec] dark:hover:bg-[#1a2d38] transition-colors cursor-pointer min-h-[44px] min-w-[44px]"
-            title="User Profile"
-            aria-label="User Profile"
+            title={t.userProfile}
+            aria-label={t.userProfile}
           >
             <User size={15} className="text-[#17495e] dark:text-[#e8b98a]" />
           </motion.button>
@@ -144,7 +165,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
       </div>
 
       <div className="w-full max-w-4xl mx-auto px-4 space-y-4 pt-1">
-        {/* 2. TOP COMPACT SQUARE BOXES: 1st AUDIO BOOK, 2nd MEDITATION */}
+        {/* 2. THE 4 MAIN EXPERIENCES: AUDIO BOOK | MEDITATIONS | STORIES | MUSIC */}
         <div className="grid grid-cols-2 gap-3 pt-1">
           {/* 1st Square: Audio Book */}
           <motion.div
@@ -154,32 +175,32 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
               audioEngine.playBreathChime('inhale');
               onNavigate('audio_chapters');
             }}
-            className="aspect-square min-h-[48px] p-3.5 sm:p-4 rounded-3xl bg-gradient-to-br from-[#17495e] via-[#1f5f78] to-[#17495e] text-white shadow-xs border border-[#17495e]/60 cursor-pointer flex flex-col justify-between relative overflow-hidden group"
+            className="aspect-square min-h-[48px] p-3 sm:p-4 rounded-3xl bg-gradient-to-br from-[#17495e] via-[#1f5f78] to-[#17495e] text-white shadow-xs border border-[#17495e]/60 cursor-pointer flex flex-col justify-between relative overflow-hidden group"
           >
             <div className="flex items-center justify-between">
-              <div className="w-9 h-9 rounded-2xl bg-white/15 text-[#e8b98a] flex items-center justify-center shrink-0">
-                <Headphones size={18} />
+              <div className="w-8.5 h-8.5 rounded-2xl bg-white/15 text-[#e8b98a] flex items-center justify-center shrink-0">
+                <Headphones size={17} />
               </div>
               <span className="text-[8.5px] uppercase font-mono font-bold tracking-wider px-2 py-0.5 rounded-full bg-black/30 text-[#e8b98a]">
-                45 Ch
+                {t.audiobookTag}
               </span>
             </div>
 
             <div>
-              <span className="text-[9px] uppercase font-mono font-bold tracking-wider text-[#e8b98a] block">
-                Dedicated Listen Section
+              <span className="text-[8.5px] uppercase font-mono font-bold tracking-wider text-[#e8b98a] block truncate">
+                {t.audiobookSubtitle || 'Dedicated Listen Section'}
               </span>
-              <h3 className="font-serif-title text-sm sm:text-base font-bold text-white leading-tight">
-                Audio Book
+              <h3 className="font-serif-title text-sm sm:text-base font-bold text-white leading-tight truncate">
+                {t.audiobookTitle}
               </h3>
-              <p className="text-[9.5px] text-white/75 line-clamp-1 mt-0.5">
-                Human 2.0 Audiobook (45 Chapters)
+              <p className="text-[9px] text-white/75 line-clamp-1 mt-0.5" title="Human 2.0 Audiobook (45 Chapters)">
+                {t.audiobookDesc || 'Human 2.0 Audiobook (45 Chapters)'}
               </p>
             </div>
 
-            <div className="flex items-center justify-between pt-1 border-t border-white/15 text-[9.5px] text-[#e8b98a] font-semibold">
-              <span>Ch 1 Free</span>
-              <ChevronRight size={13} className="group-hover:translate-x-0.5 transition-transform" />
+            <div className="flex items-center justify-between pt-1 border-t border-white/15 text-[9px] text-[#e8b98a] font-semibold">
+              <span>{t.ch1Free}</span>
+              <ChevronRight size={13} className={`group-hover:translate-x-0.5 transition-transform ${isRtl ? 'rotate-180' : ''}`} />
             </div>
           </motion.div>
 
@@ -191,32 +212,106 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
               audioEngine.playBreathChime('inhale');
               onNavigate('meditation_hub');
             }}
-            className="aspect-square min-h-[48px] p-3.5 sm:p-4 rounded-3xl bg-gradient-to-br from-[#1e4a3e] via-[#245a4c] to-[#1a4237] text-white shadow-xs border border-[#245a4c]/60 cursor-pointer flex flex-col justify-between relative overflow-hidden group"
+            className="aspect-square min-h-[48px] p-3 sm:p-4 rounded-3xl bg-gradient-to-br from-[#1e4a3e] via-[#245a4c] to-[#1a4237] text-white shadow-xs border border-[#245a4c]/60 cursor-pointer flex flex-col justify-between relative overflow-hidden group"
           >
             <div className="flex items-center justify-between">
-              <div className="w-9 h-9 rounded-2xl bg-white/15 text-[#91e5c3] flex items-center justify-center shrink-0">
-                <Sparkles size={18} />
+              <div className="w-8.5 h-8.5 rounded-2xl bg-white/15 text-[#91e5c3] flex items-center justify-center shrink-0">
+                <Sparkles size={17} />
               </div>
               <span className="text-[8.5px] uppercase font-mono font-bold tracking-wider px-2 py-0.5 rounded-full bg-black/30 text-[#91e5c3]">
-                Series
+                {t.meditationTag}
               </span>
             </div>
 
             <div>
-              <span className="text-[9px] uppercase font-mono font-bold tracking-wider text-[#91e5c3] block">
-                Restorative
+              <span className="text-[8.5px] uppercase font-mono font-bold tracking-wider text-[#91e5c3] block truncate">
+                {t.meditationSubtitle}
               </span>
-              <h3 className="font-serif-title text-sm sm:text-base font-bold text-white leading-tight">
-                Meditation
+              <h3 className="font-serif-title text-sm sm:text-base font-bold text-white leading-tight truncate">
+                {t.meditationTitle}
               </h3>
-              <p className="text-[9.5px] text-white/75 line-clamp-1 mt-0.5">
-                Explore All Series
+              <p className="text-[9px] text-white/75 line-clamp-1 mt-0.5" title="Explore All Series">
+                {t.meditationDesc || 'Explore All Series'}
               </p>
             </div>
 
-            <div className="flex items-center justify-between pt-1 border-t border-white/15 text-[9.5px] text-[#91e5c3] font-semibold">
-              <span>Browse Series</span>
-              <ChevronRight size={13} className="group-hover:translate-x-0.5 transition-transform" />
+            <div className="flex items-center justify-between pt-1 border-t border-white/15 text-[9px] text-[#91e5c3] font-semibold">
+              <span>{t.browseSeries}</span>
+              <ChevronRight size={13} className={`group-hover:translate-x-0.5 transition-transform ${isRtl ? 'rotate-180' : ''}`} />
+            </div>
+          </motion.div>
+
+          {/* 3rd Square: Human 2.0 Stories */}
+          <motion.div
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => {
+              audioEngine.playBreathChime('inhale');
+              onNavigate('stories');
+            }}
+            className="aspect-square min-h-[48px] p-3 sm:p-4 rounded-3xl bg-gradient-to-br from-[#382b52] via-[#483768] to-[#2b2140] text-white shadow-xs border border-[#483768]/60 cursor-pointer flex flex-col justify-between relative overflow-hidden group"
+          >
+            <div className="flex items-center justify-between">
+              <div className="w-8.5 h-8.5 rounded-2xl bg-white/15 text-[#d8b4fe] flex items-center justify-center shrink-0">
+                <Film size={17} />
+              </div>
+              <span className="text-[8.5px] uppercase font-mono font-bold tracking-wider px-2 py-0.5 rounded-full bg-black/30 text-[#d8b4fe]">
+                {t.storiesTag}
+              </span>
+            </div>
+
+            <div>
+              <span className="text-[8.5px] uppercase font-mono font-bold tracking-wider text-[#d8b4fe] block truncate">
+                {t.storiesSubtitle}
+              </span>
+              <h3 className="font-serif-title text-sm sm:text-base font-bold text-white leading-tight truncate">
+                {t.storiesTitle}
+              </h3>
+              <p className="text-[9px] text-white/75 line-clamp-1 mt-0.5">
+                {t.storiesDesc}
+              </p>
+            </div>
+
+            <div className="flex items-center justify-between pt-1 border-t border-white/15 text-[9px] text-[#d8b4fe] font-semibold">
+              <span>{t.exploreStories}</span>
+              <ChevronRight size={13} className={`group-hover:translate-x-0.5 transition-transform ${isRtl ? 'rotate-180' : ''}`} />
+            </div>
+          </motion.div>
+
+          {/* 4th Square: Music */}
+          <motion.div
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => {
+              audioEngine.playBreathChime('inhale');
+              onNavigate('music');
+            }}
+            className="aspect-square min-h-[48px] p-3 sm:p-4 rounded-3xl bg-gradient-to-br from-[#683e18] via-[#854f1f] to-[#523113] text-white shadow-xs border border-[#854f1f]/60 cursor-pointer flex flex-col justify-between relative overflow-hidden group"
+          >
+            <div className="flex items-center justify-between">
+              <div className="w-8.5 h-8.5 rounded-2xl bg-white/15 text-[#fed7aa] flex items-center justify-center shrink-0">
+                <Music size={17} />
+              </div>
+              <span className="text-[8.5px] uppercase font-mono font-bold tracking-wider px-2 py-0.5 rounded-full bg-black/30 text-[#fed7aa]">
+                {t.musicTag}
+              </span>
+            </div>
+
+            <div>
+              <span className="text-[8.5px] uppercase font-mono font-bold tracking-wider text-[#fed7aa] block truncate">
+                {t.musicSubtitle}
+              </span>
+              <h3 className="font-serif-title text-sm sm:text-base font-bold text-white leading-tight truncate">
+                {t.musicTitle}
+              </h3>
+              <p className="text-[9px] text-white/75 line-clamp-1 mt-0.5">
+                {t.musicDesc}
+              </p>
+            </div>
+
+            <div className="flex items-center justify-between pt-1 border-t border-white/15 text-[9px] text-[#fed7aa] font-semibold">
+              <span>{t.exploreMusic}</span>
+              <ChevronRight size={13} className={`group-hover:translate-x-0.5 transition-transform ${isRtl ? 'rotate-180' : ''}`} />
             </div>
           </motion.div>
         </div>

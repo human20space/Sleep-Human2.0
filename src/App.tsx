@@ -21,6 +21,9 @@ import { VaultScreen } from './components/VaultScreen';
 import { ProfileScreen } from './components/ProfileScreen';
 import { MeditationHubScreen } from './components/MeditationHubScreen';
 import { AudioChaptersScreen } from './components/AudioChaptersScreen';
+import { StoriesScreen } from './components/StoriesScreen';
+import { MusicScreen } from './components/MusicScreen';
+import { LanguageProvider } from './i18n/LanguageContext';
 import { EbbCompanionScreen } from './components/EbbCompanionScreen';
 import { UnguidedTimerScreen } from './components/UnguidedTimerScreen';
 import { LiveCommunityScreen } from './components/LiveCommunityScreen';
@@ -411,6 +414,38 @@ export function AppContent() {
             </motion.div>
           )}
 
+          {currentScreen === 'stories' && (
+            <motion.div
+              key="stories"
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -15 }}
+              transition={{ duration: 0.28, ease: 'easeOut' }}
+              className="flex-1 w-full h-full flex flex-col overflow-hidden"
+            >
+              <StoriesScreen
+                onBack={() => setCurrentScreen('home')}
+                onNavigate={(screen) => setCurrentScreen(screen)}
+              />
+            </motion.div>
+          )}
+
+          {currentScreen === 'music' && (
+            <motion.div
+              key="music"
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -15 }}
+              transition={{ duration: 0.28, ease: 'easeOut' }}
+              className="flex-1 w-full h-full flex flex-col overflow-hidden"
+            >
+              <MusicScreen
+                onBack={() => setCurrentScreen('home')}
+                onNavigate={(screen) => setCurrentScreen(screen)}
+              />
+            </motion.div>
+          )}
+
           {currentScreen === 'ebb' && (
             <motion.div
               key="ebb"
@@ -614,11 +649,13 @@ export function App() {
     );
   }
 
-  // Consumer Application (wrapped in AudioProvider and inside PhoneFrame)
+  // Consumer Application (wrapped in LanguageProvider, AudioProvider and inside PhoneFrame)
   return (
-    <AudioProvider>
-      <AppContent />
-    </AudioProvider>
+    <LanguageProvider>
+      <AudioProvider>
+        <AppContent />
+      </AudioProvider>
+    </LanguageProvider>
   );
 }
 
