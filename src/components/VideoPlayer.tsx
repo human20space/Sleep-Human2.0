@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { Play, Pause, Volume2, VolumeX, Maximize2, Film, RotateCcw } from 'lucide-react';
 
 interface VideoPlayerProps {

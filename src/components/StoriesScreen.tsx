@@ -11,6 +11,7 @@ import {
   Volume2,
   VolumeX,
   Maximize2,
+  RotateCcw,
 } from 'lucide-react';
 import {
   HUMAN_STORIES,
@@ -34,6 +35,9 @@ export const StoriesScreen: React.FC<StoriesScreenProps> = ({ onBack, onNavigate
   const [activeStory, setActiveStory] = useState<HumanStory>(HUMAN_STORIES[0]);
   const [isVideoPlaying, setIsVideoPlaying] = useState<boolean>(false);
   const [isStoryMuted, setIsStoryMuted] = useState<boolean>(false);
+  const [hasError, setHasError] = useState<boolean>(false);
+  const [currentTime, setCurrentTime] = useState<number>(0);
+  const [duration, setDuration] = useState<number>(0);
   const [selectedFeeling, setSelectedFeeling] = useState<UserFeeling | null>('stressed');
   const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -48,6 +52,7 @@ export const StoriesScreen: React.FC<StoriesScreenProps> = ({ onBack, onNavigate
         .play()
         .then(() => {
           setIsVideoPlaying(true);
+          setHasError(false);
         })
         .catch((err) => {
           console.warn('[StoriesScreen] Play blocked, falling back to muted:', err);
@@ -56,8 +61,13 @@ export const StoriesScreen: React.FC<StoriesScreenProps> = ({ onBack, onNavigate
             setIsStoryMuted(true);
             videoRef.current
               .play()
-              .then(() => setIsVideoPlaying(true))
-              .catch(() => {});
+              .then(() => {
+                setIsVideoPlaying(true);
+                setHasError(false);
+              })
+              .catch(() => {
+                setHasError(true);
+              });
           }
         });
     } else {
@@ -80,6 +90,21 @@ export const StoriesScreen: React.FC<StoriesScreenProps> = ({ onBack, onNavigate
     if (videoRef.current.requestFullscreen) {
       videoRef.current.requestFullscreen();
     }
+  };
+
+  const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.stopPropagation();
+    if (!videoRef.current) return;
+    const target = Number(e.target.value);
+    videoRef.current.currentTime = target;
+    setCurrentTime(target);
+  };
+
+  const formatTime = (secs: number) => {
+    if (!secs || isNaN(secs)) return '0:00';
+    const m = Math.floor(secs / 60);
+    const s = Math.floor(secs % 60);
+    return `${m}:${s.toString().padStart(2, '0')}`;
   };
 
   const handleVideoEnded = () => {
@@ -159,38 +184,85 @@ export const StoriesScreen: React.FC<StoriesScreenProps> = ({ onBack, onNavigate
               onPlay={() => setIsVideoPlaying(true)}
               onPause={() => setIsVideoPlaying(false)}
               onEnded={handleVideoEnded}
+              onTimeUpdate={() => {
+                if (videoRef.current) {
+                  setCurrentTime(videoRef.current.currentTime);
+                }
+              }}
+              onLoadedMetadata={() => {
+                if (videoRef.current && videoRef.current.duration) {
+                  setDuration(videoRef.current.duration);
+                  setHasError(false);
+                }
+              }}
+              onError={() => {
+                console.warn('[StoriesScreen] Video failed to load source:', activeStory.videoUrl);
+                setHasError(true);
+              }}
               className="w-full h-full object-cover"
             />
 
-            {/* Play/Pause Overlay Overlay (visible when paused or on hover) */}
-            <div
-              className={`absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-black/40 flex flex-col justify-between p-4 pointer-events-none transition-opacity duration-300 ${
-                isVideoPlaying ? 'opacity-0 group-hover:opacity-100' : 'opacity-100'
-              }`}
-            >
-              <div className="flex items-center justify-between">
-                <span className="text-[10px] uppercase font-mono font-bold tracking-widest px-2.5 py-1 rounded-full bg-[#d9a44a] text-black">
-                  A Human 2.0 Story · {activeStory.durationFormatted}
-                </span>
-                <span className="text-[11px] font-mono text-white/80">
-                  {activeStory.theme || activeStory.categoryLabel}
-                </span>
+            {/* Error Fallback with Retry */}
+            {hasError && (
+              <div
+                className="absolute inset-0 bg-[#0d1613] flex flex-col items-center justify-center p-4 text-center text-white z-20"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <Film size={26} className="text-[#e8b98a] mb-2" />
+                <p className="text-xs font-serif-title font-semibold text-[#f7f3ec] mb-1">
+                  {activeStory.title}
+                </p>
+                <p className="text-[11px] text-white/80 max-w-xs font-serif-quote italic mb-3">
+                  "{activeStory.subtitle}"
+                </p>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setHasError(false);
+                    if (videoRef.current) {
+                      videoRef.current.load();
+                      handleToggleVideo();
+                    }
+                  }}
+                  className="px-3.5 py-1.5 rounded-full bg-[#e8b98a] text-[#070b0e] text-xs font-bold flex items-center gap-1.5 shadow-xs cursor-pointer hover:brightness-110"
+                >
+                  <RotateCcw size={13} />
+                  <span>Retry Video</span>
+                </button>
               </div>
+            )}
 
-              <div className="flex items-end justify-between">
-                <div>
-                  <h2 className="font-serif-title text-lg sm:text-xl font-bold text-white leading-tight uppercase">
-                    {activeStory.title}
-                  </h2>
-                  <p className="text-xs text-[#e8b98a] mt-0.5 line-clamp-1">
-                    {activeStory.subtitle}
-                  </p>
+            {/* Play/Pause Overlay (visible when paused or on hover) */}
+            {!hasError && (
+              <div
+                className={`absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-black/40 flex flex-col justify-between p-4 pointer-events-none transition-opacity duration-300 ${
+                  isVideoPlaying ? 'opacity-0 group-hover:opacity-100' : 'opacity-100'
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] uppercase font-mono font-bold tracking-widest px-2.5 py-1 rounded-full bg-[#d9a44a] text-black">
+                    A Human 2.0 Story · {activeStory.durationFormatted}
+                  </span>
+                  <span className="text-[11px] font-mono text-white/80">
+                    {activeStory.theme || activeStory.categoryLabel}
+                  </span>
+                </div>
+
+                <div className="flex items-end justify-between">
+                  <div>
+                    <h2 className="font-serif-title text-lg sm:text-xl font-bold text-white leading-tight uppercase">
+                      {activeStory.title}
+                    </h2>
+                    <p className="text-xs text-[#e8b98a] mt-0.5 line-clamp-1">
+                      {activeStory.subtitle}
+                    </p>
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
 
             {/* Center Play Button Trigger (when paused) */}
-            {!isVideoPlaying && (
+            {!hasError && !isVideoPlaying && (
               <button
                 type="button"
                 onClick={(e) => {
@@ -204,39 +276,58 @@ export const StoriesScreen: React.FC<StoriesScreenProps> = ({ onBack, onNavigate
               </button>
             )}
 
-            {/* Mini Controls Bar when playing */}
-            {isVideoPlaying && (
+            {/* Always Accessible Control Bar */}
+            {!hasError && (
               <div
-                className="absolute left-0 right-0 bottom-0 p-3 bg-gradient-to-t from-black/90 to-transparent flex items-center justify-between text-white opacity-0 group-hover:opacity-100 hover:opacity-100 transition-opacity z-10"
+                className={`absolute left-0 right-0 bottom-0 p-3 bg-gradient-to-t from-black/90 via-black/60 to-transparent flex flex-col gap-1 text-white transition-opacity z-10 ${
+                  isVideoPlaying ? 'opacity-0 group-hover:opacity-100 hover:opacity-100 focus-within:opacity-100' : 'opacity-100'
+                }`}
                 onClick={(e) => e.stopPropagation()}
               >
-                <div className="flex items-center gap-3">
-                  <button
-                    type="button"
-                    onClick={handleToggleVideo}
-                    className="p-1 hover:text-[#e8b98a] transition-colors cursor-pointer"
-                    title="Pause"
-                  >
-                    <Pause size={16} />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={handleToggleMute}
-                    className="p-1 hover:text-[#e8b98a] transition-colors cursor-pointer"
-                    title={isStoryMuted ? 'Unmute' : 'Mute'}
-                  >
-                    {isStoryMuted ? <VolumeX size={16} /> : <Volume2 size={16} />}
-                  </button>
+                {/* Scrubber Progress Bar */}
+                <div className="w-full flex items-center gap-2">
+                  <input
+                    type="range"
+                    min={0}
+                    max={duration || 100}
+                    value={currentTime}
+                    onChange={handleSeek}
+                    className="w-full h-1 bg-white/30 rounded-lg appearance-none cursor-pointer accent-[#e8b98a]"
+                  />
                 </div>
 
-                <button
-                  type="button"
-                  onClick={handleFullscreen}
-                  className="p-1 hover:text-[#e8b98a] transition-colors cursor-pointer"
-                  title="Fullscreen"
-                >
-                  <Maximize2 size={16} />
-                </button>
+                <div className="flex items-center justify-between pt-1">
+                  <div className="flex items-center gap-3">
+                    <button
+                      type="button"
+                      onClick={handleToggleVideo}
+                      className="hover:text-[#e8b98a] transition-colors p-1 cursor-pointer"
+                      title={isVideoPlaying ? 'Pause' : 'Play'}
+                    >
+                      {isVideoPlaying ? <Pause size={16} /> : <Play size={16} className="fill-current" />}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleToggleMute}
+                      className="hover:text-[#e8b98a] transition-colors p-1 cursor-pointer"
+                      title={isStoryMuted ? 'Unmute' : 'Mute'}
+                    >
+                      {isStoryMuted ? <VolumeX size={16} /> : <Volume2 size={16} />}
+                    </button>
+                    <span className="text-[10px] font-mono text-white/80">
+                      {formatTime(currentTime)} / {formatTime(duration)}
+                    </span>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={handleFullscreen}
+                    className="hover:text-[#e8b98a] transition-colors p-1 cursor-pointer"
+                    title="Fullscreen"
+                  >
+                    <Maximize2 size={15} />
+                  </button>
+                </div>
               </div>
             )}
           </div>
